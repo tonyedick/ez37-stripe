@@ -1,0 +1,11 @@
+# Static analysis. WordPress function stubs come from szepeviktor/phpstan-wordpress
+# (registered automatically by phpstan/extension-installer).
+parameters:
+  level: 6
+  paths:
+    - ez37-payments.php
+    - uninstall.php
+    - src
+  tmpDir: .phpstan-cache
+  bootstrapFiles:
+    - tests/bootstrap/phpstan-constants.php
