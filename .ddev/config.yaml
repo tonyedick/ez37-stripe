@@ -1,0 +1,22 @@
+# DDEV local environment for EZ37 Payments development.
+# Docs: https://ddev.readthedocs.io/
+#
+# Versions should be aligned with production once the sanitised environment
+# details are available (Phase 1, Section 2 / open item O4). Until then these
+# are safe, current defaults.
+#
+# WordPress itself is installed into ./wordpress (git-ignored) by
+# bin/setup-local.sh. The plugin directory is symlinked into it, so code is
+# edited in ./ez37-payments and runs immediately.
+
+name: ez37
+type: wordpress
+docroot: wordpress
+php_version: "8.2"
+webserver_type: nginx-fpm
+database:
+  type: mariadb
+  version: "10.11"
+xdebug_enabled: false
+# Mailpit is included with DDEV and catches all outgoing email locally:
+#   ddev launch -m

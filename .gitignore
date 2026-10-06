@@ -1,0 +1,32 @@
+# --- Secrets: never commit ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+wp-config-local.php
+local-config.php
+
+# --- Local WordPress install created by bin/setup-local.sh ---
+/wordpress/
+
+# --- Dependencies and build output ---
+/ez37-payments/vendor/
+/build/
+*.zip
+
+# --- Tooling caches ---
+.phpunit.cache/
+.phpunit.result.cache
+.phpcs-cache
+/ez37-payments/.phpstan-cache/
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
