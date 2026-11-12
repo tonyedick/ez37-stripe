@@ -17,12 +17,14 @@ WP_VERSION="${WP_VERSION:-latest}"
 ELEMENTOR_VERSION="${ELEMENTOR_VERSION:-}"
 SITE_URL="https://ez37.ddev.site"
 
+# DDEV expects the docroot to exist before it starts.
+mkdir -p wordpress
+
 echo "==> Starting DDEV"
 ddev start
 
 if [ ! -f wordpress/wp-load.php ]; then
 	echo "==> Downloading WordPress (${WP_VERSION})"
-	mkdir -p wordpress
 	ddev wp core download --version="${WP_VERSION}"
 fi
 
