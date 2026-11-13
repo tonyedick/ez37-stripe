@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace EZ37\Payments\Frontend;
 
 use EZ37\Payments\Checkout\RateLimiter;
+use EZ37\Payments\Support\ClientIp;
 
 /**
  * GET /wp-json/ez37/v1/payment-status?session_id=cs_...
@@ -66,7 +67,7 @@ final class StatusController {
 	 * @param \WP_REST_Request $request Request.
 	 */
 	public function handle( \WP_REST_Request $request ): \WP_REST_Response {
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+		$ip = ClientIp::get();
 
 		if ( ! $this->rate_limiter->attempt( 'status', $ip ) ) {
 			$response = new \WP_REST_Response( array( 'state' => 'rate_limited' ), 429 );

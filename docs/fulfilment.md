@@ -45,7 +45,8 @@ Invalid entries are disabled and listed in the wp-admin notice.
 
 ### `EZ37_PAYMENTS_PRIVATE_DIR`
 
-Absolute path to a folder **outside the web root**. Nothing in it is reachable by URL; files are
+Absolute path to a folder **outside the web root**. A folder inside the WordPress folder (`ABSPATH`)
+is refused (security audit SA-02). Nothing in it is reachable by URL; files are
 streamed only by `AccessController`. If it is missing, fulfilment fails (and retries) and wp-admin
 shows a warning. There is deliberately no fallback inside `wp-content/uploads`, because `.htaccess`
 rules do not protect files on Nginx hosts.
@@ -58,9 +59,10 @@ Local DDEV: `EZ37_PAYMENTS_PRIVATE_DIR=/var/www/html/sample-resources` (the repo
 | Step | Detail |
 |---|---|
 | Trigger | `ez37_payments_transaction_paid` → `wp_schedule_single_event(now, ez37_payments_fulfil, [id])`. The webhook only schedules; it never waits for email. |
-| Claim | Atomic `UPDATE`: paid, not flagged for review, fulfilment `pending`/`failed`, or `in_progress` with an expired 5-minute lock. Increments `fulfilment_attempts`. Concurrent jobs cannot both win. |
+| Claim | Atomic `UPDATE`: paid, not flagged for review, fulfilment `pending`/`failed`, or `in_progress` with an expired 15-minute lock. Increments `fulfilment_attempts`. Concurrent jobs cannot both win. |
 | Already emailed? | If the customer email is logged as `sent`, complete without issuing new links (a crash after sending never invalidates the emailed link). |
 | Grant | For each resource: check the file exists inside the private folder, create a 256-bit token, store only its SHA-256 with `expires_at = now + access_days`. Existing active entitlement → new token (the old one was never emailed). Revoked → error. |
+| Reserve | The customer email is reserved in `ez37_email_log` **before** links are created. If another job is still sending it (reservation younger than 15 min), this attempt fails and retries later, so it can never replace links that are being emailed. If granting fails, the reservation is released. |
 | Email | Customer email (must succeed), then admin notice (failure only logged). |
 | Complete | `fulfilment_status = completed`, `fulfilled_at` set. |
 | Failure | `failed` (retried by the sweeper) or, at attempt 5, `failed_permanent`. **Payment status never changes.** |

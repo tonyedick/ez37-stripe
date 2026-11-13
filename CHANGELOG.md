@@ -2,6 +2,22 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.7.0] — Phase 9: Security audit
+
+See `docs/security-audit.md`.
+
+### Security
+- SA-01: the customer email is reserved before download links are created, and an in-progress send is
+  only taken over after 15 minutes, so overlapping jobs can no longer invalidate an emailed link or send
+  it twice. Fulfilment lock raised from 5 to 15 minutes.
+- SA-02: `EZ37_PAYMENTS_PRIVATE_DIR` inside the WordPress folder is refused.
+- SA-03: rate limits use `Support\ClientIp` with the new filter `ez37_payments_client_ip` (for sites
+  behind a CDN/proxy).
+- SA-04: live checkout requires an https site address.
+- SA-05: download tokens are redacted from logs.
+- SA-06: download error responses send no-cache headers; output buffers cleared before streaming.
+- SA-07: Stripe API calls retry transient failures (2 retries, idempotent).
+
 ## [0.6.0] — Phase 8: Elementor integration and admin screen
 
 ### Added

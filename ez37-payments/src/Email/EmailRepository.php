@@ -26,6 +26,14 @@ class EmailRepository {
 	public const FAILED  = 'failed';
 
 	/**
+	 * A "sending" row older than this is treated as abandoned (the process
+	 * crashed or timed out) and may be taken over. Longer than PHPMailer's
+	 * default 300-second SMTP timeout and the fulfilment lock, so two jobs
+	 * can never be sending the same email at once.
+	 */
+	public const STALE_SENDING_SECONDS = 900;
+
+	/**
 	 * Whether this email was already sent successfully.
 	 *
 	 * @param int    $transaction_id Transaction ID.
@@ -36,7 +44,8 @@ class EmailRepository {
 	}
 
 	/**
-	 * Reserve the right to send this email. Returns false if it was already sent.
+	 * Reserve the right to send this email. Returns false if it was already
+	 * sent, or if another job is sending it right now.
 	 *
 	 * @param int    $transaction_id Transaction ID.
 	 * @param string $type           Email type.
@@ -72,18 +81,20 @@ class EmailRepository {
 			return true;
 		}
 
-		// Existing row: retry unless it was sent.
+		// Existing row: retry if it failed, or if an earlier "sending" was abandoned.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		$updated = $wpdb->query(
 			$wpdb->prepare(
-				'UPDATE %i SET status = %s, recipient = %s, attempts = attempts + 1, updated_at = %s WHERE transaction_id = %d AND email_type = %s AND status <> %s',
+				'UPDATE %i SET status = %s, recipient = %s, attempts = attempts + 1, updated_at = %s WHERE transaction_id = %d AND email_type = %s AND ( status = %s OR ( status = %s AND updated_at < %s ) )',
 				$table,
 				self::SENDING,
 				$recipient,
 				$now,
 				$transaction_id,
 				$type,
-				self::SENT
+				self::FAILED,
+				self::SENDING,
+				gmdate( 'Y-m-d H:i:s', time() - self::STALE_SENDING_SECONDS )
 			)
 		);
 

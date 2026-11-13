@@ -11,6 +11,7 @@ namespace EZ37\Payments\Resources;
 
 use EZ37\Payments\Checkout\RateLimiter;
 use EZ37\Payments\Config;
+use EZ37\Payments\Support\ClientIp;
 use EZ37\Payments\Support\Logger;
 use EZ37\Payments\Transactions\PaymentStatus;
 
@@ -87,7 +88,7 @@ final class AccessController {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The token is the credential.
 		$token = sanitize_text_field( wp_unslash( $_GET[ self::QUERY_VAR ] ) );
-		$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+		$ip    = ClientIp::get();
 
 		if ( ! $this->rate_limiter->attempt( 'access', $ip ) ) {
 			$this->deny( 429, __( 'Too many attempts. Please wait a few minutes and try again.', 'ez37-payments' ) );
@@ -169,6 +170,11 @@ final class AccessController {
 		header( 'X-Robots-Tag: noindex, nofollow' );
 		header( 'Referrer-Policy: no-referrer' );
 
+		// Discard any buffered output (theme/plugin notices, whitespace) so the file is not corrupted.
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streaming a validated private file.
 		readfile( $file );
 		exit;
@@ -181,6 +187,7 @@ final class AccessController {
 	 * @param string $message Message.
 	 */
 	private function deny( int $status, string $message ): never {
+		nocache_headers();
 		header( 'X-Robots-Tag: noindex, nofollow' );
 		header( 'Referrer-Policy: no-referrer' );
 		wp_die( esc_html( $message ), esc_html__( 'Download', 'ez37-payments' ), array( 'response' => (int) $status ) );

@@ -67,6 +67,10 @@ final class CheckoutService {
 			throw new CheckoutException( CheckoutException::DISABLED, 'Checkout is disabled or misconfigured.' );
 		}
 
+		if ( $this->config->is_live() && ! self::site_uses_https() ) {
+			throw new CheckoutException( CheckoutException::DISABLED, 'Live payments require the site URL to use https.' );
+		}
+
 		$mode     = $this->config->mode();
 		$offering = $this->catalogue->find( $input->offering_key );
 
@@ -115,6 +119,14 @@ final class CheckoutService {
 		);
 
 		return $session['url'];
+	}
+
+	/**
+	 * Whether the site's public URL is https (required for live payments: the
+	 * checkout form, return pages and download links carry personal data).
+	 */
+	public static function site_uses_https(): bool {
+		return 'https' === strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_SCHEME ) );
 	}
 
 	/**

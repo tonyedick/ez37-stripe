@@ -39,7 +39,12 @@ class FulfilmentService {
 	public const SWEEP_HOOK = 'ez37_payments_fulfilment_sweep';
 
 	public const MAX_ATTEMPTS = 5;
-	public const LOCK_SECONDS = 300;
+	/**
+	 * How long a claimed job is protected from takeover. Longer than PHPMailer's
+	 * default 300-second SMTP timeout, so a slow but working job is not
+	 * mistaken for a crashed one.
+	 */
+	public const LOCK_SECONDS = 900;
 
 	/**
 	 * Constructor.
@@ -187,6 +192,7 @@ class FulfilmentService {
 	 * @param array<string, mixed> $transaction Transaction row (claimed).
 	 *
 	 * @throws \RuntimeException When anything needed for delivery is missing or fails.
+	 * @throws \Throwable         Rethrown from granting access, after the email reservation is released.
 	 */
 	private function deliver( array $transaction ): void {
 		$id       = (int) $transaction['id'];
@@ -211,6 +217,36 @@ class FulfilmentService {
 		if ( ! is_array( $keys ) || array() === $keys ) {
 			throw new \RuntimeException( 'Offering ' . $offering->key . ' has no resources configured.' );
 		}
+
+		// Reserve the customer email BEFORE creating links: if another job is
+		// still sending (e.g. a slow SMTP server outlived the lock), new links
+		// here would silently invalidate the ones in that email.
+		if ( ! $this->mailer->reserve_customer_email( $transaction ) ) {
+			throw new \RuntimeException( 'Customer email is being sent by another job; will retry.' );
+		}
+
+		try {
+			$grants = $this->grant_access( $transaction, $keys );
+		} catch ( \Throwable $e ) {
+			$this->mailer->release_customer_email( $id, $e->getMessage() );
+			throw $e;
+		}
+
+		$this->mailer->send_customer_fulfilment( $transaction, $offering, $grants );
+		$this->mailer->send_admin_sale_notice( $transaction, $offering );
+	}
+
+	/**
+	 * Create (or refresh) the entitlement and access link for each resource.
+	 *
+	 * @param array<string, mixed> $transaction Transaction row.
+	 * @param array<mixed>         $keys        Resource keys from the offering.
+	 * @return list<array{label: string, url: string, expires_at: string, file: string, attach: bool, max_attach: int}>
+	 *
+	 * @throws \RuntimeException When a resource is unavailable or cannot be granted.
+	 */
+	private function grant_access( array $transaction, array $keys ): array {
+		$id = (int) $transaction['id'];
 
 		$private_dir = $this->config->private_dir();
 		$grants      = array();
@@ -238,7 +274,6 @@ class FulfilmentService {
 			);
 		}//end foreach
 
-		$this->mailer->send_customer_fulfilment( $transaction, $offering, $grants );
-		$this->mailer->send_admin_sale_notice( $transaction, $offering );
+		return $grants;
 	}
 }

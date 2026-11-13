@@ -85,6 +85,25 @@ calls `wp cron event run --due-now` (or `wp-cron.php`) every 5–15 minutes and 
   (versioned by plugin version) is served.
 - Check that administrators see **Payments** in wp-admin and that other roles do not.
 
+## Security settings from the Phase 9 audit
+
+- **Behind a CDN or reverse proxy** (Cloudflare, load balancer, Nginx proxy): tell the plugin the real
+  visitor IP, otherwise all visitors share one rate limit. Use the header your proxy sets, in a small
+  must-use plugin, e.g. `wp-content/mu-plugins/ez37-client-ip.php`:
+
+  ```php
+  <?php
+  add_filter( 'ez37_payments_client_ip', function ( $ip ) {
+  	// Cloudflare example. Only trust this header if the origin accepts traffic from Cloudflare only.
+  	return isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $ip;
+  } );
+  ```
+- Exclude from page/CDN caching: `/checkout/`, `/payment-complete/`, `/payment-cancelled/`, and any URL
+  whose query string contains `ez37_access`.
+- The site address must be https before switching to live mode (checkout is blocked otherwise).
+- The private folder must be outside the web server's document root (the plugin can only detect a
+  folder inside the WordPress folder).
+
 ## Configuration on staging/production
 
 Add constants to `wp-config.php` **above** the "That's all, stop editing!" line. Example for

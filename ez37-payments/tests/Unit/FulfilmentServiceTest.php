@@ -139,6 +139,7 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->once()->with( 42, FulfilmentService::LOCK_SECONDS )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->with( 42 )->andReturn( self::transaction() );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->with( 42 )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->once()->andReturn( true );
 		$this->entitlements->shouldReceive( 'grant' )
 			->once()
 			->with( 42, 'brochure', 'jane@example.com', Mockery::pattern( '/^[a-f0-9]{64}$/' ), Mockery::type( 'string' ) );
@@ -166,6 +167,7 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->andReturn( true );
 		$this->mailer->shouldReceive( 'send_customer_fulfilment' )->andReturn( true );
 		$this->mailer->shouldReceive( 'send_admin_sale_notice' );
 		$this->transactions->shouldReceive( 'complete_fulfilment' );
@@ -206,8 +208,10 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->andReturn( true );
 		$this->entitlements->shouldNotReceive( 'grant' );
 		$this->mailer->shouldNotReceive( 'send_customer_fulfilment' );
+		$this->mailer->shouldReceive( 'release_customer_email' )->once()->with( 42, Mockery::pattern( '/Resource unavailable/' ) );
 		$this->transactions->shouldReceive( 'fail_fulfilment' )->once()->with( 42, false, Mockery::pattern( '/Resource unavailable/' ) );
 		$this->transactions->shouldNotReceive( 'transition', 'complete_fulfilment' );
 
@@ -218,6 +222,7 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->andReturn( true );
 		$this->entitlements->shouldReceive( 'grant' );
 		$this->mailer->shouldReceive( 'send_customer_fulfilment' )->andThrow( new \RuntimeException( 'SMTP down' ) );
 		$this->transactions->shouldReceive( 'fail_fulfilment' )->once()->with( 42, false, Mockery::type( 'string' ) );
@@ -230,6 +235,7 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction( array( 'fulfilment_attempts' => (string) FulfilmentService::MAX_ATTEMPTS ) ) );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->andReturn( true );
 		$this->entitlements->shouldReceive( 'grant' );
 		$this->mailer->shouldReceive( 'send_customer_fulfilment' )->andThrow( new \RuntimeException( 'SMTP down' ) );
 		$this->transactions->shouldReceive( 'fail_fulfilment' )->once()->with( 42, true, Mockery::type( 'string' ) );
@@ -279,6 +285,7 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
 		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
 		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false )->ordered();
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->once()->andReturn( true );
 		$this->entitlements->shouldReceive( 'grant' )->once()->with( 42, 'brochure', 'jane@example.com', Mockery::pattern( '/^[a-f0-9]{64}$/' ), Mockery::type( 'string' ) );
 		$this->mailer->shouldReceive( 'send_customer_fulfilment' )->once()->andReturn( true );
 		$this->mailer->shouldReceive( 'send_admin_sale_notice' )->once();
@@ -292,5 +299,22 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->mailer->shouldNotReceive( 'allow_customer_resend' );
 
 		$this->assertFalse( $this->service()->resend( 42 ) );
+	}
+
+	public function test_no_links_are_issued_while_another_job_is_sending_the_email(): void {
+		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
+		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
+		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false );
+		$this->mailer->shouldReceive( 'reserve_customer_email' )->once()->andReturn( false );
+		$this->entitlements->shouldNotReceive( 'grant' );
+		$this->mailer->shouldNotReceive( 'send_customer_fulfilment', 'release_customer_email' );
+		$this->transactions->shouldReceive( 'fail_fulfilment' )->once()->with( 42, false, Mockery::pattern( '/another job/' ) );
+		$this->transactions->shouldNotReceive( 'complete_fulfilment' );
+
+		$this->assertFalse( $this->service()->fulfil( 42 ) );
+	}
+
+	public function test_lock_outlasts_the_default_smtp_timeout(): void {
+		$this->assertGreaterThan( 300, FulfilmentService::LOCK_SECONDS );
 	}
 }

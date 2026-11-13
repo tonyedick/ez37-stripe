@@ -73,7 +73,28 @@ final class Config {
 
 		$real = realpath( $dir );
 
-		return ( false !== $real && is_dir( $real ) && is_readable( $real ) ) ? $real : null;
+		if ( false === $real || ! is_dir( $real ) || ! is_readable( $real ) || self::is_inside_wordpress( $real ) ) {
+			return null;
+		}
+
+		return $real;
+	}
+
+	/**
+	 * Whether a path is inside the WordPress installation folder (ABSPATH),
+	 * where files are normally reachable by URL. Paid resources must never be
+	 * stored there: anyone could download them without paying.
+	 *
+	 * @param string $real Resolved absolute path.
+	 */
+	private static function is_inside_wordpress( string $real ): bool {
+		if ( ! defined( 'ABSPATH' ) ) {
+			return false;
+		}
+
+		$wp = realpath( (string) constant( 'ABSPATH' ) );
+
+		return false !== $wp && str_starts_with( $real . '/', rtrim( $wp, '/' ) . '/' );
 	}
 
 	/**
@@ -325,7 +346,7 @@ final class Config {
 		if ( ! isset( $this->values['EZ37_PAYMENTS_PRIVATE_DIR'] ) ) {
 			$this->warnings[] = 'EZ37_PAYMENTS_PRIVATE_DIR is not set. Paid resources cannot be delivered until it points to a folder outside the web root.';
 		} elseif ( null === $this->private_dir() ) {
-			$this->warnings[] = 'EZ37_PAYMENTS_PRIVATE_DIR is not an absolute path to a readable folder.';
+			$this->warnings[] = 'EZ37_PAYMENTS_PRIVATE_DIR must be an absolute path to a readable folder OUTSIDE the WordPress folder (files inside it could be downloaded without paying). Paid resources are not delivered until this is fixed.';
 		}
 
 		foreach ( array( 'EZ37_PAYMENTS_SUCCESS_PATH', 'EZ37_PAYMENTS_CANCEL_PATH' ) as $path_key ) {

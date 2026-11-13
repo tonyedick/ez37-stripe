@@ -121,8 +121,21 @@ receive an expired nonce (they would see "Your session expired").
 | Double checkout submission | Button disabled on submit (UX); server-side rate limits and the per-transaction idempotency key remain the real protection. |
 | Admin actions changing payment state | Actions touch only fulfilment state, the email log and entitlements; refunds stay in the Stripe Dashboard. |
 
-## Planned controls (by phase)
+## Implemented in v0.7.0 (Phase 9 — security audit)
 
-| Phase | Controls |
+Full report, including accepted risks: [security-audit.md](security-audit.md).
+
+| Threat | Control |
 |---|---|
-| 9 | Independent audit of all of the above |
+| Overlapping fulfilment jobs invalidating an emailed link | Email reserved before links are created; in-progress sends taken over only after 15 min; 15-min job lock (SA-01) |
+| Paid files reachable by URL | Private folder inside `ABSPATH` refused (SA-02) |
+| One shared rate limit behind a CDN/proxy | `ez37_payments_client_ip` filter; default `REMOTE_ADDR` (SA-03) |
+| Live payments over http | Live checkout requires an https site URL (SA-04) |
+| Tokens in logs | `ez37_access=` redacted (SA-05) |
+| Cached download errors / corrupted files | No-cache on denials; buffers cleared before streaming (SA-06) |
+| Transient Stripe errors | 2 idempotent network retries (SA-07) |
+
+## Still open (by design)
+
+Refund/dispute automation, a "resolve review" admin action, privacy export/erase and log retention —
+see SA-08 to SA-10 in the audit report.

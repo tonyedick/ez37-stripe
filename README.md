@@ -67,6 +67,7 @@ See [docs/security.md](docs/security.md#configuration-and-secrets).
 | [architecture.md](docs/architecture.md) | Components — built vs planned |
 | [database.md](docs/database.md) | Tables, columns, constraints, state machines |
 | [security.md](docs/security.md) | Secrets handling, logging, implemented controls |
+| [security-audit.md](docs/security-audit.md) | Phase 9 audit: findings, fixes, accepted risks |
 | [testing.md](docs/testing.md) | Test approach and results per phase |
 | [deployment.md](docs/deployment.md) | Environments, release build, install/uninstall behaviour |
 | [payment-flow.md](docs/payment-flow.md) | Checkout, return pages, reconciliation |

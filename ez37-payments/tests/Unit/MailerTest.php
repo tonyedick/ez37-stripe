@@ -110,7 +110,7 @@ final class MailerTest extends TestCase {
 	}
 
 	public function test_customer_email_contains_link_attachment_and_escaped_name(): void {
-		$this->log->shouldReceive( 'begin' )->once()->with( 42, EmailRepository::CUSTOMER_FULFILMENT, 'jane@example.com' )->andReturn( true );
+		$this->log->shouldNotReceive( 'begin' );
 		$this->log->shouldReceive( 'finish' )->once()->with( 42, EmailRepository::CUSTOMER_FULFILMENT, true, true, null );
 
 		$sent = null;
@@ -148,11 +148,18 @@ final class MailerTest extends TestCase {
 		$this->addToAssertionCount( 1 );
 	}
 
-	public function test_already_sent_email_is_not_sent_again(): void {
-		$this->log->shouldReceive( 'begin' )->andReturn( false );
+	public function test_reservation_uses_the_email_log(): void {
+		$this->log->shouldReceive( 'begin' )->once()->with( 42, EmailRepository::CUSTOMER_FULFILMENT, 'jane@example.com' )->andReturn( false );
 		Functions\expect( 'wp_mail' )->never();
 
-		$this->assertFalse( $this->mailer()->send_customer_fulfilment( self::transaction(), self::offering(), array( $this->grant() ) ) );
+		$this->assertFalse( $this->mailer()->reserve_customer_email( self::transaction() ) );
+	}
+
+	public function test_release_marks_the_reservation_failed(): void {
+		$this->log->shouldReceive( 'finish' )->once()->with( 42, EmailRepository::CUSTOMER_FULFILMENT, false, false, 'Resource unavailable: x.' );
+
+		$this->mailer()->release_customer_email( 42, 'Resource unavailable: x.' );
+		$this->addToAssertionCount( 1 );
 	}
 
 	public function test_send_failure_is_logged_and_thrown(): void {

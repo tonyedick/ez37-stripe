@@ -231,6 +231,24 @@ final class CheckoutServiceTest extends TestCase {
 		);
 	}
 
+	public function test_live_mode_refuses_checkout_on_a_non_https_site(): void {
+		Functions\when( 'home_url' )->alias( static fn ( $path = '' ) => 'http://ez37.test' . $path );
+		Functions\when( 'wp_parse_url' )->alias( static fn ( $url, $component = -1 ) => parse_url( $url, $component ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+		$this->gateway->shouldNotReceive( 'retrieve_price', 'create_checkout_session' );
+		$this->transactions->shouldNotReceive( 'create_pending' );
+
+		$live = self::config(
+			array(
+				'EZ37_STRIPE_MODE'                => 'live',
+				'EZ37_STRIPE_LIVE_SECRET_KEY'     => 'sk_live_' . self::FAKE,
+				'EZ37_STRIPE_LIVE_WEBHOOK_SECRET' => 'whsec_' . self::FAKE,
+			)
+		);
+
+		$this->expect_reason( CheckoutException::DISABLED, fn () => $this->service( $live )->start( self::input() ) );
+		$this->assertFalse( CheckoutService::site_uses_https() );
+	}
+
 	public function test_checkout_disabled_when_configuration_invalid(): void {
 		$this->gateway->shouldNotReceive( 'retrieve_price', 'create_checkout_session' );
 

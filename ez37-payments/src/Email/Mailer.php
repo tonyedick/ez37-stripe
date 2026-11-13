@@ -58,22 +58,44 @@ class Mailer {
 	}
 
 	/**
-	 * Send the combined confirmation + access email.
+	 * Reserve the customer email before any access links are created, so that
+	 * two jobs can never both issue links (the second would invalidate the
+	 * first one's link). Returns false when it was already sent or another job
+	 * is sending it.
+	 *
+	 * @param array<string, mixed> $transaction Transaction row.
+	 *
+	 * @throws \RuntimeException On a database error.
+	 */
+	public function reserve_customer_email( array $transaction ): bool {
+		return $this->log->begin( (int) $transaction['id'], EmailRepository::CUSTOMER_FULFILMENT, (string) $transaction['customer_email'] );
+	}
+
+	/**
+	 * Give up a reservation without sending (delivery failed before the email
+	 * could be sent), so the next attempt can start straight away.
+	 *
+	 * @param int    $transaction_id Transaction ID.
+	 * @param string $reason         Log-safe reason.
+	 */
+	public function release_customer_email( int $transaction_id, string $reason ): void {
+		$this->log->finish( $transaction_id, EmailRepository::CUSTOMER_FULFILMENT, false, false, $reason );
+	}
+
+	/**
+	 * Send the combined confirmation + access email. The caller must have
+	 * reserved it with reserve_customer_email() first.
 	 *
 	 * @param array<string, mixed>                                                                                     $transaction Transaction row.
 	 * @param Offering                                                                                                 $offering    Offering.
 	 * @param list<array{label: string, url: string, expires_at: string, file: string, attach: bool, max_attach: int}> $grants Access grants.
-	 * @return bool True if sent now, false if it had already been sent.
+	 * @return bool True when sent.
 	 *
 	 * @throws \RuntimeException When sending fails.
 	 */
 	public function send_customer_fulfilment( array $transaction, Offering $offering, array $grants ): bool {
 		$id        = (int) $transaction['id'];
 		$recipient = (string) $transaction['customer_email'];
-
-		if ( ! $this->log->begin( $id, EmailRepository::CUSTOMER_FULFILMENT, $recipient ) ) {
-			return false;
-		}
 
 		$attachments = array();
 		foreach ( $grants as $grant ) {

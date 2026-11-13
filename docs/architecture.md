@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.6.0 (Phase 8)
+## Current state — v0.7.0 (Phase 9)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -25,6 +25,7 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Plugin` | Composition root: creates `Config` and `Logger` once, registers hooks. No business logic. |
 | `EZ37\Payments\Config` | Reads settings from constants/env; validates mode/key prefixes; exposes only active-mode credentials. |
 | `EZ37\Payments\Support\Logger` | Redacting logger writing to the PHP error log. |
+| `EZ37\Payments\Support\ClientIp` | Visitor IP for rate limiting; `REMOTE_ADDR` unless the deployer supplies the real IP via `ez37_payments_client_ip`. |
 | `EZ37\Payments\Install\Schema` | Table definitions, `dbDelta()` install/upgrade, schema versioning, opt-in table removal. |
 | `EZ37\Payments\Install\Activator` | Activation: schema + capability. |
 | `EZ37\Payments\Transactions\PaymentStatus` | Payment state machine (enum). |

@@ -22,6 +22,8 @@ use Stripe\StripeClient;
  */
 class StripeGateway {
 
+	public const MAX_NETWORK_RETRIES = 2;
+
 	/**
 	 * Lazily created SDK client.
 	 *
@@ -119,7 +121,14 @@ class StripeGateway {
 				throw new GatewayException( 'No valid Stripe secret key is configured for the active mode.' );
 			}
 
-			$this->client = new StripeClient( $key );
+			// Retry transient network/5xx failures. Safe: Checkout Session
+			// creation always carries our idempotency key, and reads are idempotent.
+			$this->client = new StripeClient(
+				array(
+					'api_key'             => $key,
+					'max_network_retries' => self::MAX_NETWORK_RETRIES,
+				)
+			);
 		}
 
 		return $this->client;

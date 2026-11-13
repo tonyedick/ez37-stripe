@@ -14,8 +14,8 @@ namespace EZ37\Payments\Support;
  *
  * - Writes one line per entry to the PHP error log by default (a server-side
  *   location that is not web-accessible on correctly configured hosts).
- * - Redacts Stripe secret/restricted keys, webhook secrets, client secrets
- *   and Stripe-Signature values wherever they appear in messages or context.
+ * - Redacts Stripe secret/restricted keys, webhook secrets, client secrets,
+ *   download-link tokens (ez37_access=…) and Stripe-Signature values wherever they appear in messages or context.
  * - Redacts any context value whose key names a secret (secret, password,
  *   token, signature, authorization, api_key).
  * - Masks email addresses (j***@example.com).
@@ -49,6 +49,7 @@ final class Logger {
 		'/\bwhsec_[A-Za-z0-9]+/'                  => 'whsec_[redacted]',
 		'/\b(cs|pi|seti)_[A-Za-z0-9_]+_secret_[A-Za-z0-9]+/' => '[client_secret redacted]',
 		'/\bt=\d+,v1=[a-f0-9]+(,v\d=[a-f0-9]+)*/' => '[stripe-signature redacted]',
+		'/\bez37_access=[A-Za-z0-9]+/'            => 'ez37_access=[redacted]',
 	);
 
 	private const EMAIL_PATTERN = '/([A-Za-z0-9._%+\-])[A-Za-z0-9._%+\-]*@([A-Za-z0-9.\-]+\.[A-Za-z]{2,})/';

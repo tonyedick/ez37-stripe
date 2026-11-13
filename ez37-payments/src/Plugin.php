@@ -181,6 +181,10 @@ final class Plugin {
 		$errors   = $this->config->errors();
 		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors(), $this->resources->errors() );
 
+		if ( $this->config->is_live() && ! CheckoutService::site_uses_https() ) {
+			$errors[] = __( 'Live mode requires the site address (Settings → General) to use https. Checkout is blocked.', 'ez37-payments' );
+		}
+
 		if ( array() === $errors && ! $this->config->is_checkout_enabled() ) {
 			$warnings[] = __( 'Checkout is switched off (EZ37_PAYMENTS_CHECKOUT_ENABLED).', 'ez37-payments' );
 		}

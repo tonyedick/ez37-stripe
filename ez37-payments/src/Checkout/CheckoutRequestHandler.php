@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments\Checkout;
 
+use EZ37\Payments\Support\ClientIp;
 use EZ37\Payments\Support\Logger;
 
 /**
@@ -111,7 +112,7 @@ final class CheckoutRequestHandler {
 			throw new CheckoutException( CheckoutException::SECURITY, 'Honeypot filled.' );
 		}
 
-		if ( ! $this->rate_limiter->attempt( 'ip', self::client_ip() ) ) {
+		if ( ! $this->rate_limiter->attempt( 'ip', ClientIp::get() ) ) {
 			throw new CheckoutException( CheckoutException::RATE_LIMITED, 'Too many attempts from this IP.' );
 		}
 
@@ -174,17 +175,6 @@ final class CheckoutRequestHandler {
 		}
 
 		return add_query_arg( $args, $back ) . '#ez37-checkout';
-	}
-
-	/**
-	 * Visitor IP for rate limiting. Uses REMOTE_ADDR only: forwarded headers
-	 * can be forged. Behind a CDN/proxy this is the proxy's address; adjust
-	 * once the production stack is known (open item O4).
-	 */
-	private static function client_ip(): string {
-		$ip = $_SERVER['REMOTE_ADDR'] ?? ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Validated below.
-
-		return is_string( $ip ) && false !== filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : 'unknown';
 	}
 
 	/**
