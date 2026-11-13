@@ -18,6 +18,9 @@ use EZ37\Payments\Offerings\OfferingCatalogue;
 use EZ37\Payments\Stripe\StripeGateway;
 use EZ37\Payments\Support\Logger;
 use EZ37\Payments\Transactions\TransactionRepository;
+use EZ37\Payments\Webhooks\EventProcessor;
+use EZ37\Payments\Webhooks\EventRepository;
+use EZ37\Payments\Webhooks\WebhookController;
 
 /**
  * Creates the shared services and registers WordPress hooks.
@@ -114,6 +117,9 @@ final class Plugin {
 
 		( new CheckoutRequestHandler( $service, new RateLimiter(), $this->logger ) )->register();
 		( new CheckoutShortcode( $this->config, $this->catalogue ) )->register();
+
+		$processor = new EventProcessor( $this->config, new TransactionRepository(), new EventRepository(), $this->logger );
+		( new WebhookController( $this->config, $processor, $this->logger ) )->register();
 	}
 
 	/**

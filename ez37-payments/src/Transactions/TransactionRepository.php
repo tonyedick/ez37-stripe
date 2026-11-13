@@ -15,9 +15,9 @@ use EZ37\Payments\Offerings\Offering;
 /**
  * All SQL for ez37_transactions lives here.
  *
- * Phase 3 scope: create a pending transaction, attach its Checkout Session,
- * and record a session-creation failure. Webhook-driven state transitions
- * are added in Phases 4–5.
+ * Creates pending transactions, attaches Checkout Sessions, records failures,
+ * looks transactions up by session and applies atomic payment-state
+ * transitions (from verified webhooks).
  *
  * Uses $wpdb->insert()/update() (which prepare values internally) and
  * $wpdb->prepare() for any hand-written SQL. Not final, so unit tests can mock it.
@@ -123,6 +123,113 @@ class TransactionRepository {
 			),
 			array( '%s', '%s', '%s', '%s' ),
 			array( '%d', '%s' )
+		);
+	}
+
+	/**
+	 * Find a transaction by its Stripe Checkout Session ID.
+	 *
+	 * @param string $session_id Checkout Session ID.
+	 * @return array<string, mixed>|null Row, or null when not found.
+	 */
+	public function find_by_session_id( string $session_id ): ?array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; payment state must be read fresh.
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE stripe_checkout_session_id = %s LIMIT 1',
+				Schema::table( Schema::TRANSACTIONS ),
+				$session_id
+			),
+			ARRAY_A
+		);
+
+		return is_array( $row ) ? $row : null;
+	}
+
+	/**
+	 * Atomically move a transaction to a new payment status.
+	 *
+	 * The UPDATE only matches when the current status is one the target may be
+	 * reached from (PaymentStatus::allowed_from()), so duplicate, concurrent or
+	 * out-of-order calls cannot apply a change twice or move it backwards.
+	 *
+	 * @param int                            $id  Transaction ID.
+	 * @param PaymentStatus                  $to  Target status.
+	 * @param array<string, int|string|null> $set Extra columns to set in the same UPDATE.
+	 * @return bool True only if this call changed the row.
+	 *
+	 * @throws \InvalidArgumentException On an invalid column name.
+	 * @throws \RuntimeException On a database error.
+	 */
+	public function transition( int $id, PaymentStatus $to, array $set = array() ): bool {
+		global $wpdb;
+
+		$from = array_map( static fn ( PaymentStatus $status ): string => $status->value, $to->allowed_from() );
+		if ( array() === $from ) {
+			return false;
+		}
+
+		$set['payment_status'] = $to->value;
+		$set['updated_at']     = self::now();
+
+		$assignments = array();
+		$args        = array( Schema::table( Schema::TRANSACTIONS ) );
+
+		foreach ( $set as $column => $value ) {
+			if ( 1 !== preg_match( '/^[a-z_]+$/', $column ) ) {
+				throw new \InvalidArgumentException( 'Invalid column name.' );
+			}
+
+			$args[] = $column;
+			if ( null === $value ) {
+				$assignments[] = '%i = NULL';
+				continue;
+			}
+
+			$assignments[] = is_int( $value ) ? '%i = %d' : '%i = %s';
+			$args[]        = $value;
+		}
+
+		$args[] = $id;
+		$args   = array_merge( $args, $from );
+
+		$sql = 'UPDATE %i SET ' . implode( ', ', $assignments )
+			. ' WHERE id = %d AND payment_status IN (' . implode( ', ', array_fill( 0, count( $from ), '%s' ) ) . ')';
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $sql holds only placeholders; every value goes through prepare().
+		$result = $wpdb->query( $wpdb->prepare( $sql, $args ) );
+
+		if ( false === $result ) {
+			throw new \RuntimeException( 'Transition failed: ' . (string) $wpdb->last_error );
+		}
+
+		return 1 === $result;
+	}
+
+	/**
+	 * Flag a transaction for manual review. It will not be fulfilled automatically.
+	 *
+	 * @param int    $id      Transaction ID.
+	 * @param string $code    Machine-readable reason (max 64 chars).
+	 * @param string $message Log-safe description (truncated to 500 chars).
+	 */
+	public function flag_for_review( int $id, string $code, string $message ): void {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$wpdb->update(
+			Schema::table( Schema::TRANSACTIONS ),
+			array(
+				'review_required' => 1,
+				'failure_code'    => substr( $code, 0, 64 ),
+				'failure_message' => substr( $message, 0, 500 ),
+				'updated_at'      => self::now(),
+			),
+			array( 'id' => $id ),
+			array( '%d', '%s', '%s', '%s' ),
+			array( '%d' )
 		);
 	}
 

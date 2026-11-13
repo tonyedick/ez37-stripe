@@ -2,6 +2,17 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.3.0] — Phase 4: Webhooks
+
+### Added
+- `POST /wp-json/ez37/v1/stripe/webhook` with signature + timestamp verification (stripe-php SDK).
+- Event processing for `checkout.session.completed`, `async_payment_succeeded`, `async_payment_failed`, `expired`.
+- Idempotent event log (`ez37_stripe_events`), forward-only atomic transitions, review flag on mismatches.
+- Action `ez37_payments_transaction_paid` (fired once per paid transaction) for Phase 6 fulfilment.
+
+### Changed
+- Checkout uses `allowed_payment_method_types` (Stripe API 2026-10-28 rejects `payment_method_types`).
+
 ## [0.2.0] — 2026-11-13 — Phase 3: Stripe Checkout
 
 ### Added

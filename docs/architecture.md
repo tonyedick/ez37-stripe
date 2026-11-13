@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.2.0 (Phase 3)
+## Current state — v0.3.0 (Phase 4)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -37,6 +37,9 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Checkout\RateLimiter` | Transient-based throttling (hashed keys). |
 | `EZ37\Payments\Transactions\TransactionRepository` | SQL for `ez37_transactions` (create pending, attach session, mark failed). |
 | `EZ37\Payments\Frontend\CheckoutShortcode` | `[ez37_checkout]` form (templates/checkout-form.php). |
+| `EZ37\Payments\Webhooks\WebhookController` | `POST /wp-json/ez37/v1/stripe/webhook`: size limit, signature + timestamp verification (SDK), 200/400/413/500. |
+| `EZ37\Payments\Webhooks\EventProcessor` | The only code that marks a transaction paid. Dedupe, livemode check, session/transaction cross-checks, forward-only transitions, fires `ez37_payments_transaction_paid`. |
+| `EZ37\Payments\Webhooks\EventRepository` | SQL for `ez37_stripe_events` (`INSERT IGNORE` on the unique event ID). |
 
 **Deviation from the Phase 1 plan:** the checkout form posts to `admin-post.php` instead of a REST
 route. A plain HTML form then works without JavaScript inside any Elementor layout, and the
@@ -47,7 +50,6 @@ will still be a REST route.
 
 | Phase | Components |
 |---|---|
-| 4 | `Webhooks\WebhookController`, `Webhooks\EventProcessor` |
 | 5 | `Transactions\TransactionRepository`, `Frontend\StatusController`, success/cancel shortcodes |
 | 6 | `Fulfilment\*`, `Resources\EntitlementRepository`, `Resources\AccessController` |
 | 7 | `Email\Mailer`, templates |

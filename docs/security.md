@@ -69,6 +69,19 @@ Implemented in `src/Support/Logger.php`.
 | SQL | `$wpdb->insert()` / `update()` with explicit formats; no string-built SQL. |
 | Test/live mix-up | Session created with the active mode's key only; Price `livemode` must match the mode. |
 
+## Implemented in v0.3.0 (Phase 4 — webhooks)
+
+| Threat | Control |
+|---|---|
+| Forged events | Official SDK signature check over the raw body with the active mode's `whsec_` secret. |
+| Replay | 300-second timestamp tolerance (never 0) plus unique event IDs. |
+| Duplicate / concurrent / out-of-order delivery | `INSERT IGNORE` on `stripe_event_id`; forward-only conditional `UPDATE`s. |
+| Test event on live site (or vice versa) | Event `livemode` must equal the configured mode and the transaction's `stripe_mode`. |
+| Paying for something else / less | `client_reference_id`, metadata, mode, currency, subtotal = configured price, total = subtotal + tax, no discount: else flagged for review, never paid. |
+| Oversized bodies | Rejected above 512 KB before verification. |
+| Data exposure | Unauthenticated payloads are never logged; event payloads are never stored. |
+| SQL | Identifiers via `%i`, values via `prepare()`; column names in transitions are allow-listed by pattern. |
+
 **Operational requirement:** the checkout page must be excluded from page caching, or visitors may
 receive an expired nonce (they would see "Your session expired").
 
@@ -76,7 +89,6 @@ receive an expired nonce (they would see "Your session expired").
 
 | Phase | Controls |
 |---|---|
-| 4 | Signature verification (raw body, 5-min tolerance), event-ID dedupe, livemode check, session/reference/amount cross-checks |
 | 5 | Atomic conditional state transitions, minimal-data status endpoint |
 | 6 | Private file storage, hashed 256-bit access tokens, 7-day expiry, revocation |
 | 7 | Header-injection-safe email, escaped templates |

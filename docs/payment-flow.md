@@ -1,8 +1,8 @@
 # Payment flow
 
-> **Status: Phase 3 built: checkout start (form → transaction → Stripe Checkout).**
-> Payment confirmation (webhooks, Phase 4), state management (Phase 5), fulfilment (Phase 6)
-> and email (Phase 7) are not built yet. Until Phase 4, **nothing marks a transaction paid**.
+> **Status: Phases 3–4 built: checkout start, and payment confirmation by verified webhook**
+> (see [webhook-events.md](webhook-events.md)). Success-page status (Phase 5), fulfilment (Phase 6)
+> and email (Phase 7) are not built yet.
 
 ## 1. Customer journey (implemented part)
 
@@ -97,6 +97,5 @@ Defined in `ez37-payments/config/offerings.php` (developer-edited, D8) and valid
 
 ## 5. Not yet implemented
 
-- Webhook verification and marking transactions paid/expired (Phase 4–5).
 - Success-page status display (Phase 5).
 - Fulfilment, entitlements, emails (Phases 6–7).
