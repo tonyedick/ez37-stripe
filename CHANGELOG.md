@@ -2,6 +2,25 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.6.0] — Phase 8: Elementor integration and admin screen
+
+### Added
+- **Payments** menu in wp-admin (capability `ez37_view_payments`): searchable, filterable list
+  (paid, pending, failed, expired, delivery failed, needs review) and a detail view with access,
+  email log and Stripe events, plus a link to the payment in the Stripe Dashboard.
+- Administrator actions, each a POST with its own nonce and logged: **Retry delivery**
+  (failed / failed permanently), **Resend email with a new link** (old link stops working),
+  **Revoke access** (after a manual refund, D12).
+- `[ez37_offering_price offering="…"]` shortcode.
+- Front-end stylesheet `assets/ez37-payments.css` driven by CSS custom properties; filter
+  `ez37_payments_load_styles`.
+- Checkout button disables on submit to prevent double submissions.
+- `docs/elementor.md`.
+
+### Changed
+- Email and admin dates show the timezone abbreviation.
+- `FulfilmentStatus`: `completed → pending` and `failed → pending` allowed for administrator resets only.
+
 ## [0.5.0] — Phases 6–7: Fulfilment and email
 
 ### Added

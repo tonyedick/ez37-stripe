@@ -31,7 +31,8 @@ defined( 'ABSPATH' ) || exit;
 		<div class="ez37-checkout__error" role="alert"><?php echo esc_html( $error_message ); ?></div>
 	<?php endif; ?>
 
-	<form class="ez37-checkout__form" method="post" action="<?php echo esc_url( $action_url ); ?>">
+	<?php /* Disabling the button on submit prevents accidental double submissions. */ ?>
+	<form class="ez37-checkout__form" method="post" action="<?php echo esc_url( $action_url ); ?>" onsubmit="var b=this.querySelector('button[type=submit]');if(b){b.disabled=true;}">
 		<input type="hidden" name="action" value="<?php echo esc_attr( $action ); ?>">
 		<input type="hidden" name="offering" value="<?php echo esc_attr( $offering->key ); ?>">
 		<?php wp_nonce_field( $action, $nonce_field ); ?>
@@ -60,4 +61,10 @@ defined( 'ABSPATH' ) || exit;
 			<?php esc_html_e( 'You will be taken to Stripe to pay securely. Your card details are never shared with us.', 'ez37-payments' ); ?>
 		</p>
 	</form>
+	<script>
+		/* Re-enable the button if the customer comes back with the browser's Back button. */
+		window.addEventListener( 'pageshow', function () {
+			document.querySelectorAll( '.ez37-checkout__form button[type=submit]' ).forEach( function ( b ) { b.disabled = false; } );
+		} );
+	</script>
 </div>

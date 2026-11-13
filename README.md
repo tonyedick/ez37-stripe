@@ -69,7 +69,10 @@ See [docs/security.md](docs/security.md#configuration-and-secrets).
 | [security.md](docs/security.md) | Secrets handling, logging, implemented controls |
 | [testing.md](docs/testing.md) | Test approach and results per phase |
 | [deployment.md](docs/deployment.md) | Environments, release build, install/uninstall behaviour |
-| [payment-flow.md](docs/payment-flow.md), [webhook-events.md](docs/webhook-events.md), [fulfilment.md](docs/fulfilment.md) | Placeholders until Phases 3–7 |
+| [payment-flow.md](docs/payment-flow.md) | Checkout, return pages, reconciliation |
+| [webhook-events.md](docs/webhook-events.md) | Stripe events handled and how |
+| [fulfilment.md](docs/fulfilment.md) | Resources, entitlements, emails, downloads, admin actions |
+| [elementor.md](docs/elementor.md) | Buttons, price shortcode, pages, styling |
 | [troubleshooting.md](docs/troubleshooting.md) | Known issues and fixes |
 
 ## Confidentiality

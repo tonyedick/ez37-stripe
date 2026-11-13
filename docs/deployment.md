@@ -77,6 +77,14 @@ calls `wp cron event run --due-now` (or `wp-cron.php`) every 5–15 minutes and 
 - Make sure the site sends email reliably (SMTP plugin/transactional provider with SPF/DKIM/DMARC).
 - The fulfilment job and its hourly sweeper run on WP-Cron like reconciliation; see above.
 
+## Elementor pages and admin screen (Phase 8)
+
+- Build the programme pages in Elementor following [elementor.md](elementor.md); set brand colours via
+  the `--ez37-*` CSS variables.
+- After deploying a new plugin version, purge any CDN/page cache so the new `ez37-payments.css`
+  (versioned by plugin version) is served.
+- Check that administrators see **Payments** in wp-admin and that other roles do not.
+
 ## Configuration on staging/production
 
 Add constants to `wp-config.php` **above** the "That's all, stop editing!" line. Example for

@@ -79,6 +79,24 @@ class EventRepository {
 	}
 
 	/**
+	 * Events recorded for a transaction (admin screen).
+	 *
+	 * @param int $transaction_id Transaction ID.
+	 * @return list<array<string, mixed>>
+	 */
+	public function for_transaction( int $transaction_id ): array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; admin view.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( 'SELECT * FROM %i WHERE transaction_id = %d ORDER BY id', Schema::table( Schema::STRIPE_EVENTS ), $transaction_id ),
+			ARRAY_A
+		);
+
+		return is_array( $rows ) ? array_values( $rows ) : array();
+	}
+
+	/**
 	 * Record the outcome of processing an event.
 	 *
 	 * @param string      $event_id       Stripe event ID.

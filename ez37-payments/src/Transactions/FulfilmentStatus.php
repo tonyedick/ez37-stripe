@@ -47,6 +47,10 @@ enum FulfilmentStatus: string {
 	/**
 	 * States this status may move to.
 	 *
+	 * The moves back to Pending are administrator actions only (Payments
+	 * screen: retry after a failure, resend after completion — Phase 8).
+	 * Automatic processing never re-runs a completed fulfilment.
+	 *
 	 * @return list<self>
 	 */
 	public function allowed_next(): array {
@@ -54,9 +58,9 @@ enum FulfilmentStatus: string {
 			self::NotStarted      => array( self::Pending ),
 			self::Pending         => array( self::InProgress ),
 			self::InProgress      => array( self::Completed, self::Failed, self::FailedPermanent ),
-			self::Failed          => array( self::InProgress ),
+			self::Failed          => array( self::InProgress, self::Pending ),
 			self::FailedPermanent => array( self::Pending ),
-			self::Completed       => array(),
+			self::Completed       => array( self::Pending ),
 		};
 	}
 

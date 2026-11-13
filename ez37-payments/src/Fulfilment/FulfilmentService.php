@@ -112,6 +112,33 @@ class FulfilmentService {
 	}
 
 	/**
+	 * Administrator action: retry a failed fulfilment now.
+	 *
+	 * @param int $id Transaction ID.
+	 * @return bool Whether fulfilment completed.
+	 */
+	public function retry( int $id ): bool {
+		return $this->transactions->reset_fulfilment( $id ) && $this->fulfil( $id );
+	}
+
+	/**
+	 * Administrator action: send the customer email again with a fresh link
+	 * (new token, new expiry). The previous link stops working.
+	 *
+	 * @param int $id Transaction ID.
+	 * @return bool Whether the email was sent.
+	 */
+	public function resend( int $id ): bool {
+		if ( ! $this->transactions->reset_fulfilment( $id ) ) {
+			return false;
+		}
+
+		$this->mailer->allow_customer_resend( $id );
+
+		return $this->fulfil( $id );
+	}
+
+	/**
 	 * Fulfil one transaction.
 	 *
 	 * @param int $id Transaction ID.

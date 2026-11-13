@@ -77,10 +77,14 @@ final class StatusTest extends TestCase {
 		$this->assertTrue( FulfilmentStatus::FailedPermanent->can_transition_to( FulfilmentStatus::Pending ) );
 	}
 
-	public function test_completed_fulfilment_cannot_run_again(): void {
+	public function test_completed_fulfilment_only_reopens_through_administrator_reset(): void {
 		foreach ( FulfilmentStatus::cases() as $status ) {
+			if ( FulfilmentStatus::Pending === $status ) {
+				continue;
+			}
 			$this->assertFalse( FulfilmentStatus::Completed->can_transition_to( $status ), $status->value );
 		}
+		$this->assertTrue( FulfilmentStatus::Completed->can_transition_to( FulfilmentStatus::Pending ) );
 	}
 
 	public function test_fulfilment_cannot_start_before_payment_confirmation(): void {

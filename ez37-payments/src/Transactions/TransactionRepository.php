@@ -412,6 +412,85 @@ class TransactionRepository {
 	}
 
 	/**
+	 * Page of transactions for the admin screen, newest first.
+	 *
+	 * @param string $search Optional: matches customer email, name or public ID (prefix).
+	 * @param string $status Optional: payment status filter, or "review", or "fulfilment_failed".
+	 * @param int    $limit  Page size.
+	 * @param int    $offset Offset.
+	 * @return array{rows: list<array<string, mixed>>, total: int}
+	 */
+	public function search( string $search, string $status, int $limit, int $offset ): array {
+		global $wpdb;
+
+		$where = array( '1 = 1' );
+		$args  = array();
+
+		if ( '' !== $search ) {
+			$like    = '%' . $wpdb->esc_like( $search ) . '%';
+			$where[] = '( customer_email LIKE %s OR customer_name LIKE %s OR public_id LIKE %s )';
+			array_push( $args, $like, $like, $wpdb->esc_like( strtolower( $search ) ) . '%' );
+		}
+
+		if ( 'review' === $status ) {
+			$where[] = 'review_required = 1';
+		} elseif ( 'fulfilment_failed' === $status ) {
+			$where[] = 'fulfilment_status IN (%s, %s)';
+			array_push( $args, FulfilmentStatus::Failed->value, FulfilmentStatus::FailedPermanent->value );
+		} elseif ( null !== PaymentStatus::tryFrom( $status ) ) {
+			$where[] = 'payment_status = %s';
+			$args[]  = $status;
+		}
+
+		$table      = Schema::table( Schema::TRANSACTIONS );
+		$conditions = implode( ' AND ', $where );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $conditions holds only fixed SQL and placeholders; all values go through prepare().
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$conditions}", array_merge( array( $table ), $args ) ) );
+		$rows  = $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM %i WHERE {$conditions} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge( array( $table ), $args, array( $limit, $offset ) ) ),
+			ARRAY_A
+		);
+		// phpcs:enable
+
+		return array(
+			'rows'  => is_array( $rows ) ? array_values( $rows ) : array(),
+			'total' => $total,
+		);
+	}
+
+	/**
+	 * Administrator override: put a paid, unflagged transaction back in the
+	 * fulfilment queue with a fresh attempt counter (retry after a permanent
+	 * failure, or resend after completion).
+	 *
+	 * @param int $id Transaction ID.
+	 * @return bool Whether it was reset.
+	 */
+	public function reset_fulfilment( int $id ): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET fulfilment_status = %s, fulfilment_attempts = 0, fulfilment_locked_until = NULL, updated_at = %s
+				WHERE id = %d AND payment_status = %s AND review_required = 0 AND fulfilment_status IN (%s, %s, %s, %s)',
+				Schema::table( Schema::TRANSACTIONS ),
+				FulfilmentStatus::Pending->value,
+				self::now(),
+				$id,
+				PaymentStatus::Paid->value,
+				FulfilmentStatus::Pending->value,
+				FulfilmentStatus::Completed->value,
+				FulfilmentStatus::Failed->value,
+				FulfilmentStatus::FailedPermanent->value
+			)
+		);
+
+		return 1 === $result;
+	}
+
+	/**
 	 * Random, non-sequential public reference: 26 lowercase hex characters (104 bits).
 	 */
 	public static function new_public_id(): string {

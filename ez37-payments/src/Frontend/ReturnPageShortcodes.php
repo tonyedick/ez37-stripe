@@ -73,6 +73,8 @@ final class ReturnPageShortcodes {
 		$session_id = isset( $_GET['session_id'] ) ? sanitize_text_field( wp_unslash( $_GET['session_id'] ) ) : '';
 		$result     = $this->status->lookup( $session_id );
 
+		Styles::enqueue();
+
 		if ( StatusService::STATE_PENDING === $result['state'] ) {
 			wp_enqueue_script(
 				'ez37-payment-status',
@@ -108,6 +110,8 @@ final class ReturnPageShortcodes {
 		$key      = isset( $_GET['offering'] ) ? sanitize_key( wp_unslash( $_GET['offering'] ) ) : '';
 		$offering = $this->catalogue->find( $key );
 		$retry    = '';
+
+		Styles::enqueue();
 
 		if ( null !== $offering && $offering->active && 1 === preg_match( '#^/[A-Za-z0-9/_-]*$#', $atts['checkout_path'] ) ) {
 			$retry = add_query_arg( 'offering', rawurlencode( $offering->key ), home_url( $atts['checkout_path'] ) );

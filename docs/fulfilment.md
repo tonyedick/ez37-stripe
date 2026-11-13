@@ -1,6 +1,6 @@
 # Fulfilment and email
 
-> **Status: Phases 6–7 built (v0.5.0).** Built together because decision D10 makes one customer
+> **Status: Phases 6–7 built (v0.5.0); administrator actions added in Phase 8 (v0.6.0).** Built together because decision D10 makes one customer
 > email both the confirmation and the delivery: fulfilment is complete only when that email is sent.
 
 ## Model
@@ -93,7 +93,25 @@ All customer-provided values are escaped in the HTML email; the plain-text email
 | `max_access` (if set) not reached | 404 |
 | Otherwise | File streamed with `Content-Disposition: attachment`, `no-store`, `noindex`, `nosniff`, `no-referrer`; `access_count` incremented atomically |
 
-## Not yet implemented
+## Administrator actions (Payments screen, Phase 8)
 
-- Admin screen to view transactions, retry `failed_permanent`, resend the email with a new link,
-  revoke access after a manual refund (Phase 8b).
+**wp-admin → Payments** lists every transaction (search by email, name or reference; filter by
+status). Opening one shows the summary, access (entitlements, without tokens), the email log, the
+Stripe events and a link to the payment in the Stripe Dashboard.
+
+| Action | Offered when | What happens |
+|---|---|---|
+| **Retry delivery now** | paid, not under review, delivery `failed` or `failed_permanent`, access not revoked | `reset_fulfilment()` (back to `pending`, attempts 0) then the normal fulfilment job runs immediately |
+| **Resend email with a new link** | paid, not under review, delivery `completed`, access not revoked | reset to `pending`, the customer email row is reopened, fulfilment runs: **new token and new 7-day expiry**, previous link stops working, file attached again. The internal sale notice is *not* re-sent. |
+| **Revoke access** | at least one active entitlement | every active entitlement → `revoked`; the download link answers 404 at once. Used after refunding in the Stripe Dashboard (D12). Cannot be undone from the screen. |
+
+Rules that hold for all three:
+
+- Only users with `ez37_view_payments` (administrators) can see the screen or act.
+- Each action is a POST to `admin-post.php` with a nonce bound to **that action and that transaction**.
+- The server re-checks that the action is valid for the transaction's *current* state before doing
+  anything (a stale page cannot, for example, resend after access was revoked).
+- Payment status is never changed by these actions; refunds happen only in Stripe.
+- Every action is logged (`Administrator action on payment.` with action, reference, user ID, result).
+- If a resend's email fails, the transaction becomes `failed` and the hourly sweeper retries it as
+  usual (with another new link, because the failed email never reached the customer).

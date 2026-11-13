@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments;
 
+use EZ37\Payments\Admin\PaymentsPage;
 use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Checkout\CheckoutService;
 use EZ37\Payments\Checkout\RateLimiter;
@@ -19,6 +20,7 @@ use EZ37\Payments\Fulfilment\FulfilmentService;
 use EZ37\Payments\Frontend\ReturnPageShortcodes;
 use EZ37\Payments\Frontend\StatusController;
 use EZ37\Payments\Frontend\StatusService;
+use EZ37\Payments\Frontend\Styles;
 use EZ37\Payments\Install\Schema;
 use EZ37\Payments\Offerings\OfferingCatalogue;
 use EZ37\Payments\Resources\AccessController;
@@ -135,10 +137,12 @@ final class Plugin {
 			$this->logger
 		);
 
+		( new Styles() )->register();
 		( new CheckoutRequestHandler( $service, new RateLimiter(), $this->logger ) )->register();
 		( new CheckoutShortcode( $this->config, $this->catalogue ) )->register();
 
-		$processor = new EventProcessor( $this->config, $transactions, new EventRepository(), $this->logger );
+		$events    = new EventRepository();
+		$processor = new EventProcessor( $this->config, $transactions, $events, $this->logger );
 		( new WebhookController( $this->config, $processor, $this->logger ) )->register();
 		( new Reconciler( $this->config, $transactions, $gateway, $processor, $this->logger ) )->register();
 
@@ -147,9 +151,15 @@ final class Plugin {
 		( new ReturnPageShortcodes( $status, $this->catalogue ) )->register();
 
 		$entitlements = new EntitlementRepository();
-		$mailer       = new Mailer( $this->config, new EmailRepository(), $this->logger );
-		( new FulfilmentService( $this->config, $transactions, $this->catalogue, $this->resources, $entitlements, $mailer, $this->logger ) )->register();
+		$emails       = new EmailRepository();
+		$mailer       = new Mailer( $this->config, $emails, $this->logger );
+		$fulfilment   = new FulfilmentService( $this->config, $transactions, $this->catalogue, $this->resources, $entitlements, $mailer, $this->logger );
+		$fulfilment->register();
 		( new AccessController( $this->config, $entitlements, $this->resources, new RateLimiter( 30, 600 ), $this->logger ) )->register();
+
+		if ( is_admin() ) {
+			( new PaymentsPage( $this->config, $transactions, $events, $emails, $entitlements, $fulfilment, $this->logger ) )->register();
+		}
 	}
 
 	/**

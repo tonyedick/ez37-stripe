@@ -1,0 +1,158 @@
+/*
+ * EZ37 Payments — front-end styles for the checkout form, payment status and
+ * cancel pages.
+ *
+ * Deliberately light: fonts and text colour come from the theme / Elementor
+ * kit. To match the site, override the custom properties below, e.g. in
+ * Elementor → Site Settings → Custom CSS:
+ *
+ *   :root {
+ *     --ez37-accent: #1d3b6f;
+ *     --ez37-radius: 4px;
+ *   }
+ *
+ * To switch these styles off entirely:
+ *   add_filter( 'ez37_payments_load_styles', '__return_false' );
+ */
+:root {
+	--ez37-accent: #1d3b6f;
+	--ez37-accent-text: #ffffff;
+	--ez37-border: #d0d5dd;
+	--ez37-surface: #ffffff;
+	--ez37-muted: #5f6b7a;
+	--ez37-error-bg: #fdecea;
+	--ez37-error-text: #8a1f11;
+	--ez37-success: #0a7a3e;
+	--ez37-notice-bg: #fff6dd;
+	--ez37-notice-text: #6b4b00;
+	--ez37-radius: 6px;
+	--ez37-max-width: 520px;
+}
+
+.ez37-checkout,
+.ez37-status,
+.ez37-cancelled {
+	box-sizing: border-box;
+	max-width: var(--ez37-max-width);
+	margin: 0 auto;
+	padding: 24px;
+	border: 1px solid var(--ez37-border);
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-surface);
+}
+
+.ez37-checkout *,
+.ez37-status *,
+.ez37-cancelled * {
+	box-sizing: border-box;
+}
+
+.ez37-checkout__title,
+.ez37-status__title,
+.ez37-cancelled__title {
+	margin: 0 0 8px;
+}
+
+.ez37-checkout__price {
+	margin: 0 0 20px;
+	font-size: 1.25em;
+	font-weight: 600;
+}
+
+.ez37-checkout__test-notice {
+	margin: 0 0 16px;
+	padding: 8px 12px;
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-notice-bg);
+	color: var(--ez37-notice-text);
+	font-size: 0.9em;
+}
+
+.ez37-checkout__error {
+	margin: 0 0 16px;
+	padding: 10px 12px;
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-error-bg);
+	color: var(--ez37-error-text);
+}
+
+.ez37-checkout__field {
+	margin: 0 0 16px;
+}
+
+.ez37-checkout__field label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.ez37-checkout__field input {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--ez37-border);
+	border-radius: var(--ez37-radius);
+	font: inherit;
+}
+
+.ez37-checkout__field input:focus {
+	outline: 2px solid var(--ez37-accent);
+	outline-offset: 1px;
+}
+
+.ez37-checkout__submit {
+	margin: 8px 0 12px;
+}
+
+.ez37-checkout__submit button,
+.ez37-cancelled__retry {
+	display: inline-block;
+	width: 100%;
+	padding: 12px 20px;
+	border: 0;
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-accent);
+	color: var(--ez37-accent-text);
+	font: inherit;
+	font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.ez37-checkout__submit button:hover,
+.ez37-checkout__submit button:focus,
+.ez37-cancelled__retry:hover,
+.ez37-cancelled__retry:focus {
+	filter: brightness(1.1);
+	color: var(--ez37-accent-text);
+}
+
+.ez37-checkout__submit button[disabled] {
+	opacity: 0.7;
+	cursor: wait;
+}
+
+.ez37-checkout__small {
+	margin: 0;
+	color: var(--ez37-muted);
+	font-size: 0.875em;
+}
+
+.ez37-status--paid .ez37-status__title {
+	color: var(--ez37-success);
+}
+
+.ez37-status--failed .ez37-status__title,
+.ez37-status--expired .ez37-status__title {
+	color: var(--ez37-error-text);
+}
+
+.ez37-status p:last-child,
+.ez37-cancelled p:last-child,
+.ez37-checkout--unavailable p:last-child {
+	margin-bottom: 0;
+}
+
+.ez37-price {
+	white-space: nowrap;
+}

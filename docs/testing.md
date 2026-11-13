@@ -26,7 +26,7 @@ composer check      # = lint + analyse + test
 |---|---|---|
 | `ConfigTest.php` | 17 | Default test mode; checkout off by default; valid config; restricted keys; invalid/case-insensitive mode; live mode rejects test keys; test mode never returns live keys (warning only); publishable key rejected; webhook secret missing/malformed; truthy switch values; trimming; invalid log level/email; unknown settings ignored; secrets absent from debug output and messages; env-variable loading |
 | `LoggerTest.php` | 11 | Level filtering; prefix; redaction of `sk_`/`rk_`/`whsec_`, client secrets and signature headers; ordinary Stripe IDs kept; email masking; recursive sensitive-key redaction; exception summarising; no object dumps; log-injection; truncation |
-| `StatusTest.php` | 13 | Payment happy/delayed paths; `paid` is final; nothing returns to `pending`; no self-transitions; `expired` cannot become `paid`; `allowed_from()` sets; enum values fit columns and match schema defaults; fulfilment lifecycle; completed cannot re-run; fulfilment cannot start before payment |
+| `StatusTest.php` | 13 | Payment happy/delayed paths; `paid` is final; nothing returns to `pending`; no self-transitions; `expired` cannot become `paid`; `allowed_from()` sets; enum values fit columns and match schema defaults; fulfilment lifecycle; completed reopens only via administrator reset; fulfilment cannot start before payment |
 | `SchemaTest.php` | 10 | Exactly four prefixed tables; dbDelta formatting rules; all idempotency unique keys; ASCII case-sensitive Stripe ID columns; utf8mb4 prefix indexes; required data-model columns; status defaults; unsigned integer amounts; `install()` calls `dbDelta()` with 4 statements and records the version; `maybe_upgrade()` skips when current |
 
 Test fixtures never contain real or realistic secrets: key-shaped strings are built at runtime
@@ -46,7 +46,26 @@ from a prefix plus `FAKE…`.
 | 2026-11-13 | 5 | Developer Mac, PHP 8.4.21, PHPUnit 10.5.66 | `composer check`: PHPCS clean, PHPStan clean, **150 tests, 447 assertions, all passing**. |
 | 2026-11-13 | 5 | Local DDEV + Stripe CLI (sandbox) | **UX-01:** payment → success page shows "Payment confirmed" with offering, amount and masked email. **UX-02 / PAY-05:** back arrow on Stripe → cancel page "Nothing was charged" with "Try again" link. **Reconciliation (WH-07 backstop):** `wp cron event run ez37_payments_reconcile` found the Phase 3 transaction whose webhook was never delivered locally, fetched the session from Stripe and marked it `paid` (`{"processed":1}`). |
 | 2026-11-13 | 6–7 | Developer Mac, PHP 8.4.21, PHPUnit 10.5.66 | `composer check`: PHPCS clean, PHPStan clean, all unit tests passing (fulfilment, resources/access, mailer added). |
+| 2026-11-13 | 8 | Claude build sandbox, PHP 8.3.6, PHPUnit 10.5.66 (developer's `vendor/`) | PHPCS clean, PHPStan level 6 clean, **203 tests, 562 assertions, all passing** (new: admin action availability, capability/nonce/state checks, retry/resend/revoke, price shortcode, admin helpers). Admin templates smoke-rendered with sample data. |
 | 2026-11-13 | 6–7 | Local DDEV + Stripe CLI + Mailpit | **FUL-01, FUL-13, UX-04, UX-05:** test payment → webhook → background fulfilment → customer email "Payment confirmed: Leadership Coaching" (name, programme, $1.00 USD, reference, Download button, 7-day expiry, PDF attached) and admin email "New sale … [TEST]" to the admin address → Download button served `brochure-placeholder.pdf`. Observed: dates shown in the site timezone (local site is UTC); sender is WordPress default (`wordpress@…`), to be configured on staging/production. |
+
+## Phase 8 manual test script (local DDEV)
+
+1. **Styling (UX):** open `/checkout/?offering=leadership-coaching` — card layout, test-mode banner,
+   full-width button. Add to Additional CSS `:root { --ez37-accent: #b00020; }` → button turns red.
+2. **Price shortcode:** add `[ez37_offering_price offering="leadership-coaching"]` to any page →
+   "$1.00 USD"; with an unknown key → nothing.
+3. **Elementor button:** Button widget linking to `/checkout/?offering=leadership-coaching` opens the form.
+4. **Double click (PAY-06):** click "Continue to secure payment" twice quickly → one transaction.
+5. **Payments list:** wp-admin → Payments shows the earlier test payments; search by email and by the
+   10-character reference from an email; filters work.
+6. **Resend (FUL-04):** on a delivered payment, "Resend email with a new link" → confirm → new email in
+   Mailpit; the *old* link now says "not valid", the new one downloads.
+7. **Revoke (SEC-10):** "Revoke access" → the new link now says "not valid"; Resend/Retry are no longer offered.
+8. **Retry (FUL-03):** pick a payment with failed delivery (or temporarily rename the brochure file,
+   run `ddev wp cron event run ez37_payments_fulfilment_sweep`, restore the file) → "Retry delivery now" → email arrives.
+9. **Access control:** log in as an Editor (or log out) and open `wp-admin/admin.php?page=ez37-payments`
+   → refused.
 
 ## Not yet tested (by design, later phases)
 

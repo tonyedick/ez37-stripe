@@ -106,6 +106,52 @@ class EntitlementRepository {
 	}
 
 	/**
+	 * Revoke all active access for a transaction (e.g. after a manual refund, D12).
+	 *
+	 * @param int $transaction_id Transaction ID.
+	 * @return int Number of entitlements revoked.
+	 */
+	public function revoke_for_transaction( int $transaction_id ): int {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET status = %s, revoked_at = %s WHERE transaction_id = %d AND status = %s',
+				Schema::table( Schema::ENTITLEMENTS ),
+				self::REVOKED,
+				gmdate( 'Y-m-d H:i:s' ),
+				$transaction_id,
+				self::ACTIVE
+			)
+		);
+
+		return is_int( $result ) ? $result : 0;
+	}
+
+	/**
+	 * Entitlements for a transaction (admin screen). Token hashes are not returned.
+	 *
+	 * @param int $transaction_id Transaction ID.
+	 * @return list<array<string, mixed>>
+	 */
+	public function for_transaction( int $transaction_id ): array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; admin view.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, resource_key, status, expires_at, access_count, last_accessed_at, revoked_at, created_at FROM %i WHERE transaction_id = %d ORDER BY id',
+				Schema::table( Schema::ENTITLEMENTS ),
+				$transaction_id
+			),
+			ARRAY_A
+		);
+
+		return is_array( $rows ) ? array_values( $rows ) : array();
+	}
+
+	/**
 	 * Count one download, atomically, respecting max_access when set.
 	 *
 	 * @param int $id Entitlement ID.

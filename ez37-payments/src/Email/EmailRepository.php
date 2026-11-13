@@ -124,6 +124,48 @@ class EmailRepository {
 	}
 
 	/**
+	 * Administrator override: allow an email that was already sent to be sent again.
+	 *
+	 * @param int    $transaction_id Transaction ID.
+	 * @param string $type           Email type.
+	 */
+	public function allow_resend( int $transaction_id, string $type ): void {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$wpdb->update(
+			Schema::table( Schema::EMAIL_LOG ),
+			array(
+				'status'     => self::FAILED,
+				'last_error' => 'Resend requested by an administrator.',
+				'updated_at' => gmdate( 'Y-m-d H:i:s' ),
+			),
+			array(
+				'transaction_id' => $transaction_id,
+				'email_type'     => $type,
+			)
+		);
+	}
+
+	/**
+	 * Email log rows for a transaction (admin screen).
+	 *
+	 * @param int $transaction_id Transaction ID.
+	 * @return list<array<string, mixed>>
+	 */
+	public function for_transaction( int $transaction_id ): array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; admin view.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( 'SELECT * FROM %i WHERE transaction_id = %d ORDER BY id', Schema::table( Schema::EMAIL_LOG ), $transaction_id ),
+			ARRAY_A
+		);
+
+		return is_array( $rows ) ? array_values( $rows ) : array();
+	}
+
+	/**
 	 * Current status of an email, or null.
 	 *
 	 * @param int    $transaction_id Transaction ID.

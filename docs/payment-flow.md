@@ -122,6 +122,8 @@ to `EventProcessor::reconcile_session()`: `complete` is handled like `checkout.s
 transitions, same `ez37_payments_transaction_paid` action. A transient lock prevents overlapping runs;
 deactivating the plugin unschedules the job.
 
-## 7. Not yet implemented
+## 7. Elementor and admin (Phase 8)
 
-- Fulfilment, entitlements, emails (Phases 6–7).
+Elementor buttons link to `/checkout/?offering=<key>`; prices on pages come from
+`[ez37_offering_price offering="<key>"]`. See [elementor.md](elementor.md). Administrators manage
+deliveries in wp-admin → Payments (see [fulfilment.md](fulfilment.md#administrator-actions-payments-screen-phase-8)).

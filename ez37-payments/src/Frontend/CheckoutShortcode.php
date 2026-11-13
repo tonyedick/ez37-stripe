@@ -24,10 +24,15 @@ use EZ37\Payments\Offerings\OfferingCatalogue;
  *
  * The form carries only the offering key, name and email. Price and currency
  * are displayed from server configuration and never submitted.
+ *
+ * Also provides [ez37_offering_price offering="leadership-coaching"], which
+ * prints the configured price (e.g. "$1.00 USD") for use in Elementor text,
+ * so prices are never typed into page content by hand.
  */
 final class CheckoutShortcode {
 
-	public const TAG = 'ez37_checkout';
+	public const TAG       = 'ez37_checkout';
+	public const PRICE_TAG = 'ez37_offering_price';
 
 	/**
 	 * Constructor.
@@ -45,6 +50,24 @@ final class CheckoutShortcode {
 	 */
 	public function register(): void {
 		add_shortcode( self::TAG, array( $this, 'render' ) );
+		add_shortcode( self::PRICE_TAG, array( $this, 'render_price' ) );
+	}
+
+	/**
+	 * [ez37_offering_price offering="key"]: the configured price, or nothing
+	 * when the offering is unknown or inactive.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function render_price( $atts = array() ): string {
+		$atts     = shortcode_atts( array( 'offering' => '' ), is_array( $atts ) ? $atts : array(), self::PRICE_TAG );
+		$offering = $this->catalogue->find( sanitize_key( $atts['offering'] ) );
+
+		if ( null === $offering || ! $offering->active ) {
+			return '';
+		}
+
+		return '<span class="ez37-price">' . esc_html( $offering->formatted_price() ) . '</span>';
 	}
 
 	/**
@@ -62,6 +85,8 @@ final class CheckoutShortcode {
 
 		$offering = $this->catalogue->find( sanitize_key( $key ) );
 		$mode     = $this->config->mode();
+
+		Styles::enqueue();
 
 		if ( null === $offering || ! $offering->is_purchasable( $mode ) || ! $this->config->can_accept_payments() ) {
 			return Template::render(

@@ -14,6 +14,7 @@ use EZ37\Payments\Checkout\CheckoutException;
 use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Config;
 use EZ37\Payments\Frontend\CheckoutShortcode;
+use EZ37\Payments\Offerings\OfferingCatalogue;
 
 final class CheckoutFrontTest extends TestCase {
 
@@ -76,5 +77,40 @@ final class CheckoutFrontTest extends TestCase {
 			$this->assertSame( '/payment-complete/', $config->success_path(), $path );
 			$this->assertNotEmpty( $config->warnings(), $path );
 		}
+	}
+
+	public function test_price_shortcode_shows_configured_price_only_for_active_offerings(): void {
+		Functions\when( 'shortcode_atts' )->alias( static fn ( $defaults, $atts ) => array_merge( $defaults, $atts ) );
+		Functions\when( 'sanitize_key' )->returnArg();
+		Functions\when( 'esc_html' )->alias( static fn ( $v ) => htmlspecialchars( (string) $v, ENT_QUOTES ) );
+
+		$base      = array(
+			'currency'  => 'usd',
+			'amount'    => 150000,
+			'price_ids' => array(
+				'test' => 'price_TEST',
+				'live' => '',
+			),
+		);
+		$shortcode = new CheckoutShortcode(
+			new Config( array() ),
+			new OfferingCatalogue(
+				array(
+					'leadership-coaching' => $base + array(
+						'name'   => 'Leadership Coaching',
+						'active' => true,
+					),
+					'old-programme'       => $base + array(
+						'name'   => 'Old',
+						'active' => false,
+					),
+				)
+			)
+		);
+
+		$this->assertSame( '<span class="ez37-price">$1,500.00 USD</span>', $shortcode->render_price( array( 'offering' => 'leadership-coaching' ) ) );
+		$this->assertSame( '', $shortcode->render_price( array( 'offering' => 'old-programme' ) ) );
+		$this->assertSame( '', $shortcode->render_price( array( 'offering' => 'unknown' ) ) );
+		$this->assertSame( '', $shortcode->render_price( '' ) );
 	}
 }

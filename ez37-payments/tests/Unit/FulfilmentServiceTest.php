@@ -258,4 +258,39 @@ final class FulfilmentServiceTest extends TestCase {
 		$this->service()->queue( 42 );
 		$this->addToAssertionCount( 1 );
 	}
+
+	public function test_retry_resets_then_fulfils(): void {
+		$this->transactions->shouldReceive( 'reset_fulfilment' )->once()->with( 42 )->andReturn( true );
+		$this->transactions->shouldReceive( 'claim_fulfilment' )->once()->andReturn( false );
+
+		$this->assertFalse( $this->service()->retry( 42 ) );
+	}
+
+	public function test_retry_does_nothing_when_reset_is_refused(): void {
+		$this->transactions->shouldReceive( 'reset_fulfilment' )->once()->andReturn( false );
+		$this->transactions->shouldNotReceive( 'claim_fulfilment' );
+
+		$this->assertFalse( $this->service()->retry( 42 ) );
+	}
+
+	public function test_resend_issues_a_new_link_and_sends_again(): void {
+		$this->transactions->shouldReceive( 'reset_fulfilment' )->once()->with( 42 )->andReturn( true );
+		$this->mailer->shouldReceive( 'allow_customer_resend' )->once()->with( 42 )->ordered();
+		$this->transactions->shouldReceive( 'claim_fulfilment' )->andReturn( true );
+		$this->transactions->shouldReceive( 'find_by_id' )->andReturn( self::transaction() );
+		$this->mailer->shouldReceive( 'customer_email_sent' )->andReturn( false )->ordered();
+		$this->entitlements->shouldReceive( 'grant' )->once()->with( 42, 'brochure', 'jane@example.com', Mockery::pattern( '/^[a-f0-9]{64}$/' ), Mockery::type( 'string' ) );
+		$this->mailer->shouldReceive( 'send_customer_fulfilment' )->once()->andReturn( true );
+		$this->mailer->shouldReceive( 'send_admin_sale_notice' )->once();
+		$this->transactions->shouldReceive( 'complete_fulfilment' )->once()->with( 42 );
+
+		$this->assertTrue( $this->service()->resend( 42 ) );
+	}
+
+	public function test_resend_refused_for_ineligible_transaction(): void {
+		$this->transactions->shouldReceive( 'reset_fulfilment' )->once()->andReturn( false );
+		$this->mailer->shouldNotReceive( 'allow_customer_resend' );
+
+		$this->assertFalse( $this->service()->resend( 42 ) );
+	}
 }

@@ -49,6 +49,15 @@ class Mailer {
 	}
 
 	/**
+	 * Administrator override: let the customer email be sent again.
+	 *
+	 * @param int $transaction_id Transaction ID.
+	 */
+	public function allow_customer_resend( int $transaction_id ): void {
+		$this->log->allow_resend( $transaction_id, EmailRepository::CUSTOMER_FULFILMENT );
+	}
+
+	/**
 	 * Send the combined confirmation + access email.
 	 *
 	 * @param array<string, mixed>                                                                                     $transaction Transaction row.
@@ -204,7 +213,8 @@ class Mailer {
 			return '';
 		}
 
-		$format = (string) get_option( 'date_format' ) . ' ' . (string) get_option( 'time_format' );
+		// "T" adds the timezone abbreviation (e.g. WAT) so times are never ambiguous.
+		$format = (string) get_option( 'date_format' ) . ' ' . (string) get_option( 'time_format' ) . ' T';
 
 		return (string) wp_date( $format, $timestamp );
 	}

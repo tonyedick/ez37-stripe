@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.5.0 (Phases 6–7)
+## Current state — v0.6.0 (Phase 8)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -48,7 +48,9 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Resources\PaidResource` / `ResourceCatalogue` | Resources from `config/resources.php`; path-traversal-safe file resolution. |
 | `EZ37\Payments\Resources\EntitlementRepository` | SQL for `ez37_entitlements` (idempotent grant, token-hash lookup, atomic access count). |
 | `EZ37\Payments\Resources\AccessController` | `?ez37_access=<token>` secure download. |
-| `EZ37\Payments\Email\Mailer` / `EmailRepository` | Customer and admin emails via `wp_mail()`, at most once each (`ez37_email_log`). |
+| `EZ37\Payments\Email\Mailer` / `EmailRepository` | Customer and admin emails via `wp_mail()`, at most once each (`ez37_email_log`); administrator resend override. |
+| `EZ37\Payments\Frontend\Styles` | Registers `assets/ez37-payments.css`; shortcodes enqueue it (filter `ez37_payments_load_styles`). |
+| `EZ37\Payments\Admin\PaymentsPage` | wp-admin **Payments** screen (list, detail) and the retry / resend / revoke actions (`admin-post.php?action=ez37_payments_admin`). Loaded only in wp-admin. |
 
 **Deviation from the Phase 1 plan:** Phases 6 (fulfilment) and 7 (email) were built together, because
 the single combined customer email (D10) is the delivery itself.
@@ -59,12 +61,15 @@ route. A plain HTML form then works without JavaScript inside any Elementor layo
 handler can redirect straight to Stripe (303) or back with an error code. The webhook (Phase 4)
 will still be a REST route.
 
+**Elementor integration** needs no Elementor-specific code: buttons link to `/checkout/?offering=<key>`
+and pages use the shortcodes (`[ez37_checkout]`, `[ez37_offering_price]`, `[ez37_payment_status]`,
+`[ez37_payment_cancelled]`) in Shortcode widgets. See [elementor.md](elementor.md). This keeps the
+payment engine independent of Elementor, as required.
+
 ### Planned (not yet built)
 
-| Phase | Components |
-|---|---|
-| 8 | `Frontend\Shortcodes` (Elementor integration) |
-| 8b | `Admin\TransactionsPage` |
+Nothing further is planned for the plugin's feature set before launch. Phases 9–11 are the security
+audit, full test matrix and deployment preparation.
 
 ## Conventions
 

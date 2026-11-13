@@ -107,9 +107,22 @@ Implemented in `src/Support/Logger.php`.
 **Operational requirement:** the checkout page must be excluded from page caching, or visitors may
 receive an expired nonce (they would see "Your session expired").
 
+## Implemented in v0.6.0 (Phase 8 — Elementor integration, admin screen)
+
+| Threat | Control |
+|---|---|
+| Unauthorised viewing of customer/payment data | Payments screen requires `ez37_view_payments` (administrators); checked again inside the render callback. |
+| Unauthorised admin actions | `current_user_can()` first, then `check_admin_referer()` with a nonce bound to action + transaction ID; only POST via `admin-post.php`. |
+| CSRF / stale or replayed admin forms | Per-action, per-transaction nonces; the action is re-validated against the transaction's current state server-side. |
+| Token exposure in admin | Entitlement listing selects explicit columns and never the token hash; tokens are never stored in plain form. |
+| Reflected input on the admin screen | Search, filter and notice parameters are sanitised; notice text comes from a fixed list (unknown codes show nothing); all output escaped in templates. |
+| SQL injection via search | `LIKE` values escaped with `esc_like()` and passed to `prepare()`; the WHERE clause is built only from fixed SQL fragments. |
+| Prices in page content | `[ez37_offering_price]` reads configuration; Elementor pages never carry an amount. |
+| Double checkout submission | Button disabled on submit (UX); server-side rate limits and the per-transaction idempotency key remain the real protection. |
+| Admin actions changing payment state | Actions touch only fulfilment state, the email log and entitlements; refunds stay in the Stripe Dashboard. |
+
 ## Planned controls (by phase)
 
 | Phase | Controls |
 |---|---|
-| 8b | Capability + nonce on every admin action |
 | 9 | Independent audit of all of the above |
