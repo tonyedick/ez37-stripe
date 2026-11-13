@@ -87,11 +87,29 @@ final class SchemaTest extends TestCase {
 
 	public function test_transactions_cover_the_required_data_model(): void {
 		$required = array(
-			'public_id', 'offering_key', 'customer_name', 'customer_email', 'amount', 'currency',
-			'stripe_checkout_session_id', 'stripe_payment_intent_id', 'stripe_customer_id',
-			'amount_subtotal', 'amount_tax', 'amount_paid',
-			'payment_status', 'fulfilment_status', 'fulfilment_attempts', 'fulfilment_locked_until',
-			'review_required', 'failure_code', 'failure_message', 'created_at', 'updated_at', 'paid_at', 'fulfilled_at',
+			'public_id',
+			'offering_key',
+			'customer_name',
+			'customer_email',
+			'amount',
+			'currency',
+			'stripe_checkout_session_id',
+			'stripe_payment_intent_id',
+			'stripe_customer_id',
+			'amount_subtotal',
+			'amount_tax',
+			'amount_paid',
+			'payment_status',
+			'fulfilment_status',
+			'fulfilment_attempts',
+			'fulfilment_locked_until',
+			'review_required',
+			'failure_code',
+			'failure_message',
+			'created_at',
+			'updated_at',
+			'paid_at',
+			'fulfilled_at',
 		);
 
 		foreach ( $required as $column ) {
@@ -113,6 +131,7 @@ final class SchemaTest extends TestCase {
 	}
 
 	public function test_install_runs_dbdelta_and_records_version(): void {
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Unit test: stand-in for $wpdb; WordPress is not loaded.
 		$GLOBALS['wpdb'] = new class() {
 			public string $prefix = 'wp_';
 

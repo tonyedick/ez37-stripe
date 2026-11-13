@@ -43,6 +43,15 @@
 
 	<rule ref="PHPCompatibilityWP"/>
 
+	<!-- False positives: PHPCompatibility 9.x does not understand PHP 8.1 enums,
+	     so $this/self inside enum methods are reported as outside a class. -->
+	<rule ref="PHPCompatibility.Variables.ForbiddenThisUseContexts.OutsideObjectContext">
+		<exclude-pattern>/src/Transactions/*Status\.php</exclude-pattern>
+	</rule>
+	<rule ref="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.SelfOutsideClassScopeFound">
+		<exclude-pattern>/src/Transactions/*Status\.php</exclude-pattern>
+	</rule>
+
 	<!-- Tests use PHPUnit's camelCase API and do not need doc comments on every method. -->
 	<rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
 		<exclude-pattern>/tests/*</exclude-pattern>

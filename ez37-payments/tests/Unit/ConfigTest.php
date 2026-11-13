@@ -143,13 +143,13 @@ final class ConfigTest extends TestCase {
 		foreach ( array( '1', 'true', 'TRUE', 'yes', 'on', true ) as $on ) {
 			$values                                   = self::valid_test();
 			$values['EZ37_PAYMENTS_CHECKOUT_ENABLED'] = $on;
-			$this->assertTrue( ( new Config( $values ) )->is_checkout_enabled(), var_export( $on, true ) );
+			$this->assertTrue( ( new Config( $values ) )->is_checkout_enabled(), var_export( $on, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Assertion message.
 		}
 
 		foreach ( array( '0', 'false', 'no', 'off', '', 'enabled', false ) as $off ) {
 			$values                                   = self::valid_test();
 			$values['EZ37_PAYMENTS_CHECKOUT_ENABLED'] = $off;
-			$this->assertFalse( ( new Config( $values ) )->is_checkout_enabled(), var_export( $off, true ) );
+			$this->assertFalse( ( new Config( $values ) )->is_checkout_enabled(), var_export( $off, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Assertion message.
 		}
 	}
 
@@ -178,7 +178,7 @@ final class ConfigTest extends TestCase {
 	}
 
 	public function test_unknown_settings_are_ignored(): void {
-		$values             = self::valid_test();
+		$values                = self::valid_test();
 		$values['DB_PASSWORD'] = 'should-never-be-read';
 
 		$config = new Config( $values );
@@ -199,12 +199,12 @@ final class ConfigTest extends TestCase {
 	}
 
 	public function test_from_environment_reads_environment_variables(): void {
-		putenv( 'EZ37_PAYMENTS_LOG_LEVEL=debug' );
+		putenv( 'EZ37_PAYMENTS_LOG_LEVEL=debug' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Testing env-variable loading.
 
 		try {
 			$this->assertSame( 'debug', Config::from_environment()->log_level() );
 		} finally {
-			putenv( 'EZ37_PAYMENTS_LOG_LEVEL' );
+			putenv( 'EZ37_PAYMENTS_LOG_LEVEL' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Clean up.
 		}
 	}
 

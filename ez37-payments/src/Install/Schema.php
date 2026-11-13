@@ -36,7 +36,7 @@ final class Schema {
 
 	public const VERSION_OPTION = 'ez37_payments_db_version';
 
-	public const TRANSACTIONS = 'ez37_transactions';
+	public const TRANSACTIONS  = 'ez37_transactions';
 	public const STRIPE_EVENTS = 'ez37_stripe_events';
 	public const ENTITLEMENTS  = 'ez37_entitlements';
 	public const EMAIL_LOG     = 'ez37_email_log';

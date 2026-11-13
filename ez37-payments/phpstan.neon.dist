@@ -7,5 +7,13 @@ parameters:
     - uninstall.php
     - src
   tmpDir: .phpstan-cache
+  # Defined by the site owner in wp-config.php; its value is not fixed.
+  dynamicConstantNames:
+    - EZ37_PAYMENTS_ALLOW_DATA_DELETION
   bootstrapFiles:
     - tests/bootstrap/phpstan-constants.php
+  ignoreErrors:
+    # Runtime guard for servers on old PHP. Analysis assumes a supported PHP
+    # version, so it believes this check can never be true.
+    - identifier: if.alwaysFalse
+      path: ez37-payments.php

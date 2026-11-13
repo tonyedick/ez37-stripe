@@ -26,6 +26,11 @@ final class Plugin {
 	 */
 	public const CAPABILITY = 'ez37_view_payments';
 
+	/**
+	 * The booted instance (one per request).
+	 *
+	 * @var self|null
+	 */
 	private static ?self $instance = null;
 
 	/**

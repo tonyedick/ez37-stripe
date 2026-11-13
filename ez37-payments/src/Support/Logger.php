@@ -45,14 +45,19 @@ final class Logger {
 	 * Patterns for secrets that may appear anywhere in text.
 	 */
 	private const SECRET_PATTERNS = array(
-		'/\b(sk|rk)_(live|test)_[A-Za-z0-9]+/' => '$1_$2_[redacted]',
-		'/\bwhsec_[A-Za-z0-9]+/'               => 'whsec_[redacted]',
+		'/\b(sk|rk)_(live|test)_[A-Za-z0-9]+/'    => '$1_$2_[redacted]',
+		'/\bwhsec_[A-Za-z0-9]+/'                  => 'whsec_[redacted]',
 		'/\b(cs|pi|seti)_[A-Za-z0-9_]+_secret_[A-Za-z0-9]+/' => '[client_secret redacted]',
 		'/\bt=\d+,v1=[a-f0-9]+(,v\d=[a-f0-9]+)*/' => '[stripe-signature redacted]',
 	);
 
 	private const EMAIL_PATTERN = '/([A-Za-z0-9._%+\-])[A-Za-z0-9._%+\-]*@([A-Za-z0-9.\-]+\.[A-Za-z]{2,})/';
 
+	/**
+	 * Numeric weight of the minimum level to record.
+	 *
+	 * @var int
+	 */
 	private int $min_weight;
 
 	/**
@@ -65,8 +70,8 @@ final class Logger {
 	/**
 	 * Constructor.
 	 *
-	 * @param string             $min_level Minimum level to record.
-	 * @param callable|null      $writer    Receives each line; defaults to error_log().
+	 * @param string        $min_level Minimum level to record.
+	 * @param callable|null $writer    Receives each line; defaults to error_log().
 	 */
 	public function __construct( string $min_level = 'info', ?callable $writer = null ) {
 		$this->min_weight = self::LEVEL_WEIGHT[ $min_level ] ?? self::LEVEL_WEIGHT['info'];

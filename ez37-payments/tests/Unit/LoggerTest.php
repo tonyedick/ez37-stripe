@@ -99,9 +99,9 @@ final class LoggerTest extends TestCase {
 		$this->logger()->info(
 			'ctx',
 			array(
-				'webhook_secret' => 'anything',
+				'webhook_secret'   => 'anything',
 				'Stripe-Signature' => 'anything',
-				'nested'         => array(
+				'nested'           => array(
 					'password'     => 'hunter2',
 					'access_token' => 'raw-token',
 					'session_id'   => 'cs_test_keepme',
