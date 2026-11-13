@@ -56,3 +56,19 @@ The site is then `https://ez37.ddev.site:8443`. To see what uses a port:
 
 Comes from a library bundled by another plugin (seen with Elementor 4.4 on WordPress 7.1), not from
 EZ37 Payments. Harmless; the command's result follows the notice.
+
+## Checkout page: "We could not start the payment"
+
+Read the reason (keys are redacted):
+
+```bash
+ddev logs -s web | grep ez37-payments | tail -5
+```
+
+or open the failed request in **Stripe Dashboard → Workbench → Logs**.
+
+| Log says | Cause | Fix |
+|---|---|---|
+| `No such price: 'price_…'` (`resource_missing`) | The Price was created in a different Stripe account/sandbox than the secret key | Create the Price in the key's sandbox, or use that sandbox's key. Each sandbox is a separate account. |
+| `payment_method_types parameter is no longer supported` | Old plugin code (before 2026-11-13) on Stripe API 2026-10-28 | Fixed: the plugin sends `allowed_payment_method_types`. |
+| `api_key_invalid` | Typo/whitespace in the key, or `ddev restart` not run | Re-copy the key, restart. |

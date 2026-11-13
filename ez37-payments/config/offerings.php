@@ -25,18 +25,19 @@ defined( 'ABSPATH' ) || exit;
 
 return array(
 	'leadership-coaching' => array(
-		'name'              => 'Leadership Coaching',
-		'active'            => true,
-		'currency'          => 'usd',
-		'amount'            => 100,
-		// TEST: $1.00.
-				'price_ids' => array(
-					'test'             => '',
-					// Paste the sandbox Price ID (price_...) here.
-								'live' => '',
-				),
-		'tax'               => 'none',
-		'fulfilment'        => array(
+		'name'       => 'Leadership Coaching',
+		'active'     => true,
+		'currency'   => 'usd',
+		'amount'     => 100,
+		// TEST price: $1.00 (amount is in cents). Real price before go-live.
+		'price_ids'  => array(
+			// Sandbox Price ID. Must belong to the same Stripe sandbox as the test secret key.
+			'test' => 'price_1UbGnnIHxBQcfaUGoWhfpIHT',
+			// Live Price ID from the client's Stripe account, added before go-live.
+			'live' => '',
+		),
+		'tax'        => 'none',
+		'fulfilment' => array(
 			'handler'   => 'resource_access',
 			'resources' => array( 'leadership-coaching-brochure' ),
 		),

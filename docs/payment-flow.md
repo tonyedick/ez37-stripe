@@ -61,7 +61,7 @@ Built in `CheckoutService::session_params()`:
 | `customer_creation` | `always` | Stripe only creates a Customer in payment mode "if required" (i.e. with invoices, which we don't use, D5). `always` gives every payment a Customer ID. |
 | `client_reference_id` | Transaction `public_id` | Reconciliation (checked by the webhook in Phase 4) |
 | `metadata`, `payment_intent_data.metadata` | `ez37_transaction`, `ez37_offering` | Visible in the Stripe Dashboard on the session and the payment |
-| `payment_method_types` | `['card']` | D3: cards; Apple Pay / Google Pay run on the card method |
+| `allowed_payment_method_types` | `['card']` | D3: cards; Apple Pay / Google Pay run on the card method. Filters the payment methods enabled in **Dashboard → Settings → Payment methods**. (`payment_method_types` is rejected by Stripe API `2026-10-28.endive`, which `stripe-php` 23 uses: "no longer supported when creating a Checkout Session".) |
 | `adaptive_pricing.enabled` | `false` | Always charge USD (D2), whatever the account's Adaptive Pricing setting is. Stripe: the parameter "defaults to your dashboard setting". |
 | `expires_at` | now + 1 hour | Stripe allows 30 min – 24 h; abandoned sessions expire sooner |
 | `success_url` | `<site>/payment-complete/?session_id={CHECKOUT_SESSION_ID}` | UX only (D9) |

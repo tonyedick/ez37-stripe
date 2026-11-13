@@ -133,26 +133,28 @@ final class CheckoutService {
 		);
 
 		return array(
-			'mode'                 => 'payment',
-			'line_items'           => array(
+			'mode'                         => 'payment',
+			'line_items'                   => array(
 				array(
 					'price'    => $price_id,
 					'quantity' => 1,
 				),
 			),
-			'customer_email'       => $input->email,
-			'customer_creation'    => 'always',
-			'client_reference_id'  => $public_id,
-			'metadata'             => $metadata,
-			'payment_intent_data'  => array( 'metadata' => $metadata ),
+			'customer_email'               => $input->email,
+			'customer_creation'            => 'always',
+			'client_reference_id'          => $public_id,
+			'metadata'                     => $metadata,
+			'payment_intent_data'          => array( 'metadata' => $metadata ),
 			// Cards only; Apple Pay / Google Pay run on the card method (decision D3).
-			'payment_method_types' => array( 'card' ),
+			// API 2026-10-28 rejects payment_method_types; this filters the
+			// payment methods enabled in the Dashboard instead.
+			'allowed_payment_method_types' => array( 'card' ),
 			// Always charge in the offering currency (USD, decision D2), whatever the
 			// account's Adaptive Pricing setting is.
-			'adaptive_pricing'     => array( 'enabled' => false ),
-			'expires_at'           => time() + self::SESSION_LIFETIME,
-			'success_url'          => $this->config->success_url() . ( str_contains( $this->config->success_url(), '?' ) ? '&' : '?' ) . 'session_id={CHECKOUT_SESSION_ID}',
-			'cancel_url'           => add_query_arg( 'offering', rawurlencode( $offering->key ), $this->config->cancel_url() ),
+			'adaptive_pricing'             => array( 'enabled' => false ),
+			'expires_at'                   => time() + self::SESSION_LIFETIME,
+			'success_url'                  => $this->config->success_url() . ( str_contains( $this->config->success_url(), '?' ) ? '&' : '?' ) . 'session_id={CHECKOUT_SESSION_ID}',
+			'cancel_url'                   => add_query_arg( 'offering', rawurlencode( $offering->key ), $this->config->cancel_url() ),
 		);
 	}
 

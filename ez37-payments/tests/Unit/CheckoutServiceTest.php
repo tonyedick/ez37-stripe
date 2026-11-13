@@ -208,7 +208,8 @@ final class CheckoutServiceTest extends TestCase {
 		$this->assertSame( 'abc123', $captured['payment_intent_data']['metadata']['ez37_transaction'] );
 		$this->assertSame( 'jane@example.com', $captured['customer_email'] );
 		$this->assertSame( 'always', $captured['customer_creation'] );
-		$this->assertSame( array( 'card' ), $captured['payment_method_types'] );
+		$this->assertSame( array( 'card' ), $captured['allowed_payment_method_types'] );
+		$this->assertArrayNotHasKey( 'payment_method_types', $captured, 'Rejected by Stripe API 2026-10-28.' );
 		$this->assertSame( array( 'enabled' => false ), $captured['adaptive_pricing'] );
 		$this->assertArrayNotHasKey( 'automatic_tax', $captured, 'Tax is not confirmed (D7).' );
 		$this->assertArrayNotHasKey( 'invoice_creation', $captured, 'Receipts only (D5).' );
