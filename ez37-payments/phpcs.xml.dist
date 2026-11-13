@@ -6,6 +6,8 @@
 	<file>./uninstall.php</file>
 	<file>./src</file>
 	<file>./tests</file>
+	<file>./config</file>
+	<file>./templates</file>
 
 	<exclude-pattern>/vendor/*</exclude-pattern>
 
@@ -42,6 +44,13 @@
 	</rule>
 
 	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Exception messages in this plugin are never printed to visitors: customers see
+	     fixed, escaped messages (CheckoutShortcode::error_message) and details go only to
+	     the redacting Logger. Escaping log text with esc_html() would only corrupt the logs. -->
+	<rule ref="WordPress.Security.EscapeOutput.ExceptionNotEscaped">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
 
 	<!-- False positives: PHPCompatibility 9.x does not understand PHP 8.1 enums,
 	     so $this/self inside enum methods are reported as outside a class. -->

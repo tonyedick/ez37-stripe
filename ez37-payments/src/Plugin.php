@@ -9,8 +9,15 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments;
 
+use EZ37\Payments\Checkout\CheckoutRequestHandler;
+use EZ37\Payments\Checkout\CheckoutService;
+use EZ37\Payments\Checkout\RateLimiter;
+use EZ37\Payments\Frontend\CheckoutShortcode;
 use EZ37\Payments\Install\Schema;
+use EZ37\Payments\Offerings\OfferingCatalogue;
+use EZ37\Payments\Stripe\StripeGateway;
 use EZ37\Payments\Support\Logger;
+use EZ37\Payments\Transactions\TransactionRepository;
 
 /**
  * Creates the shared services and registers WordPress hooks.
@@ -36,12 +43,14 @@ final class Plugin {
 	/**
 	 * Constructor.
 	 *
-	 * @param Config $config Configuration.
-	 * @param Logger $logger Logger.
+	 * @param Config            $config    Configuration.
+	 * @param Logger            $logger    Logger.
+	 * @param OfferingCatalogue $catalogue Offerings.
 	 */
 	private function __construct(
 		private readonly Config $config,
-		private readonly Logger $logger
+		private readonly Logger $logger,
+		private readonly OfferingCatalogue $catalogue
 	) {}
 
 	/**
@@ -55,7 +64,7 @@ final class Plugin {
 		$config = Config::from_environment();
 		$logger = new Logger( $config->log_level() );
 
-		self::$instance = new self( $config, $logger );
+		self::$instance = new self( $config, $logger, OfferingCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/offerings.php' ) );
 		self::$instance->register_hooks();
 	}
 
@@ -94,6 +103,17 @@ final class Plugin {
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_notices', array( $this, 'render_config_notice' ) );
+
+		$service = new CheckoutService(
+			$this->config,
+			$this->catalogue,
+			new StripeGateway( $this->config ),
+			new TransactionRepository(),
+			$this->logger
+		);
+
+		( new CheckoutRequestHandler( $service, new RateLimiter(), $this->logger ) )->register();
+		( new CheckoutShortcode( $this->config, $this->catalogue ) )->register();
 	}
 
 	/**
@@ -113,7 +133,22 @@ final class Plugin {
 		}
 
 		$errors   = $this->config->errors();
-		$warnings = $this->config->warnings();
+		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors() );
+
+		if ( array() === $errors && ! $this->config->is_checkout_enabled() ) {
+			$warnings[] = __( 'Checkout is switched off (EZ37_PAYMENTS_CHECKOUT_ENABLED).', 'ez37-payments' );
+		}
+
+		foreach ( $this->catalogue->all() as $offering ) {
+			if ( $offering->active && null === $offering->price_id( $this->config->mode() ) ) {
+				$warnings[] = sprintf(
+					/* translators: 1: offering key, 2: test or live */
+					__( 'Offering "%1$s" has no Stripe Price ID for %2$s mode and cannot be bought.', 'ez37-payments' ),
+					$offering->key,
+					$this->config->mode()
+				);
+			}
+		}
 
 		if ( array() === $errors && array() === $warnings ) {
 			return;
@@ -136,6 +171,11 @@ final class Plugin {
 			echo '<li>' . esc_html( $item ) . '</li>';
 		}
 
-		echo '</ul><p>' . esc_html__( 'Checkout stays disabled until all errors are resolved.', 'ez37-payments' ) . '</p></div>';
+		if ( array() !== $errors ) {
+			echo '</ul><p>' . esc_html__( 'Checkout stays disabled until all errors are resolved.', 'ez37-payments' ) . '</p></div>';
+			return;
+		}
+
+		echo '</ul></div>';
 	}
 }

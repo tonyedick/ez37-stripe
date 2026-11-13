@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.1.0 (Phase 2)
+## Current state — v0.2.0 (Phase 3)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -29,12 +29,24 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Install\Activator` | Activation: schema + capability. |
 | `EZ37\Payments\Transactions\PaymentStatus` | Payment state machine (enum). |
 | `EZ37\Payments\Transactions\FulfilmentStatus` | Fulfilment state machine (enum). |
+| `EZ37\Payments\Offerings\Offering` / `OfferingCatalogue` | Offerings from `config/offerings.php`, validated; invalid ones skipped and reported. |
+| `EZ37\Payments\Stripe\StripeGateway` | The only class using the Stripe SDK (`stripe/stripe-php`): create Checkout Session, retrieve Price. Converts SDK errors to `GatewayException`. |
+| `EZ37\Payments\Checkout\CheckoutInput` | Validates offering key, name, email. Ignores everything else. |
+| `EZ37\Payments\Checkout\CheckoutService` | Price verification, pending transaction, Checkout Session. Never marks anything paid. |
+| `EZ37\Payments\Checkout\CheckoutRequestHandler` | `admin-post.php?action=ez37_checkout`: Origin, nonce, honeypot, rate limits, then 303 to Stripe. |
+| `EZ37\Payments\Checkout\RateLimiter` | Transient-based throttling (hashed keys). |
+| `EZ37\Payments\Transactions\TransactionRepository` | SQL for `ez37_transactions` (create pending, attach session, mark failed). |
+| `EZ37\Payments\Frontend\CheckoutShortcode` | `[ez37_checkout]` form (templates/checkout-form.php). |
+
+**Deviation from the Phase 1 plan:** the checkout form posts to `admin-post.php` instead of a REST
+route. A plain HTML form then works without JavaScript inside any Elementor layout, and the
+handler can redirect straight to Stripe (303) or back with an error code. The webhook (Phase 4)
+will still be a REST route.
 
 ### Planned (not yet built)
 
 | Phase | Components |
 |---|---|
-| 3 | `Offerings\Offering`, `Offerings\OfferingCatalogue`, `config/offerings.php`, `Stripe\StripeGateway` (adds `stripe/stripe-php`), `Checkout\CheckoutService`, `Checkout\CheckoutController` |
 | 4 | `Webhooks\WebhookController`, `Webhooks\EventProcessor` |
 | 5 | `Transactions\TransactionRepository`, `Frontend\StatusController`, success/cancel shortcodes |
 | 6 | `Fulfilment\*`, `Resources\EntitlementRepository`, `Resources\AccessController` |

@@ -51,11 +51,31 @@ Implemented in `src/Support/Logger.php`.
 - PHP < 8.1 or missing dependencies → admin notice and the plugin stays inert (no fatal error).
 - The release build script aborts if anything resembling a Stripe secret is found in the build.
 
+## Implemented in v0.2.0 (Phase 3 — checkout start)
+
+| Threat | Control |
+|---|---|
+| Price manipulation | Form submits only offering key, name, email. Price ID, amount and currency come from `config/offerings.php`. Extra fields are ignored. |
+| Misconfigured Stripe Price | Before checkout, the Price is retrieved and must be active, `one_time`, same currency, same amount, same mode as config. Mismatch → checkout blocked for that offering, error logged. |
+| Offering manipulation | Key must match `^[a-z0-9](…)$` (≤64 chars), exist, be active, and have a Price ID for the current mode. |
+| CSRF | WordPress nonce (`ez37_checkout`) **and** Origin/Referer host must equal the site host. |
+| Bots / abuse | Honeypot field; 10 attempts / 10 minutes per IP and per email (hashed transient keys). IP is `REMOTE_ADDR` only (forwarded headers are forgeable) — revisit behind a CDN (O4). |
+| Header injection | Name/email containing CR/LF are rejected before sanitising. |
+| Open redirect | Success redirect only to `https://checkout.stripe.com`; error redirect only to a validated same-site referer (`wp_validate_redirect`). |
+| Duplicate sessions on retry | Stripe idempotency key `ez37-checkout-<public_id>` per transaction. |
+| Information leakage | Customers see generic messages; details go to the redacting log. Emails are masked in logs. |
+| Enumeration | Transaction `public_id` is 104 random bits; the internal ID is never exposed. |
+| Output escaping | Templates use `esc_html`, `esc_attr`, `esc_url`. |
+| SQL | `$wpdb->insert()` / `update()` with explicit formats; no string-built SQL. |
+| Test/live mix-up | Session created with the active mode's key only; Price `livemode` must match the mode. |
+
+**Operational requirement:** the checkout page must be excluded from page caching, or visitors may
+receive an expired nonce (they would see "Your session expired").
+
 ## Planned controls (by phase)
 
 | Phase | Controls |
 |---|---|
-| 3 | Offering-key validation, server-side price, nonce + Origin check, rate limiting, honeypot, input validation, Stripe idempotency keys, restricted-key permission list |
 | 4 | Signature verification (raw body, 5-min tolerance), event-ID dedupe, livemode check, session/reference/amount cross-checks |
 | 5 | Atomic conditional state transitions, minimal-data status endpoint |
 | 6 | Private file storage, hashed 256-bit access tokens, 7-day expiry, revocation |

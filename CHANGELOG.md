@@ -2,6 +2,18 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.2.0] — 2026-11-13 — Phase 3: Stripe Checkout
+
+### Added
+- Offering catalogue (`config/offerings.php`) with validation; first test offering
+  "Leadership Coaching" at $1.00 (test only).
+- `StripeGateway` using the official `stripe/stripe-php` SDK.
+- Checkout start: `[ez37_checkout]` form → `admin-post.php` handler (Origin + nonce + honeypot +
+  rate limits + input validation) → pending transaction → Stripe Checkout Session → 303 redirect.
+- Stripe Price verification against config before every checkout (cached 10 minutes).
+- Configurable return pages (`EZ37_PAYMENTS_SUCCESS_PATH`, `EZ37_PAYMENTS_CANCEL_PATH`).
+- Admin notices for checkout switched off, invalid offerings, and offerings without a Price ID.
+
 ## [0.1.0] — 2026-10-06 — Phase 2: Foundation
 
 ### Added

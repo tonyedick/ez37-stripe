@@ -42,7 +42,15 @@ final class Config {
 		'EZ37_PAYMENTS_CHECKOUT_ENABLED',
 		'EZ37_PAYMENTS_LOG_LEVEL',
 		'EZ37_PAYMENTS_ADMIN_EMAIL',
+		'EZ37_PAYMENTS_SUCCESS_PATH',
+		'EZ37_PAYMENTS_CANCEL_PATH',
 	);
+
+	/**
+	 * Default page paths Stripe returns customers to.
+	 */
+	public const DEFAULT_SUCCESS_PATH = '/payment-complete/';
+	public const DEFAULT_CANCEL_PATH  = '/payment-cancelled/';
 
 	/**
 	 * Raw values keyed by setting name. Missing settings are absent.
@@ -50,6 +58,34 @@ final class Config {
 	 * @var array<string, string>
 	 */
 	private array $values;
+
+	/**
+	 * Path of the page customers return to after paying (UX only — never proof of payment).
+	 */
+	public function success_path(): string {
+		return $this->path_setting( 'EZ37_PAYMENTS_SUCCESS_PATH', self::DEFAULT_SUCCESS_PATH );
+	}
+
+	/**
+	 * Path of the page customers return to when they cancel on Stripe.
+	 */
+	public function cancel_path(): string {
+		return $this->path_setting( 'EZ37_PAYMENTS_CANCEL_PATH', self::DEFAULT_CANCEL_PATH );
+	}
+
+	/**
+	 * Absolute success URL on this site.
+	 */
+	public function success_url(): string {
+		return home_url( $this->success_path() );
+	}
+
+	/**
+	 * Absolute cancel URL on this site.
+	 */
+	public function cancel_url(): string {
+		return home_url( $this->cancel_path() );
+	}
 
 	/**
 	 * Configuration problems found on construction.
@@ -268,6 +304,33 @@ final class Config {
 		if ( isset( $this->values['EZ37_PAYMENTS_ADMIN_EMAIL'] ) && null === $this->admin_email() ) {
 			$this->errors[] = 'EZ37_PAYMENTS_ADMIN_EMAIL is not a valid email address.';
 		}
+
+		foreach ( array( 'EZ37_PAYMENTS_SUCCESS_PATH', 'EZ37_PAYMENTS_CANCEL_PATH' ) as $path_key ) {
+			if ( isset( $this->values[ $path_key ] ) && ! self::is_valid_path( $this->values[ $path_key ] ) ) {
+				$this->warnings[] = sprintf( '%s must be a site path such as /payment-complete/. Using the default.', $path_key );
+			}
+		}
+	}
+
+	/**
+	 * A site-relative path setting, or its default when missing/invalid.
+	 *
+	 * @param string $key      Setting name.
+	 * @param string $fallback Default path.
+	 */
+	private function path_setting( string $key, string $fallback ): string {
+		$value = $this->values[ $key ] ?? null;
+
+		return ( null !== $value && self::is_valid_path( $value ) ) ? $value : $fallback;
+	}
+
+	/**
+	 * Whether a value is a safe site-relative path ("/something/").
+	 *
+	 * @param string $path Path.
+	 */
+	private static function is_valid_path( string $path ): bool {
+		return 1 === preg_match( '#^/[A-Za-z0-9/_-]*$#', $path ) && ! str_starts_with( $path, '//' );
 	}
 
 	/**
