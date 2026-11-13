@@ -37,9 +37,10 @@ from a prefix plus `FAKE…`.
 | Date | Phase | Environment | Result |
 |---|---|---|---|
 | 2026-10-06 | 2 | Claude build sandbox, PHP 8.3.6 | `php -l` clean on all files. **51 tests, 210 assertions, all passing** — run through a minimal PHPUnit/Brain Monkey stand-in because Packagist was not reachable from the sandbox. A mutation check (three deliberately introduced bugs) was caught by the suite. |
-| _pending_ | 2 | Developer machine, `composer check` | **To do:** run the real PHPUnit, PHPCS and PHPStan locally, commit `composer.lock`, record the result here. |
+| 2026-11-13 | 2 | Developer Mac, PHP 8.4.21, PHPUnit 10.5.66 | **51 tests, 221 assertions, all passing** (real PHPUnit). First PHPCS/PHPStan run reported formatting issues, missing doc comments and false positives (PHPCompatibility 9 does not understand enums; PHPStan treats the PHP-version guard and the uninstall opt-in constant as constant). Fixed in `02cb688`; `composer.lock` committed. |
+| 2026-11-13 | 2 | Local DDEV site (WordPress 7.1.4, Elementor 4.4.0, MariaDB 10.11, PHP 8.2) | Plugin activates; config notice correctly lists missing `EZ37_STRIPE_TEST_SECRET_KEY` and `EZ37_STRIPE_TEST_WEBHOOK_SECRET` and keeps checkout disabled; 4 `ez37_` tables created by `dbDelta()`; `ez37_payments_db_version` = `1.0.0`. Setup script fixed for non-standard router ports and a silent exit (pipefail + SIGPIPE). |
 
 ## Not yet tested (by design, later phases)
 
-- Real `dbDelta()` against MariaDB/MySQL (Phase 2 local check via `bin/setup-local.sh`; automated in Phase 5 integration tests).
+- Automated integration tests against a real database (Phase 5). Real `dbDelta()` was verified manually on the local DDEV site.
 - Everything involving Stripe (Phases 3–4 onward).

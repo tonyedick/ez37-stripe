@@ -37,3 +37,22 @@ overrides an environment variable of the same name.
 Check the PHP error log for `dbDelta` errors and that the database user can `CREATE`/`ALTER`.
 Re-run safely with `ddev wp eval 'EZ37\Payments\Install\Schema::install();'` — `dbDelta()` is
 idempotent.
+
+## `bin/setup-local.sh`: "ports are not available: exposing port TCP 127.0.0.1:443"
+
+Docker Desktop on macOS cannot bind ports below 1024 without its privileged helper, or another
+program already uses ports 80/443. Use unprivileged router ports (once per machine):
+
+```bash
+ddev poweroff
+ddev config global --router-http-port=8080 --router-https-port=8443
+bin/setup-local.sh
+```
+
+The site is then `https://ez37.ddev.site:8443`. To see what uses a port:
+`sudo lsof -nP -iTCP:443 -sTCP:LISTEN`.
+
+## "PHP Deprecated: Function WP\MCP\Core\McpAdapter is deprecated" in `ddev wp` output
+
+Comes from a library bundled by another plugin (seen with Elementor 4.4 on WordPress 7.1), not from
+EZ37 Payments. Harmless; the command's result follows the notice.

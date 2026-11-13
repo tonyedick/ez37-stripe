@@ -15,7 +15,6 @@ cd "$(dirname "$0")/.."
 
 WP_VERSION="${WP_VERSION:-latest}"
 ELEMENTOR_VERSION="${ELEMENTOR_VERSION:-}"
-SITE_URL="https://ez37.ddev.site"
 
 # DDEV expects the docroot to exist before it starts.
 mkdir -p wordpress
@@ -23,13 +22,19 @@ mkdir -p wordpress
 echo "==> Starting DDEV"
 ddev start
 
+# The URL depends on the router ports configured on this machine
+# (e.g. https://ez37.ddev.site:8443), so ask DDEV rather than assuming.
+SITE_URL="$(ddev exec printenv DDEV_PRIMARY_URL | tr -d '\r')"
+
 if [ ! -f wordpress/wp-load.php ]; then
 	echo "==> Downloading WordPress (${WP_VERSION})"
 	ddev wp core download --version="${WP_VERSION}"
 fi
 
 if ! ddev wp core is-installed >/dev/null 2>&1; then
-	ADMIN_PASSWORD="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 24)"
+	# Note: avoid `tr </dev/urandom | head`: with pipefail, tr's SIGPIPE
+	# makes the pipeline fail and `set -e` silently stops the script.
+	ADMIN_PASSWORD="$(openssl rand -hex 16)"
 	echo "==> Installing WordPress"
 	ddev wp core install \
 		--url="${SITE_URL}" \
