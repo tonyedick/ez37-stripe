@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments\Install;
 
+use EZ37\Payments\Fulfilment\FulfilmentService;
 use EZ37\Payments\Plugin;
 use EZ37\Payments\Transactions\Reconciler;
 
@@ -48,5 +49,6 @@ final class Activator {
 	 */
 	public static function deactivate(): void {
 		wp_clear_scheduled_hook( Reconciler::CRON_HOOK );
+		wp_clear_scheduled_hook( FulfilmentService::SWEEP_HOOK );
 	}
 }

@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.4.0 (Phase 5)
+## Current state — v0.5.0 (Phases 6–7)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -44,6 +44,14 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Frontend\StatusController` | `GET /wp-json/ez37/v1/payment-status` (rate-limited, no-store). |
 | `EZ37\Payments\Frontend\ReturnPageShortcodes` | `[ez37_payment_status]`, `[ez37_payment_cancelled]`, privacy headers. |
 | `EZ37\Payments\Frontend\Template` | Renders `templates/*.php`. |
+| `EZ37\Payments\Fulfilment\FulfilmentService` | Queue on payment, claim/lock, grant entitlements, send emails, retry/sweep. |
+| `EZ37\Payments\Resources\PaidResource` / `ResourceCatalogue` | Resources from `config/resources.php`; path-traversal-safe file resolution. |
+| `EZ37\Payments\Resources\EntitlementRepository` | SQL for `ez37_entitlements` (idempotent grant, token-hash lookup, atomic access count). |
+| `EZ37\Payments\Resources\AccessController` | `?ez37_access=<token>` secure download. |
+| `EZ37\Payments\Email\Mailer` / `EmailRepository` | Customer and admin emails via `wp_mail()`, at most once each (`ez37_email_log`). |
+
+**Deviation from the Phase 1 plan:** Phases 6 (fulfilment) and 7 (email) were built together, because
+the single combined customer email (D10) is the delivery itself.
 | `EZ37\Payments\Webhooks\EventRepository` | SQL for `ez37_stripe_events` (`INSERT IGNORE` on the unique event ID). |
 
 **Deviation from the Phase 1 plan:** the checkout form posts to `admin-post.php` instead of a REST
@@ -55,8 +63,6 @@ will still be a REST route.
 
 | Phase | Components |
 |---|---|
-| 6 | `Fulfilment\*`, `Resources\EntitlementRepository`, `Resources\AccessController` |
-| 7 | `Email\Mailer`, templates |
 | 8 | `Frontend\Shortcodes` (Elementor integration) |
 | 8b | `Admin\TransactionsPage` |
 

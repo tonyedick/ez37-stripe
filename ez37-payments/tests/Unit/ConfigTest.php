@@ -31,6 +31,7 @@ final class ConfigTest extends TestCase {
 			'EZ37_STRIPE_TEST_SECRET_KEY'     => self::fake( 'sk_test_' ),
 			'EZ37_STRIPE_TEST_WEBHOOK_SECRET' => self::fake( 'whsec_' ),
 			'EZ37_PAYMENTS_CHECKOUT_ENABLED'  => '1',
+			'EZ37_PAYMENTS_PRIVATE_DIR'       => __DIR__,
 		);
 	}
 

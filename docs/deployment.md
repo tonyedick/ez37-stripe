@@ -68,6 +68,15 @@ hourly). WP-Cron only runs when the site gets traffic; on production, prefer a r
 calls `wp cron event run --due-now` (or `wp-cron.php`) every 5–15 minutes and set
 `DISABLE_WP_CRON` accordingly. Check with `wp cron event list | grep ez37`.
 
+## Private resources and email (Phases 6–7)
+
+- Create a folder **outside the web root** (e.g. one level above `public_html`), upload the resource
+  files into it keeping the paths from `config/resources.php`, and set
+  `define( 'EZ37_PAYMENTS_PRIVATE_DIR', '/absolute/path/to/folder' );`.
+- Set `EZ37_PAYMENTS_ADMIN_EMAIL` for sale notices.
+- Make sure the site sends email reliably (SMTP plugin/transactional provider with SPF/DKIM/DMARC).
+- The fulfilment job and its hourly sweeper run on WP-Cron like reconciliation; see above.
+
 ## Configuration on staging/production
 
 Add constants to `wp-config.php` **above** the "That's all, stop editing!" line. Example for

@@ -92,6 +92,18 @@ Implemented in `src/Support/Logger.php`.
 | Session ID leaking | `Referrer-Policy: no-referrer`, `no-cache`, `noindex` on pages with `?session_id=`. |
 | Missed webhook | Hourly reconciliation via authenticated Stripe API reads, same validation as webhooks. |
 
+## Implemented in v0.5.0 (Phases 6–7 — fulfilment, downloads, email)
+
+| Threat | Control |
+|---|---|
+| Downloading without paying | Token must map to an active entitlement whose transaction is `paid` and not under review; files live outside the web root. |
+| Guessing links | 256-bit random tokens; only SHA-256 stored; strict format check before any query; 30 attempts / 10 min per IP. |
+| Link sharing / stale access | 7-day expiry (D6); optional `max_access`; revocation supported in the data model. |
+| Path traversal | Resource paths validated in config and re-checked with `realpath()` against the private folder at download time. |
+| Duplicate emails | `UNIQUE (transaction_id, email_type)`; sent rows never re-sent; retries never issue a second link once emailed. |
+| Email failure marking payment unpaid | Fulfilment state is separate; failures retry; payment status untouched. |
+| Email content injection | HTML email escapes all values; plain-text admin email strips line breaks. |
+
 **Operational requirement:** the checkout page must be excluded from page caching, or visitors may
 receive an expired nonce (they would see "Your session expired").
 
@@ -99,7 +111,5 @@ receive an expired nonce (they would see "Your session expired").
 
 | Phase | Controls |
 |---|---|
-| 6 | Private file storage, hashed 256-bit access tokens, 7-day expiry, revocation |
-| 7 | Header-injection-safe email, escaped templates |
 | 8b | Capability + nonce on every admin action |
 | 9 | Independent audit of all of the above |

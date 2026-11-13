@@ -2,6 +2,15 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.5.0] — Phases 6–7: Fulfilment and email
+
+### Added
+- Resource registry (`config/resources.php`) and private folder setting `EZ37_PAYMENTS_PRIVATE_DIR`.
+- Fulfilment job on payment (WP-Cron), atomic claim/lock, retries, hourly sweeper, permanent-failure state.
+- Entitlements with hashed 256-bit tokens and 7-day expiry; secure download endpoint `?ez37_access=`.
+- Combined customer email (confirmation + download link + attachment ≤ 5 MB) and internal sale notice, each sent at most once.
+- Placeholder brochure in `sample-resources/` for development.
+
 ## [0.4.0] — Phase 5: Payment status
 
 ### Added

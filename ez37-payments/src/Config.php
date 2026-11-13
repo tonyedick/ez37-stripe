@@ -44,6 +44,7 @@ final class Config {
 		'EZ37_PAYMENTS_ADMIN_EMAIL',
 		'EZ37_PAYMENTS_SUCCESS_PATH',
 		'EZ37_PAYMENTS_CANCEL_PATH',
+		'EZ37_PAYMENTS_PRIVATE_DIR',
 	);
 
 	/**
@@ -58,6 +59,22 @@ final class Config {
 	 * @var array<string, string>
 	 */
 	private array $values;
+
+	/**
+	 * Absolute path of the private folder holding paid resources, or null when
+	 * not configured or not a readable directory. It must be outside the web
+	 * root: files there are only ever served through the access controller.
+	 */
+	public function private_dir(): ?string {
+		$dir = $this->values['EZ37_PAYMENTS_PRIVATE_DIR'] ?? null;
+		if ( null === $dir || ! str_starts_with( $dir, '/' ) ) {
+			return null;
+		}
+
+		$real = realpath( $dir );
+
+		return ( false !== $real && is_dir( $real ) && is_readable( $real ) ) ? $real : null;
+	}
 
 	/**
 	 * Path of the page customers return to after paying (UX only — never proof of payment).
@@ -303,6 +320,12 @@ final class Config {
 
 		if ( isset( $this->values['EZ37_PAYMENTS_ADMIN_EMAIL'] ) && null === $this->admin_email() ) {
 			$this->errors[] = 'EZ37_PAYMENTS_ADMIN_EMAIL is not a valid email address.';
+		}
+
+		if ( ! isset( $this->values['EZ37_PAYMENTS_PRIVATE_DIR'] ) ) {
+			$this->warnings[] = 'EZ37_PAYMENTS_PRIVATE_DIR is not set. Paid resources cannot be delivered until it points to a folder outside the web root.';
+		} elseif ( null === $this->private_dir() ) {
+			$this->warnings[] = 'EZ37_PAYMENTS_PRIVATE_DIR is not an absolute path to a readable folder.';
 		}
 
 		foreach ( array( 'EZ37_PAYMENTS_SUCCESS_PATH', 'EZ37_PAYMENTS_CANCEL_PATH' ) as $path_key ) {

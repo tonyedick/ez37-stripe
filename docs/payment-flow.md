@@ -2,7 +2,7 @@
 
 > **Status: Phases 3–5 built: checkout start, payment confirmation by verified webhook**
 > (see [webhook-events.md](webhook-events.md)), return pages with live status, and reconciliation of
-> missed webhooks. Fulfilment (Phase 6) and email (Phase 7) are not built yet.
+> missed webhooks. Fulfilment and email (Phases 6–7) are described in [fulfilment.md](fulfilment.md).
 
 ## 1. Customer journey (implemented part)
 

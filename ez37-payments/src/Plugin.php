@@ -12,12 +12,18 @@ namespace EZ37\Payments;
 use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Checkout\CheckoutService;
 use EZ37\Payments\Checkout\RateLimiter;
+use EZ37\Payments\Email\EmailRepository;
+use EZ37\Payments\Email\Mailer;
 use EZ37\Payments\Frontend\CheckoutShortcode;
+use EZ37\Payments\Fulfilment\FulfilmentService;
 use EZ37\Payments\Frontend\ReturnPageShortcodes;
 use EZ37\Payments\Frontend\StatusController;
 use EZ37\Payments\Frontend\StatusService;
 use EZ37\Payments\Install\Schema;
 use EZ37\Payments\Offerings\OfferingCatalogue;
+use EZ37\Payments\Resources\AccessController;
+use EZ37\Payments\Resources\EntitlementRepository;
+use EZ37\Payments\Resources\ResourceCatalogue;
 use EZ37\Payments\Stripe\StripeGateway;
 use EZ37\Payments\Support\Logger;
 use EZ37\Payments\Transactions\Reconciler;
@@ -53,11 +59,13 @@ final class Plugin {
 	 * @param Config            $config    Configuration.
 	 * @param Logger            $logger    Logger.
 	 * @param OfferingCatalogue $catalogue Offerings.
+	 * @param ResourceCatalogue $resources Resources.
 	 */
 	private function __construct(
 		private readonly Config $config,
 		private readonly Logger $logger,
-		private readonly OfferingCatalogue $catalogue
+		private readonly OfferingCatalogue $catalogue,
+		private readonly ResourceCatalogue $resources
 	) {}
 
 	/**
@@ -71,7 +79,12 @@ final class Plugin {
 		$config = Config::from_environment();
 		$logger = new Logger( $config->log_level() );
 
-		self::$instance = new self( $config, $logger, OfferingCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/offerings.php' ) );
+		self::$instance = new self(
+			$config,
+			$logger,
+			OfferingCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/offerings.php' ),
+			ResourceCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/resources.php' )
+		);
 		self::$instance->register_hooks();
 	}
 
@@ -132,6 +145,11 @@ final class Plugin {
 		$status = new StatusService( $transactions );
 		( new StatusController( $status, new RateLimiter( 60, 600 ) ) )->register();
 		( new ReturnPageShortcodes( $status, $this->catalogue ) )->register();
+
+		$entitlements = new EntitlementRepository();
+		$mailer       = new Mailer( $this->config, new EmailRepository(), $this->logger );
+		( new FulfilmentService( $this->config, $transactions, $this->catalogue, $this->resources, $entitlements, $mailer, $this->logger ) )->register();
+		( new AccessController( $this->config, $entitlements, $this->resources, new RateLimiter( 30, 600 ), $this->logger ) )->register();
 	}
 
 	/**
@@ -151,7 +169,7 @@ final class Plugin {
 		}
 
 		$errors   = $this->config->errors();
-		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors() );
+		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors(), $this->resources->errors() );
 
 		if ( array() === $errors && ! $this->config->is_checkout_enabled() ) {
 			$warnings[] = __( 'Checkout is switched off (EZ37_PAYMENTS_CHECKOUT_ENABLED).', 'ez37-payments' );

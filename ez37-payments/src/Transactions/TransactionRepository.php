@@ -267,6 +267,151 @@ class TransactionRepository {
 	}
 
 	/**
+	 * Find a transaction by internal ID.
+	 *
+	 * @param int $id Transaction ID.
+	 * @return array<string, mixed>|null
+	 */
+	public function find_by_id( int $id ): ?array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; payment state must be read fresh.
+		$row = $wpdb->get_row(
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', Schema::table( Schema::TRANSACTIONS ), $id ),
+			ARRAY_A
+		);
+
+		return is_array( $row ) ? $row : null;
+	}
+
+	/**
+	 * Atomically claim a paid transaction for a fulfilment attempt.
+	 *
+	 * Succeeds only for paid, unflagged transactions whose fulfilment is
+	 * pending, failed (retry), or in progress with an expired lock (crashed
+	 * job). Increments the attempt counter. Concurrent claims cannot both win.
+	 *
+	 * @param int $id           Transaction ID.
+	 * @param int $lock_seconds How long the claim is held.
+	 */
+	public function claim_fulfilment( int $id, int $lock_seconds ): bool {
+		global $wpdb;
+
+		$now = time();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; atomic claim.
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET fulfilment_status = %s, fulfilment_locked_until = %s, fulfilment_attempts = fulfilment_attempts + 1, updated_at = %s
+				WHERE id = %d AND payment_status = %s AND review_required = 0
+				AND ( fulfilment_status IN (%s, %s) OR ( fulfilment_status = %s AND ( fulfilment_locked_until IS NULL OR fulfilment_locked_until < %s ) ) )',
+				Schema::table( Schema::TRANSACTIONS ),
+				FulfilmentStatus::InProgress->value,
+				gmdate( 'Y-m-d H:i:s', $now + $lock_seconds ),
+				gmdate( 'Y-m-d H:i:s', $now ),
+				$id,
+				PaymentStatus::Paid->value,
+				FulfilmentStatus::Pending->value,
+				FulfilmentStatus::Failed->value,
+				FulfilmentStatus::InProgress->value,
+				gmdate( 'Y-m-d H:i:s', $now )
+			)
+		);
+
+		return 1 === $result;
+	}
+
+	/**
+	 * Mark a claimed fulfilment as completed.
+	 *
+	 * @param int $id Transaction ID.
+	 */
+	public function complete_fulfilment( int $id ): void {
+		$this->finish_fulfilment(
+			$id,
+			array(
+				'fulfilment_status'       => FulfilmentStatus::Completed->value,
+				'fulfilled_at'            => self::now(),
+				'fulfilment_locked_until' => null,
+			)
+		);
+	}
+
+	/**
+	 * Mark a claimed fulfilment as failed (retryable or permanent). The
+	 * payment status is never touched.
+	 *
+	 * @param int    $id        Transaction ID.
+	 * @param bool   $permanent True when retries are exhausted.
+	 * @param string $message   Log-safe reason.
+	 */
+	public function fail_fulfilment( int $id, bool $permanent, string $message ): void {
+		$this->finish_fulfilment(
+			$id,
+			array(
+				'fulfilment_status'       => ( $permanent ? FulfilmentStatus::FailedPermanent : FulfilmentStatus::Failed )->value,
+				'fulfilment_locked_until' => null,
+				'failure_code'            => 'fulfilment_failed',
+				'failure_message'         => substr( $message, 0, 500 ),
+			)
+		);
+	}
+
+	/**
+	 * IDs of transactions whose fulfilment is due (new, retry, or crashed).
+	 *
+	 * @param int $max_attempts Do not return transactions that used this many attempts.
+	 * @param int $limit        Maximum rows.
+	 * @return list<int>
+	 */
+	public function find_fulfilment_due( int $max_attempts, int $limit ): array {
+		global $wpdb;
+
+		$now = gmdate( 'Y-m-d H:i:s' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; queue must be read fresh.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				'SELECT id FROM %i WHERE payment_status = %s AND review_required = 0 AND fulfilment_attempts < %d
+				AND ( fulfilment_status IN (%s, %s) OR ( fulfilment_status = %s AND fulfilment_locked_until < %s ) )
+				ORDER BY paid_at ASC LIMIT %d',
+				Schema::table( Schema::TRANSACTIONS ),
+				PaymentStatus::Paid->value,
+				$max_attempts,
+				FulfilmentStatus::Pending->value,
+				FulfilmentStatus::Failed->value,
+				FulfilmentStatus::InProgress->value,
+				$now,
+				$limit
+			)
+		);
+
+		return array_map( 'intval', is_array( $ids ) ? array_values( $ids ) : array() );
+	}
+
+	/**
+	 * Update a claimed (in_progress) fulfilment.
+	 *
+	 * @param int                            $id  Transaction ID.
+	 * @param array<string, int|string|null> $set Columns.
+	 */
+	private function finish_fulfilment( int $id, array $set ): void {
+		global $wpdb;
+
+		$set['updated_at'] = self::now();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
+		$wpdb->update(
+			Schema::table( Schema::TRANSACTIONS ),
+			$set,
+			array(
+				'id'                => $id,
+				'fulfilment_status' => FulfilmentStatus::InProgress->value,
+			)
+		);
+	}
+
+	/**
 	 * Random, non-sequential public reference: 26 lowercase hex characters (104 bits).
 	 */
 	public static function new_public_id(): string {

@@ -17,6 +17,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/fake-wp/' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress core constant, faked for unit tests.
 }
 
+if ( ! defined( 'EZ37_PAYMENTS_DIR' ) ) {
+	define( 'EZ37_PAYMENTS_DIR', dirname( __DIR__, 2 ) . '/' );
+}
+
 if ( ! defined( 'EZ37_PAYMENTS_FILE' ) ) {
 	define( 'EZ37_PAYMENTS_FILE', dirname( __DIR__, 2 ) . '/ez37-payments.php' );
 }
