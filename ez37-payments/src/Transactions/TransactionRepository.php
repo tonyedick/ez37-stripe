@@ -149,6 +149,39 @@ class TransactionRepository {
 	}
 
 	/**
+	 * Transactions still waiting for payment confirmation that are old enough
+	 * to suspect a missed webhook, oldest first.
+	 *
+	 * @param string $mode            "test" or "live" (only the active mode is reconciled).
+	 * @param int    $min_age_minutes Ignore transactions younger than this.
+	 * @param int    $max_age_hours   Ignore transactions older than this.
+	 * @param int    $limit           Maximum rows.
+	 * @return list<array<string, mixed>>
+	 */
+	public function find_unconfirmed( string $mode, int $min_age_minutes, int $max_age_hours, int $limit ): array {
+		global $wpdb;
+
+		$now = time();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; payment state must be read fresh.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE payment_status IN (%s, %s) AND stripe_mode = %s AND stripe_checkout_session_id IS NOT NULL AND review_required = 0 AND created_at <= %s AND created_at >= %s ORDER BY created_at ASC LIMIT %d',
+				Schema::table( Schema::TRANSACTIONS ),
+				PaymentStatus::Pending->value,
+				PaymentStatus::Processing->value,
+				$mode,
+				gmdate( 'Y-m-d H:i:s', $now - $min_age_minutes * 60 ),
+				gmdate( 'Y-m-d H:i:s', $now - $max_age_hours * 3600 ),
+				$limit
+			),
+			ARRAY_A
+		);
+
+		return is_array( $rows ) ? array_values( $rows ) : array();
+	}
+
+	/**
 	 * Atomically move a transaction to a new payment status.
 	 *
 	 * The UPDATE only matches when the current status is one the target may be

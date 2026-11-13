@@ -1,8 +1,8 @@
 # Payment flow
 
-> **Status: Phases 3–4 built: checkout start, and payment confirmation by verified webhook**
-> (see [webhook-events.md](webhook-events.md)). Success-page status (Phase 5), fulfilment (Phase 6)
-> and email (Phase 7) are not built yet.
+> **Status: Phases 3–5 built: checkout start, payment confirmation by verified webhook**
+> (see [webhook-events.md](webhook-events.md)), return pages with live status, and reconciliation of
+> missed webhooks. Fulfilment (Phase 6) and email (Phase 7) are not built yet.
 
 ## 1. Customer journey (implemented part)
 
@@ -92,10 +92,36 @@ Defined in `ez37-payments/config/offerings.php` (developer-edited, D8) and valid
 | Page | Content | Notes |
 |---|---|---|
 | Checkout, e.g. `/checkout/` | `[ez37_checkout]` | Must be **excluded from page caching** (nonce). Elementor buttons link to `/checkout/?offering=<key>`. Alternatively `[ez37_checkout offering="<key>"]` on any page. |
-| `/payment-complete/` | Thank-you text (status shortcode added in Phase 5) | Never treated as proof of payment |
-| `/payment-cancelled/` | "Payment cancelled, nothing was charged" + link back | |
+| `/payment-complete/` | `[ez37_payment_status]` | Read-only status (D9). Never treated as proof of payment. |
+| `/payment-cancelled/` | `[ez37_payment_cancelled]` (attribute `checkout_path`, default `/checkout/`) | "Nothing was charged" + "Try again" link for the same offering |
 
-## 5. Not yet implemented
+## 5. Return pages (Phase 5)
 
-- Success-page status display (Phase 5).
+`[ez37_payment_status]` reads `?session_id=` (format `cs_test_…`/`cs_live_…`, else "not found"),
+looks up the transaction **read-only** and shows:
+
+| Transaction | Customer sees |
+|---|---|
+| `paid` (no review flag) | "Payment confirmed", offering, amount, masked email (`j***@example.com`) |
+| `pending` / `processing` | "Confirming your payment…"; `assets/payment-status.js` polls `GET /wp-json/ez37/v1/payment-status?session_id=…` every 3 s, 10 times, reloads when the state changes, then shows "still confirming, no need to pay again" |
+| `review_required = 1` | "We are checking your payment… do not pay again" |
+| `failed` / `expired` | "Payment not completed, nothing was charged" |
+| unknown / malformed ID | "We could not find this payment" (no details) |
+
+The status endpoint returns only `{"state": …}`, is rate-limited (60 / 10 min per IP), and sends
+`Cache-Control: no-store`. Pages with `?session_id=` get `no-cache`, `Referrer-Policy: no-referrer`
+and `X-Robots-Tag: noindex`.
+
+## 6. Reconciliation of missed webhooks (Phase 5)
+
+`Reconciler` runs hourly (WP-Cron hook `ez37_payments_reconcile`): up to 20 transactions in the
+active mode that are `pending`/`processing`, have a session, are not flagged, and are between
+15 minutes and 48 hours old. For each, the Checkout Session is fetched from the Stripe API and passed
+to `EventProcessor::reconcile_session()`: `complete` is handled like `checkout.session.completed`,
+`expired` like `checkout.session.expired`, `open` changes nothing. Same checks, same forward-only
+transitions, same `ez37_payments_transaction_paid` action. A transient lock prevents overlapping runs;
+deactivating the plugin unschedules the job.
+
+## 7. Not yet implemented
+
 - Fulfilment, entitlements, emails (Phases 6–7).

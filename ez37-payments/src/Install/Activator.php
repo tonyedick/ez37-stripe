@@ -10,12 +10,13 @@ declare( strict_types=1 );
 namespace EZ37\Payments\Install;
 
 use EZ37\Payments\Plugin;
+use EZ37\Payments\Transactions\Reconciler;
 
 /**
  * Runs on plugin activation.
  *
- * Deactivation intentionally does nothing to data: payment records and the
- * schema are kept. Data is only removed on uninstall, and only with an
+ * Deactivation only stops scheduled jobs: payment records and the schema
+ * are kept. Data is only removed on uninstall, and only with an
  * explicit opt-in (see uninstall.php).
  */
 final class Activator {
@@ -40,5 +41,12 @@ final class Activator {
 		if ( null !== $admin ) {
 			$admin->add_cap( Plugin::CAPABILITY );
 		}
+	}
+
+	/**
+	 * Deactivation hook callback: stop scheduled jobs. Data is kept.
+	 */
+	public static function deactivate(): void {
+		wp_clear_scheduled_hook( Reconciler::CRON_HOOK );
 	}
 }

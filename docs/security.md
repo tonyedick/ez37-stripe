@@ -82,6 +82,16 @@ Implemented in `src/Support/Logger.php`.
 | Data exposure | Unauthenticated payloads are never logged; event payloads are never stored. |
 | SQL | Identifiers via `%i`, values via `prepare()`; column names in transitions are allow-listed by pattern. |
 
+## Implemented in v0.4.0 (Phase 5 — return pages, reconciliation)
+
+| Threat | Control |
+|---|---|
+| Success URL treated as proof | Status page and endpoint are read-only; only webhooks/reconciliation change state. |
+| Data leakage via shared links | Only state, offering, amount and masked email are shown; no names, IDs or full emails. |
+| Enumeration | Session ID format checked before any query; status endpoint rate-limited (60/10 min/IP); unknown and malformed IDs look identical. |
+| Session ID leaking | `Referrer-Policy: no-referrer`, `no-cache`, `noindex` on pages with `?session_id=`. |
+| Missed webhook | Hourly reconciliation via authenticated Stripe API reads, same validation as webhooks. |
+
 **Operational requirement:** the checkout page must be excluded from page caching, or visitors may
 receive an expired nonce (they would see "Your session expired").
 
@@ -89,7 +99,6 @@ receive an expired nonce (they would see "Your session expired").
 
 | Phase | Controls |
 |---|---|
-| 5 | Atomic conditional state transitions, minimal-data status endpoint |
 | 6 | Private file storage, hashed 256-bit access tokens, 7-day expiry, revocation |
 | 7 | Header-injection-safe email, escaped templates |
 | 8b | Capability + nonce on every admin action |

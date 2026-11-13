@@ -312,4 +312,56 @@ final class EventProcessorTest extends TestCase {
 		$this->expectException( \RuntimeException::class );
 		$this->processor()->process( array( 'type' => 'checkout.session.completed' ) );
 	}
+
+	public function test_reconcile_complete_paid_session_marks_paid_without_event_log(): void {
+		$this->events->shouldNotReceive( 'record', 'finish' );
+		$this->transactions->shouldReceive( 'find_by_session_id' )->andReturn( self::transaction() );
+		$this->transactions->shouldReceive( 'transition' )->once()->with( 42, PaymentStatus::Paid, Mockery::type( 'array' ) )->andReturn( true );
+		Actions\expectDone( EventProcessor::PAID_ACTION )->once()->with( 42 );
+
+		$this->assertSame( 'processed', $this->processor()->reconcile_session( self::session( array( 'status' => 'complete' ) ) ) );
+	}
+
+	public function test_reconcile_expired_session_marks_expired(): void {
+		$this->events->shouldNotReceive( 'record', 'finish' );
+		$this->transactions->shouldReceive( 'find_by_session_id' )->andReturn( self::transaction() );
+		$this->transactions->shouldReceive( 'transition' )->once()->with( 42, PaymentStatus::Expired )->andReturn( true );
+
+		$this->assertSame(
+			'processed',
+			$this->processor()->reconcile_session(
+				self::session(
+					array(
+						'status'         => 'expired',
+						'payment_status' => 'unpaid',
+					)
+				)
+			)
+		);
+	}
+
+	public function test_reconcile_open_session_changes_nothing(): void {
+		$this->transactions->shouldNotReceive( 'find_by_session_id', 'transition' );
+
+		$this->assertSame( 'open', $this->processor()->reconcile_session( self::session( array( 'status' => 'open' ) ) ) );
+	}
+
+	public function test_reconcile_mismatch_is_flagged_not_paid(): void {
+		$this->transactions->shouldReceive( 'find_by_session_id' )->andReturn( self::transaction() );
+		$this->transactions->shouldReceive( 'flag_for_review' )->once();
+		$this->transactions->shouldNotReceive( 'transition' );
+
+		$this->assertSame(
+			'review',
+			$this->processor()->reconcile_session(
+				self::session(
+					array(
+						'status'          => 'complete',
+						'amount_subtotal' => 1,
+						'amount_total'    => 1,
+					)
+				)
+			)
+		);
+	}
 }

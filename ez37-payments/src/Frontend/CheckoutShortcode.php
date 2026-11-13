@@ -64,13 +64,13 @@ final class CheckoutShortcode {
 		$mode     = $this->config->mode();
 
 		if ( null === $offering || ! $offering->is_purchasable( $mode ) || ! $this->config->can_accept_payments() ) {
-			return $this->render_template(
+			return Template::render(
 				'checkout-unavailable.php',
 				array( 'message' => __( 'This programme is not available for online purchase at the moment. Please contact us for details.', 'ez37-payments' ) )
 			);
 		}
 
-		return $this->render_template(
+		return Template::render(
 			'checkout-form.php',
 			array(
 				'offering'       => $offering,
@@ -99,28 +99,5 @@ final class CheckoutShortcode {
 			CheckoutException::DISABLED      => __( 'This programme is not available for online purchase at the moment.', 'ez37-payments' ),
 			default                          => __( 'We could not start the payment. No money has been taken. Please try again shortly.', 'ez37-payments' ),
 		};
-	}
-
-	/**
-	 * Render a template from templates/ with variables.
-	 *
-	 * @param string               $template File name inside templates/.
-	 * @param array<string, mixed> $vars     Variables for the template.
-	 */
-	private function render_template( string $template, array $vars ): string {
-		$path = EZ37_PAYMENTS_DIR . 'templates/' . $template;
-
-		if ( ! is_readable( $path ) ) {
-			return '';
-		}
-
-		ob_start();
-		( static function ( string $ez37_template_path, array $ez37_vars ): void {
-			// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- Controlled, plugin-internal variables only.
-			extract( $ez37_vars, EXTR_SKIP );
-			require $ez37_template_path;
-		} )( $path, $vars );
-
-		return (string) ob_get_clean();
 	}
 }

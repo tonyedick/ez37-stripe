@@ -53,6 +53,21 @@ config, docs or `.env` files). The script aborts if anything resembling a Stripe
 | Deactivate | No data changes. |
 | Delete (uninstall) | Removes the capability. **Tables kept** unless `EZ37_PAYMENTS_ALLOW_DATA_DELETION` is `true`. |
 
+## Pages and scheduled job (Phase 5)
+
+Create (or keep) three pages:
+
+| Page | Slug | Content |
+|---|---|---|
+| Checkout | `checkout` | `[ez37_checkout]` |
+| Payment complete | `payment-complete` | `[ez37_payment_status]` |
+| Payment cancelled | `payment-cancelled` | `[ez37_payment_cancelled]` |
+
+Exclude all three from page caching. The reconciliation job runs on WP-Cron (`ez37_payments_reconcile`,
+hourly). WP-Cron only runs when the site gets traffic; on production, prefer a real server cron that
+calls `wp cron event run --due-now` (or `wp-cron.php`) every 5–15 minutes and set
+`DISABLE_WP_CRON` accordingly. Check with `wp cron event list | grep ez37`.
+
 ## Configuration on staging/production
 
 Add constants to `wp-config.php` **above** the "That's all, stop editing!" line. Example for

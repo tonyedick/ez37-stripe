@@ -64,6 +64,24 @@ class StripeGateway {
 	}
 
 	/**
+	 * Retrieve a Checkout Session (used to reconcile missed webhooks).
+	 *
+	 * @param string $session_id Checkout Session ID.
+	 * @return array<string, mixed> The session as an array.
+	 *
+	 * @throws GatewayException When Stripe rejects the request or cannot be reached.
+	 */
+	public function retrieve_checkout_session( string $session_id ): array {
+		try {
+			$session = $this->client()->checkout->sessions->retrieve( $session_id );
+		} catch ( ApiErrorException $e ) {
+			throw new GatewayException( self::describe( 'Checkout Session lookup failed', $e ), (string) $e->getStripeCode(), (int) $e->getHttpStatus(), $e );
+		}
+
+		return $session->toArray();
+	}
+
+	/**
 	 * Retrieve a Price.
 	 *
 	 * @param string $price_id Stripe Price ID.

@@ -2,6 +2,15 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [0.4.0] — Phase 5: Payment status
+
+### Added
+- `[ez37_payment_status]`: read-only success page status with polling (`assets/payment-status.js`).
+- `GET /wp-json/ez37/v1/payment-status` (rate-limited, minimal data, no-store).
+- `[ez37_payment_cancelled]`: cancel page with "Try again" link.
+- Hourly reconciliation of unconfirmed transactions via the Stripe API (`ez37_payments_reconcile`).
+- Privacy headers on pages with `?session_id=`; deactivation unschedules jobs.
+
 ## [0.3.0] — Phase 4: Webhooks
 
 ### Added

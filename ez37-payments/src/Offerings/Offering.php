@@ -65,8 +65,18 @@ final class Offering {
 	 * Only two-decimal currencies are supported for now (USD — decision D2).
 	 */
 	public function formatted_price(): string {
-		$symbol = 'usd' === $this->currency ? '$' : '';
+		return self::format_amount( $this->amount, $this->currency );
+	}
 
-		return sprintf( '%s%s %s', $symbol, number_format( $this->amount / 100, 2 ), strtoupper( $this->currency ) );
+	/**
+	 * Format an amount in the smallest currency unit, e.g. (100, "usd") → "$1.00 USD".
+	 *
+	 * @param int    $amount   Amount in cents.
+	 * @param string $currency Lowercase ISO code.
+	 */
+	public static function format_amount( int $amount, string $currency ): string {
+		$symbol = 'usd' === $currency ? '$' : '';
+
+		return sprintf( '%s%s %s', $symbol, number_format( $amount / 100, 2 ), strtoupper( $currency ) );
 	}
 }

@@ -110,13 +110,37 @@ class EventProcessor {
 	}
 
 	/**
+	 * Apply the current state of a Checkout Session fetched from the Stripe API
+	 * (reconciliation of transactions whose webhook never arrived).
+	 *
+	 * The session comes from an authenticated API call, so it is as trustworthy
+	 * as a signed event, and it goes through exactly the same checks.
+	 *
+	 * @param array<string, mixed> $session Checkout Session from the API.
+	 * @return string Outcome: processed, ignored, review or open.
+	 */
+	public function reconcile_session( array $session ): string {
+		$status = $session['status'] ?? null;
+
+		if ( 'complete' === $status ) {
+			return $this->handle_session_event( null, 'checkout.session.completed', $session );
+		}
+
+		if ( 'expired' === $status ) {
+			return $this->handle_session_event( null, 'checkout.session.expired', $session );
+		}
+
+		return 'open';
+	}
+
+	/**
 	 * Apply a checkout.session.* event.
 	 *
-	 * @param string               $event_id Event ID.
+	 * @param string|null          $event_id Event ID, or null when reconciling from the API.
 	 * @param string               $type     Event type.
 	 * @param array<string, mixed> $session  Checkout Session.
 	 */
-	private function handle_session_event( string $event_id, string $type, array $session ): string {
+	private function handle_session_event( ?string $event_id, string $type, array $session ): string {
 		$session_id  = is_string( $session['id'] ?? null ) ? $session['id'] : '';
 		$transaction = '' === $session_id ? null : $this->transactions->find_by_session_id( $session_id );
 
@@ -138,11 +162,11 @@ class EventProcessor {
 		if ( array() !== $problems ) {
 			$summary = implode( '; ', $problems );
 			$this->transactions->flag_for_review( $id, 'webhook_mismatch', $summary );
-			$this->events->finish( $event_id, EventRepository::PROCESSED, $id, 'flagged for review: ' . $summary );
+			$this->finish( $event_id, EventRepository::PROCESSED, $id, 'flagged for review: ' . $summary );
 			$this->logger->error(
 				'Checkout Session does not match its transaction; flagged for review, not fulfilled.',
 				array(
-					'event'       => $event_id,
+					'event'       => $event_id ?? 'reconciliation',
 					'transaction' => (string) $transaction['public_id'],
 					'problems'    => $problems,
 				)
@@ -168,12 +192,12 @@ class EventProcessor {
 			$changed = $this->transactions->transition( $id, PaymentStatus::Expired );
 		}
 
-		$this->events->finish( $event_id, EventRepository::PROCESSED, $id, $changed ? null : 'no state change (already applied or not allowed)' );
+		$this->finish( $event_id, EventRepository::PROCESSED, $id, $changed ? null : 'no state change (already applied or not allowed)' );
 
 		$this->logger->info(
 			$changed ? 'Transaction updated from Stripe event.' : 'Stripe event caused no state change.',
 			array(
-				'event'       => $event_id,
+				'event'       => $event_id ?? 'reconciliation',
 				'type'        => $type,
 				'transaction' => (string) $transaction['public_id'],
 			)
@@ -264,20 +288,34 @@ class EventProcessor {
 	/**
 	 * Acknowledge an event without changing anything.
 	 *
-	 * @param string $event_id Event ID.
-	 * @param string $reason   Why.
+	 * @param string|null $event_id Event ID, or null when reconciling.
+	 * @param string      $reason   Why.
 	 */
-	private function ignore( string $event_id, string $reason ): string {
-		$this->events->finish( $event_id, EventRepository::IGNORED, null, $reason );
+	private function ignore( ?string $event_id, string $reason ): string {
+		$this->finish( $event_id, EventRepository::IGNORED, null, $reason );
 		$this->logger->info(
 			'Stripe event ignored.',
 			array(
-				'event'  => $event_id,
+				'event'  => $event_id ?? 'reconciliation',
 				'reason' => $reason,
 			)
 		);
 
 		return 'ignored';
+	}
+
+	/**
+	 * Record an event outcome (no-op when reconciling, which has no event).
+	 *
+	 * @param string|null $event_id       Event ID.
+	 * @param string      $status         EventRepository status.
+	 * @param int|null    $transaction_id Transaction ID.
+	 * @param string|null $message        Note.
+	 */
+	private function finish( ?string $event_id, string $status, ?int $transaction_id, ?string $message ): void {
+		if ( null !== $event_id ) {
+			$this->events->finish( $event_id, $status, $transaction_id, $message );
+		}
 	}
 
 	/**

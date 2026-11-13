@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       EZ37 Payments
  * Description:       Custom Stripe Checkout payments, fulfilment and secure resource delivery for EZ37 Solutions.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            EZ37 Solutions
@@ -17,7 +17,7 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EZ37_PAYMENTS_VERSION', '0.3.0' );
+define( 'EZ37_PAYMENTS_VERSION', '0.4.0' );
 define( 'EZ37_PAYMENTS_FILE', __FILE__ );
 define( 'EZ37_PAYMENTS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EZ37_PAYMENTS_MIN_PHP', '8.1' );
@@ -65,5 +65,6 @@ require_once $ez37_payments_autoload;
 unset( $ez37_payments_autoload );
 
 register_activation_hook( __FILE__, array( \EZ37\Payments\Install\Activator::class, 'activate' ) );
+register_deactivation_hook( __FILE__, array( \EZ37\Payments\Install\Activator::class, 'deactivate' ) );
 
 add_action( 'plugins_loaded', array( \EZ37\Payments\Plugin::class, 'boot' ) );

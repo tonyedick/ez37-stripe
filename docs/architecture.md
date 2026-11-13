@@ -3,7 +3,7 @@
 The target architecture is described in [phase-1-analysis.md §4](phase-1-analysis.md#4-proposed-architecture).
 This document records **what is actually built**, and is updated at the end of every phase.
 
-## Current state — v0.3.0 (Phase 4)
+## Current state — v0.4.0 (Phase 5)
 
 ```
 ez37-payments.php ── PHP/dependency checks ── activation hook ── plugins_loaded
@@ -39,6 +39,11 @@ uninstall.php ── removes capability; drops tables ONLY if EZ37_PAYMENTS_ALLO
 | `EZ37\Payments\Frontend\CheckoutShortcode` | `[ez37_checkout]` form (templates/checkout-form.php). |
 | `EZ37\Payments\Webhooks\WebhookController` | `POST /wp-json/ez37/v1/stripe/webhook`: size limit, signature + timestamp verification (SDK), 200/400/413/500. |
 | `EZ37\Payments\Webhooks\EventProcessor` | The only code that marks a transaction paid. Dedupe, livemode check, session/transaction cross-checks, forward-only transitions, fires `ez37_payments_transaction_paid`. |
+| `EZ37\Payments\Transactions\Reconciler` | Hourly WP-Cron backstop: fetches unconfirmed sessions from Stripe and applies them through `EventProcessor::reconcile_session()`. |
+| `EZ37\Payments\Frontend\StatusService` | Read-only, minimal-data status lookup by Checkout Session ID. |
+| `EZ37\Payments\Frontend\StatusController` | `GET /wp-json/ez37/v1/payment-status` (rate-limited, no-store). |
+| `EZ37\Payments\Frontend\ReturnPageShortcodes` | `[ez37_payment_status]`, `[ez37_payment_cancelled]`, privacy headers. |
+| `EZ37\Payments\Frontend\Template` | Renders `templates/*.php`. |
 | `EZ37\Payments\Webhooks\EventRepository` | SQL for `ez37_stripe_events` (`INSERT IGNORE` on the unique event ID). |
 
 **Deviation from the Phase 1 plan:** the checkout form posts to `admin-post.php` instead of a REST
@@ -50,7 +55,6 @@ will still be a REST route.
 
 | Phase | Components |
 |---|---|
-| 5 | `Transactions\TransactionRepository`, `Frontend\StatusController`, success/cancel shortcodes |
 | 6 | `Fulfilment\*`, `Resources\EntitlementRepository`, `Resources\AccessController` |
 | 7 | `Email\Mailer`, templates |
 | 8 | `Frontend\Shortcodes` (Elementor integration) |

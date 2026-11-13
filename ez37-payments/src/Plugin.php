@@ -13,10 +13,14 @@ use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Checkout\CheckoutService;
 use EZ37\Payments\Checkout\RateLimiter;
 use EZ37\Payments\Frontend\CheckoutShortcode;
+use EZ37\Payments\Frontend\ReturnPageShortcodes;
+use EZ37\Payments\Frontend\StatusController;
+use EZ37\Payments\Frontend\StatusService;
 use EZ37\Payments\Install\Schema;
 use EZ37\Payments\Offerings\OfferingCatalogue;
 use EZ37\Payments\Stripe\StripeGateway;
 use EZ37\Payments\Support\Logger;
+use EZ37\Payments\Transactions\Reconciler;
 use EZ37\Payments\Transactions\TransactionRepository;
 use EZ37\Payments\Webhooks\EventProcessor;
 use EZ37\Payments\Webhooks\EventRepository;
@@ -107,19 +111,27 @@ final class Plugin {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_notices', array( $this, 'render_config_notice' ) );
 
+		$gateway      = new StripeGateway( $this->config );
+		$transactions = new TransactionRepository();
+
 		$service = new CheckoutService(
 			$this->config,
 			$this->catalogue,
-			new StripeGateway( $this->config ),
-			new TransactionRepository(),
+			$gateway,
+			$transactions,
 			$this->logger
 		);
 
 		( new CheckoutRequestHandler( $service, new RateLimiter(), $this->logger ) )->register();
 		( new CheckoutShortcode( $this->config, $this->catalogue ) )->register();
 
-		$processor = new EventProcessor( $this->config, new TransactionRepository(), new EventRepository(), $this->logger );
+		$processor = new EventProcessor( $this->config, $transactions, new EventRepository(), $this->logger );
 		( new WebhookController( $this->config, $processor, $this->logger ) )->register();
+		( new Reconciler( $this->config, $transactions, $gateway, $processor, $this->logger ) )->register();
+
+		$status = new StatusService( $transactions );
+		( new StatusController( $status, new RateLimiter( 60, 600 ) ) )->register();
+		( new ReturnPageShortcodes( $status, $this->catalogue ) )->register();
 	}
 
 	/**
