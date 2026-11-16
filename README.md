@@ -69,6 +69,7 @@ See [docs/security.md](docs/security.md#configuration-and-secrets).
 | [security.md](docs/security.md) | Secrets handling, logging, implemented controls |
 | [security-audit.md](docs/security-audit.md) | Phase 9 audit: findings, fixes, accepted risks |
 | [testing.md](docs/testing.md) | Test approach and results per phase |
+| [test-matrix.md](docs/test-matrix.md) | Phase 10 formal test matrix and manual test session |
 | [deployment.md](docs/deployment.md) | Environments, release build, install/uninstall behaviour |
 | [payment-flow.md](docs/payment-flow.md) | Checkout, return pages, reconciliation |
 | [webhook-events.md](docs/webhook-events.md) | Stripe events handled and how |

@@ -51,6 +51,18 @@ from a prefix plus `FAKE…`.
 | 2026-11-13 | 8 | Claude build sandbox, PHP 8.3.6, PHPUnit 10.5.66 (developer's `vendor/`) | PHPCS clean, PHPStan level 6 clean, **203 tests, 562 assertions, all passing** (new: admin action availability, capability/nonce/state checks, retry/resend/revoke, price shortcode, admin helpers). Admin templates smoke-rendered with sample data. |
 | 2026-11-13 | 6–7 | Local DDEV + Stripe CLI + Mailpit | **FUL-01, FUL-13, UX-04, UX-05:** test payment → webhook → background fulfilment → customer email "Payment confirmed: Leadership Coaching" (name, programme, $1.00 USD, reference, Download button, 7-day expiry, PDF attached) and admin email "New sale … [TEST]" to the admin address → Download button served `brochure-placeholder.pdf`. Observed: dates shown in the site timezone (local site is UTC); sender is WordPress default (`wordpress@…`), to be configured on staging/production. |
 
+## Phase 10 — full test matrix
+
+The formal matrix with method, expected behaviour (as built) and results is in
+[test-matrix.md](test-matrix.md). The automated part runs with:
+
+```bash
+python3 bin/phase10-local.py      # from the repository root; DDEV running; test mode only
+```
+
+It writes `build/phase10-results.md`. The manual part is the "Manual test session" (M1–M14) at the
+end of the matrix.
+
 ## Phase 8 manual test script (local DDEV)
 
 1. **Styling (UX):** open `/checkout/?offering=leadership-coaching` — card layout, test-mode banner,

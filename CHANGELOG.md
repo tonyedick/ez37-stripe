@@ -2,6 +2,12 @@
 
 All notable changes to the EZ37 Payments plugin.
 
+## [Unreleased]
+
+### Added
+- Phase 10: `docs/test-matrix.md` (formal test matrix, manual session M1–M14) and
+  `bin/phase10-local.py` (automated checks against the local DDEV site, sandbox only).
+
 ## [0.7.0] — Phase 9: Security audit
 
 See `docs/security-audit.md`.
