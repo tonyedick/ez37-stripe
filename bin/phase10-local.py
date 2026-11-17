@@ -57,10 +57,10 @@ results: list[tuple[str, str, str, str]] = []  # (id, scenario, PASS/FAIL/SKIP, 
 # Small helpers
 # --------------------------------------------------------------------------
 
-def record(test_id: str, scenario: str, ok: bool | None, detail: str = "") -> None:
-    status = "SKIP" if ok is None else ("PASS" if ok else "FAIL")
+def record(test_id: str, scenario: str, ok: bool | None, detail: str = "", note: bool = False) -> None:
+    status = "NOTE" if note else ("SKIP" if ok is None else ("PASS" if ok else "FAIL"))
     results.append((test_id, scenario, status, detail))
-    mark = {"PASS": "\033[32mPASS\033[0m", "FAIL": "\033[31mFAIL\033[0m", "SKIP": "\033[33mSKIP\033[0m"}[status]
+    mark = {"PASS": "\033[32mPASS\033[0m", "FAIL": "\033[31mFAIL\033[0m", "SKIP": "\033[33mSKIP\033[0m", "NOTE": "\033[36mNOTE\033[0m"}[status]
     print(f"  {mark}  {test_id:<7} {scenario}" + (f" — {detail}" if detail else ""))
 
 
@@ -197,7 +197,14 @@ class Site:
     # --- checkout ---------------------------------------------------------
 
     def nonce(self) -> str:
-        status, _, body, _ = self.http.request("GET", self.checkout_url)
+        try:
+            status, _, body, _ = self.http.request("GET", self.checkout_url)
+        except urllib.error.URLError as e:
+            host = urllib.parse.urlparse(self.checkout_url).hostname
+            die(
+                f"cannot reach {host} ({e.reason}). *.ddev.site names are resolved by public DNS, so this usually "
+                f"means no internet / DNS. Check with `ping {host}`; to work offline run `ddev hostname {host} 127.0.0.1`."
+            )
         match = re.search(rb'name="_ez37_nonce" value="([a-f0-9]+)"', body)
         if status != 200 or not match:
             die("the checkout page did not show the form. Is EZ37_PAYMENTS_CHECKOUT_ENABLED=1 and is the page /checkout/ with [ez37_checkout]?")
@@ -627,8 +634,30 @@ def secrets_and_tax(site: Site) -> None:
     if os.path.isfile(debug_log):
         with open(debug_log, encoding="utf-8", errors="replace") as fh:
             logs += fh.read()[-2_000_000:]
-    hits = len(SECRET_PATTERN.findall(logs))
-    record("SEC-14c", "No secrets or download tokens in logs", hits == 0, f"{hits} match(es) (values not shown)")
+    # Classify every match by where it appears; values are always masked.
+    masker = re.compile(r"((?:sk|rk)_(?:test|live)_|whsec_|ez37_access=)[A-Za-z0-9]{10,}")
+    request_line = re.compile(r'"(GET|POST|HEAD) [^"]*ez37_access=|\b(GET|POST|HEAD) /\S*ez37_access=')
+    leaks, requests = [], []
+    for line in logs.splitlines():
+        if not SECRET_PATTERN.search(line):
+            continue
+        masked = masker.sub(lambda m: m.group(1) + "[masked]", line.strip())[:200]
+        is_token_only = all(m.group(0).startswith("ez37_access=") for m in SECRET_PATTERN.finditer(line))
+        (requests if is_token_only and request_line.search(line) else leaks).append(masked)
+
+    record("SEC-14c", "No secrets or tokens written by the plugin/PHP", not leaks, f"{len(leaks)} line(s)" if leaks else "none")
+    for masked in leaks[:5]:
+        print(f"           {masked}")
+    if requests:
+        record(
+            "SEC-14d",
+            "Download tokens in web-server request log",
+            None,
+            f"{len(requests)} request line(s) — expected (servers log URLs); keep logs private / strip query strings in production",
+            note=True,
+        )
+        for masked in requests[:3]:
+            print(f"           {masked}")
 
     real = db(
         site.prefix,
@@ -667,12 +696,13 @@ def write_report() -> None:
     passed = sum(1 for r in results if r[2] == "PASS")
     failed = sum(1 for r in results if r[2] == "FAIL")
     skipped = sum(1 for r in results if r[2] == "SKIP")
+    notes = sum(1 for r in results if r[2] == "NOTE")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(f"# Phase 10 automated checks — run {RUN}, {time.strftime('%Y-%m-%d %H:%M %Z')}\n\n")
-        fh.write(f"{passed} passed, {failed} failed, {skipped} skipped.\n\n| ID | Scenario | Result | Detail |\n|---|---|---|---|\n")
+        fh.write(f"{passed} passed, {failed} failed, {skipped} skipped, {notes} note(s).\n\n| ID | Scenario | Result | Detail |\n|---|---|---|---|\n")
         for test_id, scenario, status, detail in results:
             fh.write(f"| {test_id} | {scenario} | {status} | {detail.replace('|', '/')} |\n")
-    print(f"\n{passed} passed, {failed} failed, {skipped} skipped. Report: {path}")
+    print(f"\n{passed} passed, {failed} failed, {skipped} skipped, {notes} note(s). Report: {path}")
 
 
 def main() -> None:

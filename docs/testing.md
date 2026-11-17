@@ -63,6 +63,26 @@ python3 bin/phase10-local.py      # from the repository root; DDEV running; test
 It writes `build/phase10-results.md`. The manual part is the "Manual test session" (M1–M14) at the
 end of the matrix.
 
+### Phase 10 results (v0.7.0, Stripe test mode, local DDEV)
+
+| Date | Part | Result |
+|---|---|---|
+| 2026-11-17 | Automated (`bin/phase10-local.py`) | **61 passed, 0 failed, 0 skipped, 1 note.** All webhook, checkout-validation, payment-state, concurrency, fulfilment, download, access-control, status-endpoint, secrets and tax checks passed. SEC-14d (note): download tokens appear in web-server request logs, as every web server logs URLs; production logs must stay private or strip query strings (Phase 11 checklist). An earlier run reported SEC-14c failing; the cause was the web server's own request lines for the script's download tests, and the check was corrected to look only at what the plugin writes. |
+| 2026-11-17 | Manual session M1–M14 (developer, Stripe CLI `listen`, Mailpit) | **All passed**, as reported by the developer. M1: payment confirmed, customer email with Download button and PDF attached, download works, webhook answered 200. |
+| 2026-11-17 | Unit + static checks | 214 tests, 579 assertions, PHPCS and PHPStan clean (unchanged since Phase 9). |
+
+Findings recorded during the manual session (no code defects):
+
+- **Webhook secret for local testing.** The Stripe CLI signs forwarded events with its own `whsec_…` secret
+  (`stripe listen --print-secret`), which must be the value of `EZ37_STRIPE_TEST_WEBHOOK_SECRET` in
+  `.ddev/.env`. With a different secret the plugin correctly answers 400 and the success page stays on
+  "Confirming your payment…" (this is the designed behaviour, not a fault). The CLI must also be logged
+  into the same Stripe sandbox as the site's test key (`stripe config --list`).
+- **Debug output.** DDEV enables `WP_DEBUG`, so notices from Elementor, the theme and the MCP adapter print
+  on pages locally. Production must set `WP_DEBUG` and `WP_DEBUG_DISPLAY` to false (Phase 11 checklist).
+- **Sender address.** Emails come from the WordPress default `wordpress@<site>`; the production From name,
+  address and SPF/DKIM/DMARC are Phase 11 items.
+
 ## Phase 8 manual test script (local DDEV)
 
 1. **Styling (UX):** open `/checkout/?offering=leadership-coaching` — card layout, test-mode banner,

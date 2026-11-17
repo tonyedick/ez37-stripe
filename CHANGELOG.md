@@ -7,6 +7,8 @@ All notable changes to the EZ37 Payments plugin.
 ### Added
 - Phase 10: `docs/test-matrix.md` (formal test matrix, manual session M1–M14) and
   `bin/phase10-local.py` (automated checks against the local DDEV site, sandbox only).
+- Phase 10 complete (17 Nov 2026): automated 61/61, manual M1–M14 all passed, in Stripe test mode.
+- `bin/pages-local.php` creates the local test pages (programme, checkout, payment complete/cancelled).
 
 ## [0.7.0] — Phase 9: Security audit
 
