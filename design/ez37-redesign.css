@@ -1,0 +1,243 @@
+/* =====================================================================
+   EZ37 redesign — companion stylesheet
+   Paste into: Page Settings > Advanced > Custom CSS (per new page)
+   or into one Theme Builder header/footer container. NEVER into
+   Site Settings > Custom CSS until launch day.
+   All rules are scoped under .ez37 so live pages are untouched.
+   Put class "ez37" on the page's outermost container (Advanced > CSS Classes).
+   Header/footer/topbar templates are outside the page, so they carry their own
+   classes (ez37-header, ez37-footer, ez37-topbar) on their top container.
+   ===================================================================== */
+
+.ez37,
+.ez37-topbar,
+.ez37-header,
+.ez37-footer {
+	--ez37-ink: #14123f;
+	--ez37-body: #4a4968;
+	--ez37-indigo: #4338ca;
+	--ez37-indigo-deep: #1e1b6b;
+	--ez37-tint: #eef0ff;
+	--ez37-mist: #f7f7ff;
+	--ez37-coral: #ff5a47;
+	--ez37-coral-deep: #d63424;
+	--ez37-coral-hover: #b42318;
+	--ez37-radius-btn: 14px;
+	--ez37-coral-tint: #ffedea;
+	--ez37-teal: #0e9f8e;
+	--ez37-teal-tint: #e3f7f4;
+	--ez37-amber: #f5a524;
+	--ez37-amber-tint: #fff4dc;
+	--ez37-line: #e3e2f3;
+	--ez37-radius-card: 20px;
+	--ez37-radius-img: 24px;
+	--ez37-shadow-card: 0 8px 30px rgba(20, 18, 63, 0.08);
+	--ez37-shadow-card-hover: 0 14px 40px rgba(20, 18, 63, 0.14);
+	--ez37-shadow-cta: 0 10px 24px rgba(214, 52, 36, 0.32);
+}
+
+/* ---------- Buttons ---------- */
+.ez37 .ez37-btn .elementor-button,
+.ez37 .ez37-btn.elementor-button,
+.ez37 a.ez37-btn {
+	background: var(--ez37-coral-deep);
+	color: #fff;
+	border-radius: var(--ez37-radius-btn);
+	padding: 16px 32px;
+	font-family: "Poppins", sans-serif;
+	font-weight: 600;
+	box-shadow: var(--ez37-shadow-cta);
+	transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.ez37 .ez37-btn .elementor-button:hover,
+.ez37 .ez37-btn.elementor-button:hover,
+.ez37 a.ez37-btn:hover {
+	background: var(--ez37-coral-hover);
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 14px 30px rgba(214, 52, 36, 0.42);
+}
+
+.ez37 .ez37-btn-outline .elementor-button,
+.ez37 a.ez37-btn-outline {
+	background-color: transparent;
+	/* Gradient is always present but zero-width; hover wipes it across. */
+	background-image: linear-gradient(135deg, #d63424 0%, #a91e13 100%);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 0% 100%;
+	color: var(--ez37-indigo);
+	border: 1.5px solid var(--ez37-indigo);
+	border-radius: var(--ez37-radius-btn);
+	padding: 14px 30px;
+	font-family: "Poppins", sans-serif;
+	font-weight: 600;
+	transition:
+		background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+		color 0.25s ease 0.05s,
+		border-color 0.3s ease,
+		transform 0.18s ease,
+		box-shadow 0.3s ease;
+}
+.ez37 .ez37-btn-outline .elementor-button:hover,
+.ez37 a.ez37-btn-outline:hover {
+	background-color: transparent;
+	background-size: 100% 100%;
+	border-color: #a91e13;
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 10px 22px rgba(214, 52, 36, 0.3);
+}
+
+.ez37 .elementor-button:focus-visible,
+.ez37 a:focus-visible {
+	outline: 3px solid var(--ez37-indigo);
+	outline-offset: 2px;
+}
+
+/* ---------- Eyebrow badge ---------- */
+.ez37 .ez37-badge .elementor-heading-title,
+.ez37 .ez37-badge {
+	display: inline-block;
+	font-family: "Poppins", sans-serif;
+	font-weight: 500;
+	font-size: 12px;
+	line-height: 1.3;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ez37-indigo);
+	border: 1px solid var(--ez37-indigo);
+	border-radius: 999px;
+	padding: 6px 14px;
+}
+
+/* ---------- Two-tone headline highlight ---------- */
+.ez37 .ez37-hl {
+	color: var(--ez37-coral-deep);
+}
+
+/* ---------- Icon chip ---------- */
+.ez37 .ez37-chip {
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--ez37-tint);
+	color: var(--ez37-indigo);
+}
+.ez37 .ez37-chip--coral { background: var(--ez37-coral-tint); color: var(--ez37-coral-deep); }
+.ez37 .ez37-chip--teal  { background: var(--ez37-teal-tint);  color: var(--ez37-teal); }
+.ez37 .ez37-chip--amber { background: var(--ez37-amber-tint); color: #a86a00; }
+
+/* ---------- Cards ---------- */
+.ez37 .ez37-card {
+	background: #fff;
+	border: 1px solid var(--ez37-line);
+	border-radius: var(--ez37-radius-card);
+	box-shadow: var(--ez37-shadow-card);
+	padding: 32px;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ez37 .ez37-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--ez37-shadow-card-hover);
+}
+.ez37 .ez37-path a { text-decoration: none; }
+
+/* ---------- Section bands ---------- */
+.ez37 .ez37-band {
+	background: var(--ez37-tint);
+	padding: 96px 24px;
+}
+.ez37 .ez37-band--inset {
+	border-radius: 32px;
+	margin: 24px;
+}
+
+/* ---------- Stats ---------- */
+.ez37 .ez37-stat { border-top: 4px solid var(--ez37-indigo); }
+.ez37 .ez37-stat--coral { border-top-color: var(--ez37-coral); }
+.ez37 .ez37-stat--teal  { border-top-color: var(--ez37-teal); }
+
+/* ---------- Photo card ---------- */
+.ez37 .ez37-photo {
+	position: relative;
+	border-radius: var(--ez37-radius-img);
+	overflow: hidden;
+	min-height: 420px;
+	color: #fff;
+}
+.ez37 .ez37-photo::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(30, 27, 107, 0.92) 0%, rgba(30, 27, 107, 0.55) 45%, rgba(30, 27, 107, 0) 80%);
+	pointer-events: none;
+}
+.ez37 .ez37-photo > * { position: relative; z-index: 1; }
+
+/* ---------- Timeline ---------- */
+.ez37 .ez37-timeline { position: relative; }
+.ez37 .ez37-timeline::before {
+	content: "";
+	position: absolute;
+	left: 20px;
+	top: 20px;
+	bottom: 20px;
+	width: 2px;
+	background: var(--ez37-line);
+}
+.ez37 .ez37-timeline__dot {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var(--ez37-indigo);
+	color: #fff;
+	font-family: "Poppins", sans-serif;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	z-index: 1;
+}
+.ez37 .ez37-timeline__dot--coral { background: var(--ez37-coral-deep); }
+.ez37 .ez37-timeline__dot--teal  { background: var(--ez37-teal); }
+
+/* ---------- Announcement bar ---------- */
+.ez37-topbar {
+	background: var(--ez37-ink);
+	color: #fff;
+	font-size: 14px;
+	text-align: center;
+	padding: 10px 16px;
+}
+.ez37-topbar a { color: var(--ez37-coral); font-weight: 600; }
+
+/* ---------- Header ---------- */
+.ez37-header {
+	background: #fff;
+	min-height: 80px;
+	transition: box-shadow 0.2s ease;
+}
+.ez37-header.elementor-sticky--effects {
+	box-shadow: 0 6px 24px rgba(20, 18, 63, 0.08);
+}
+
+/* ---------- Footer ---------- */
+.ez37-footer { background: var(--ez37-ink); color: #fff; }
+.ez37-footer a { color: #c9c6ff; text-decoration: none; }
+.ez37-footer a:hover { color: var(--ez37-coral); }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 767px) {
+	.ez37 .ez37-band { padding: 48px 16px; }
+	.ez37 .ez37-card { padding: 24px; }
+	.ez37 .ez37-photo { min-height: 340px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ez37 * { transition: none !important; transform: none !important; }
+}
