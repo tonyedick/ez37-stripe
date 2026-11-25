@@ -12,7 +12,9 @@
 .ez37,
 .ez37-topbar,
 .ez37-header,
-.ez37-footer {
+.ez37-footer,
+.ez37-btn,
+.ez37-btn-outline {
 	--ez37-ink: #14123f;
 	--ez37-body: #4a4968;
 	--ez37-indigo: #4338ca;
@@ -37,11 +39,13 @@
 }
 
 /* ---------- Buttons ---------- */
-.ez37 .ez37-btn .elementor-button,
-.ez37 .ez37-btn.elementor-button,
-.ez37 a.ez37-btn {
+.elementor-widget-button.ez37-btn .elementor-button,
+.ez37-btn .elementor-button,
+.ez37-btn.elementor-button,
+a.ez37-btn {
 	background: var(--ez37-coral-deep);
 	color: #fff;
+	border: 0;
 	border-radius: var(--ez37-radius-btn);
 	padding: 16px 32px;
 	font-family: "Poppins", sans-serif;
@@ -49,44 +53,40 @@
 	box-shadow: var(--ez37-shadow-cta);
 	transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
-.ez37 .ez37-btn .elementor-button:hover,
-.ez37 .ez37-btn.elementor-button:hover,
-.ez37 a.ez37-btn:hover {
+.elementor-widget-button.ez37-btn .elementor-button:hover,
+.ez37-btn .elementor-button:hover,
+.ez37-btn.elementor-button:hover,
+a.ez37-btn:hover {
 	background: var(--ez37-coral-hover);
 	color: #fff;
 	transform: translateY(-2px);
 	box-shadow: 0 14px 30px rgba(214, 52, 36, 0.42);
 }
 
-.ez37 .ez37-btn-outline .elementor-button,
-.ez37 a.ez37-btn-outline {
+.elementor-widget-button.ez37-btn-outline .elementor-button,
+.ez37-btn-outline .elementor-button,
+a.ez37-btn-outline {
 	background-color: transparent;
-	/* Gradient is always present but zero-width; hover wipes it across. */
-	background-image: linear-gradient(135deg, #d63424 0%, #a91e13 100%);
+	/* Oversized diagonal fill, parked off the bottom-right; hover slides it
+	   in from the top-left corner to the bottom-right. */
+	background-image: linear-gradient(135deg, var(--ez37-indigo) 0%, var(--ez37-indigo) 48%, rgba(67, 56, 202, 0) 52%, rgba(67, 56, 202, 0) 100%);
 	background-repeat: no-repeat;
-	background-position: left center;
-	background-size: 0% 100%;
+	background-size: 300% 300%;
+	background-position: 100% 100%;
 	color: var(--ez37-indigo);
 	border: 1.5px solid var(--ez37-indigo);
 	border-radius: var(--ez37-radius-btn);
 	padding: 14px 30px;
 	font-family: "Poppins", sans-serif;
 	font-weight: 600;
-	transition:
-		background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-		color 0.25s ease 0.05s,
-		border-color 0.3s ease,
-		transform 0.18s ease,
-		box-shadow 0.3s ease;
+	transition: background-position 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
 }
-.ez37 .ez37-btn-outline .elementor-button:hover,
-.ez37 a.ez37-btn-outline:hover {
+.elementor-widget-button.ez37-btn-outline .elementor-button:hover,
+.ez37-btn-outline .elementor-button:hover,
+a.ez37-btn-outline:hover {
 	background-color: transparent;
-	background-size: 100% 100%;
-	border-color: #a91e13;
+	background-position: 0 0;
 	color: #fff;
-	transform: translateY(-2px);
-	box-shadow: 0 10px 22px rgba(214, 52, 36, 0.3);
 }
 
 .ez37 .elementor-button:focus-visible,
@@ -216,20 +216,450 @@
 }
 .ez37-topbar a { color: var(--ez37-coral); font-weight: 600; }
 
-/* ---------- Header ---------- */
-.ez37-header {
-	background: #fff;
-	min-height: 80px;
-	transition: box-shadow 0.2s ease;
-}
-.ez37-header.elementor-sticky--effects {
-	box-shadow: 0 6px 24px rgba(20, 18, 63, 0.08);
-}
-
 /* ---------- Footer ---------- */
 .ez37-footer { background: var(--ez37-ink); color: #fff; }
 .ez37-footer a { color: #c9c6ff; text-decoration: none; }
 .ez37-footer a:hover { color: var(--ez37-coral); }
+
+/* ---------- Wordmark (text logo, until the clean logo file is added) ---------- */
+.ez37-wordmark {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+}
+.ez37-wordmark__main {
+	font-family: "Poppins", sans-serif;
+	font-weight: 700;
+	font-size: 28px;
+	letter-spacing: -0.02em;
+	color: var(--ez37-ink);
+}
+.ez37-wordmark__main span { color: var(--ez37-coral-deep); }
+.ez37-wordmark small {
+	font-family: "Poppins", sans-serif;
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.5em;
+	margin-top: 3px;
+	color: var(--ez37-coral-deep);
+}
+
+/* ---------- Header: floating rounded bar ---------- */
+.ez37-header {
+	background: var(--ez37-mist); /* matches the top of the hero so the bar and hero read as one */
+	align-items: stretch;
+	pointer-events: none; /* the strip must not block clicks on the page */
+	z-index: 50;
+	transition: background-color 0.2s ease;
+}
+/* Once the page scrolls, only the rounded bar floats: the strip behind it disappears. */
+.ez37-header.elementor-sticky--effects,
+.ez37-header.elementor-sticky--active.elementor-sticky--effects { background: transparent; }
+.ez37-header > * { pointer-events: auto; }
+.ez37-header__bar {
+	position: relative; /* menu panels are positioned against the bar */
+	box-sizing: border-box;
+	width: 100% !important;
+	max-width: 1240px !important;
+	margin: 0 auto;
+	min-height: 72px;
+	padding: 8px 12px 8px 28px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.94);
+	-webkit-backdrop-filter: saturate(160%) blur(14px);
+	backdrop-filter: saturate(160%) blur(14px);
+	border: 1px solid rgba(227, 226, 243, 0.9);
+	box-shadow: 0 10px 40px rgba(20, 18, 63, 0.1);
+	flex-wrap: nowrap;
+	align-items: center;
+	transition: box-shadow 0.2s ease;
+}
+.ez37-header.elementor-sticky--effects .ez37-header__bar {
+	box-shadow: 0 14px 44px rgba(20, 18, 63, 0.16);
+}
+
+/* Let the dropdowns anchor to the bar, not to the menu widget */
+.ez37-header .elementor-widget-n-menu,
+.ez37-header .elementor-widget-n-menu > .elementor-widget-container,
+.ez37-header .e-n-menu,
+.ez37-header .e-n-menu-wrapper,
+.ez37-header .e-n-menu-heading,
+.ez37-header .e-n-menu-item { position: static !important; }
+.ez37-header .elementor-widget-n-menu { flex: 1 1 auto; width: auto !important; min-width: 0; }
+
+/* Navigation items */
+.ez37-header .e-n-menu-heading { flex-wrap: nowrap; justify-content: center; gap: 0; }
+.ez37-header .e-n-menu-title {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	padding: 10px 12px;
+	border-radius: 12px;
+	white-space: nowrap;
+	font-family: "Poppins", sans-serif;
+	font-weight: 500;
+	font-size: 15px;
+	color: var(--ez37-ink);
+	transition: background 0.15s ease, color 0.15s ease;
+}
+.ez37-header .e-n-menu-title-text { font-family: inherit; font-weight: inherit; font-size: inherit; color: inherit; }
+.ez37-header .e-n-menu-title-container { gap: 6px; }
+.ez37-header .e-n-menu-item:hover > .e-n-menu-title,
+.ez37-header .e-n-menu-title:hover,
+.ez37-header .e-n-menu-title:has([aria-expanded="true"]),
+.ez37-header .e-n-menu-title.e-current {
+	background: var(--ez37-tint);
+	color: var(--ez37-indigo);
+}
+
+/* ONE thin chevron: hide Elementor's own icon, draw ours */
+.ez37-header .e-n-menu-dropdown-icon svg,
+.ez37-header .e-n-menu-dropdown-icon i { display: none !important; }
+.ez37-header .e-n-menu-dropdown-icon {
+	display: inline-flex;
+	align-items: center;
+	background: none;
+	border: 0;
+	padding: 0 0 0 6px;
+	color: inherit;
+}
+.ez37-header .e-n-menu-dropdown-icon::after {
+	content: "";
+	display: block;
+	width: 7px;
+	height: 7px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg) translateY(-2px);
+	transition: transform 0.2s ease;
+}
+.ez37-header .e-n-menu-dropdown-icon[aria-expanded="true"]::after {
+	transform: rotate(-135deg) translate(-2px, 0);
+}
+
+/* Call to action: our standard primary button, sized to sit inside the bar */
+.ez37-header .ez37-header__cta { flex: 0 0 auto; width: auto !important; }
+.ez37-header .ez37-header__cta .elementor-button { padding: 13px 24px; white-space: nowrap; }
+
+/* ---------- Mega menu panel (design-system colours only) ---------- */
+/* Elementor computes left/right/width from JS; pin the panel to the bar instead. */
+.ez37-header .e-n-menu-content {
+	--stretch-left: 0px !important;
+	--stretch-right: 0px !important;
+	--stretch-width: 100% !important;
+	position: absolute !important;
+	left: 0 !important;
+	right: 0 !important;
+	top: 100% !important;
+	width: auto !important;
+	transform: none !important;
+	margin: 0 !important;
+	align-items: stretch;
+}
+.ez37-header .e-n-menu-content > .e-con { max-width: 100% !important; }
+
+.ez37-mega {
+	box-sizing: border-box;
+	width: 100%;
+	margin-top: 12px;
+	background: #fff;
+	border: 1px solid var(--ez37-line);
+	border-radius: 0;
+	--border-radius: 0px;
+	box-shadow: var(--ez37-shadow-card-hover);
+	--padding-top: 14px;
+	--padding-right: 14px;
+	--padding-bottom: 14px;
+	--padding-left: 14px;
+	padding: 14px;
+}
+.ez37-mega--small { width: min(380px, 100%); margin: 12px auto 0; }
+@media (min-width: 1025px) {
+	/* Small Partnerships panel: centred under the bar, never pushed off-screen. */
+	.ez37-nav .e-n-menu-content > .ez37-mega--small {
+		position: absolute !important;
+		left: 50% !important;
+		right: auto !important;
+		top: 0 !important;
+		transform: translateX(-50%) !important;
+		margin: 8px 0 0 !important;
+		width: 380px !important;
+		max-width: calc(100vw - 32px) !important;
+	}
+}
+
+.ez37-mega__col {
+	box-sizing: border-box;
+	min-width: 0;
+	flex: 1 1 0;
+	border-radius: 0;
+	--border-radius: 0px;
+	padding: 28px;
+	--padding-top: 28px;
+	--padding-right: 28px;
+	--padding-bottom: 28px;
+	--padding-left: 28px;
+	--ez37-col: var(--ez37-indigo);
+	background: #fff;
+}
+.ez37-mega__col--wide { flex: 2 1 0; }
+.ez37-mega__col--coral { --ez37-col: var(--ez37-coral-deep); background: #fff; }
+.ez37-mega__col--teal  { --ez37-col: var(--ez37-teal);       background: #fff; }
+
+.ez37-mega__title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 18px;
+	padding-bottom: 14px;
+	border-bottom: 1.5px solid var(--ez37-col);
+	font-family: "Poppins", sans-serif;
+	font-weight: 600;
+	font-size: 15px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--ez37-col);
+}
+.ez37-mega__title-icon { display: inline-flex; }
+.ez37-mega__title-icon svg { width: 22px; height: 22px; }
+
+.ez37-mega__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.ez37-mega__list li { margin: 0; min-width: 0; }
+.ez37-mega__list--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 20px; }
+.ez37-mega__list a {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 10px 12px;
+	border-radius: 0;
+	text-decoration: none;
+	color: var(--ez37-ink);
+	transition: background 0.15s ease, transform 0.15s ease;
+}
+.ez37-mega__list a:hover,
+.ez37-mega__list a:focus-visible {
+	background: var(--ez37-mist);
+	transform: translateX(2px);
+}
+.ez37-mega__icon {
+	flex: 0 0 40px;
+	width: 40px;
+	height: 40px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0;
+	color: #fff;
+	background: var(--ez37-col);
+}
+.ez37-mega__icon svg { width: 20px; height: 20px; }
+.ez37-mega__text {
+	min-width: 0;
+	font-family: "Poppins", sans-serif;
+	font-weight: 500;
+	font-size: 16px;
+	line-height: 1.3;
+	overflow-wrap: anywhere;
+}
+
+/* ---------- Laptop widths: CTA hides (Contact Us stays in the menu) ---------- */
+@media (max-width: 1279px) {
+	.ez37-header .ez37-header__cta { display: none; }
+	.ez37-header__bar { padding-right: 20px; }
+}
+
+/* ---------- Tablet and phone: logo left, hamburger right, full-height sheet ---------- */
+@media (max-width: 1024px) {
+	.ez37-header { padding: 12px 12px 0; }
+	.ez37-header__bar { min-height: 64px; padding: 8px 14px 8px 22px; }
+
+	/* Menu widget shrinks to the toggle and sits at the far right of the bar */
+	.ez37-header .elementor-widget-n-menu { flex: 0 0 auto; margin-left: auto; }
+	.ez37-header .e-n-menu { display: flex; justify-content: flex-end; }
+	.ez37-header .e-n-menu-toggle { margin-left: auto; }
+
+	/* The sheet: below the bar, as wide as the bar, filling the screen height */
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-wrapper {
+		box-sizing: border-box;
+		position: absolute !important;
+		left: 0;
+		right: 0;
+		top: calc(100% + 12px);
+		width: auto;
+		height: calc(100vh - 110px);
+		height: calc(100dvh - 110px);
+		max-height: none;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		background: #fff;
+		border: 1px solid var(--ez37-line);
+		border-radius: 28px;
+		box-shadow: 0 24px 60px rgba(20, 18, 63, 0.18);
+		padding: 10px 10px 24px;
+	}
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-heading {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: flex-start;
+		width: 100%;
+	}
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-item { width: 100%; }
+
+	/* Each row: label on the left, ONE chevron on the right */
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-title {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 0;
+		font-size: 19px;
+		border-radius: 14px;
+	}
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-title-container {
+		flex: 1 1 auto;
+		padding: 18px 16px;
+	}
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-dropdown-icon {
+		padding: 18px 20px;
+	}
+
+	/* Open item: becomes a pinned header; every other row steps out of the way,
+	   so the panel is shown on top without scrolling past the rest of the menu */
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-heading:has([aria-expanded="true"]) > .e-n-menu-item:not(:has([aria-expanded="true"])) {
+		display: none;
+	}
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-item:has([aria-expanded="true"]) > .e-n-menu-title {
+		position: sticky;
+		top: 0;
+		z-index: 3;
+		background: var(--ez37-tint);
+		color: var(--ez37-indigo);
+	}
+
+	/* Panels become full-width stacked sections inside the sheet */
+	.ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-content {
+		position: static !important;
+		width: 100% !important;
+		padding: 8px 0 0;
+	}
+	.ez37-mega {
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		border: 0;
+		box-shadow: none;
+		border-radius: 0;
+		--flex-direction: column;
+		flex-direction: column;
+		--align-items: stretch;
+		align-items: stretch;
+		--padding-top: 0px;
+		--padding-right: 0px;
+		--padding-bottom: 8px;
+		--padding-left: 0px;
+		padding: 0 0 8px;
+	}
+	.ez37-mega--small { width: 100%; margin: 0; }
+	.ez37-mega__col {
+		flex: 1 1 auto;
+		width: 100%;
+		padding: 18px 14px;
+		--padding-top: 18px;
+		--padding-right: 14px;
+		--padding-bottom: 18px;
+		--padding-left: 14px;
+	}
+	.ez37-mega__col--wide { flex: 1 1 auto; }
+	.ez37-mega__list a { padding: 8px; gap: 12px; }
+	.ez37-mega__icon { flex-basis: 36px; width: 36px; height: 36px; }
+	.ez37-mega__text { font-size: 16px; }
+}
+
+@media (max-width: 1024px) {
+	.ez37-header .ez37-mega > .e-con-inner { width: 100% !important; max-width: 100% !important; flex-direction: column !important; }
+	.ez37-header .ez37-mega .ez37-mega__col,
+	.ez37-header .ez37-mega--small { width: 100% !important; max-width: 100% !important; flex: 0 0 auto !important; box-sizing: border-box; }
+}
+
+@media (max-width: 600px) {
+	.ez37-mega__list--grid { grid-template-columns: 1fr; }
+	.ez37-wordmark__main { font-size: 26px; }
+}
+
+/* ---------- Footer layout ---------- */
+/* Four-column grid: brand + three link columns */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	display: grid !important;
+	grid-template-columns: 1.5fr 1fr 1fr 1fr;
+	gap: 48px !important;
+	align-items: start;
+	width: 100%;
+}
+.ez37-footer__col { min-width: 0; width: auto !important; max-width: none !important; flex: none !important; }
+.ez37-footer__chip {
+	display: inline-flex;
+	width: fit-content !important;
+	align-self: flex-start;
+	background: #fff;
+	border-radius: 12px;
+	padding: 12px 16px;
+}
+.ez37-footer__addresses { display: flex; flex-direction: column; gap: 16px; }
+.ez37-footer__addr { display: flex; flex-direction: column; gap: 4px; }
+.ez37-footer__addr b { font: 600 12px "Poppins", sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+.ez37-footer__addr span { font: 400 15px/1.55 "Inter", sans-serif; color: #c9c6ff; max-width: 320px; }
+.ez37-footer__social { display: flex; gap: 12px; margin-top: 8px; }
+.ez37-footer__social a {
+	width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;
+	background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #fff;
+	transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.ez37-footer__social a svg { width: 20px; height: 20px; }
+.ez37-footer__social a:hover, .ez37-footer__social a:focus-visible { background: var(--ez37-coral-deep); border-color: var(--ez37-coral-deep); color: #fff; transform: translateY(-2px); }
+.ez37-footer__social a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.ez37-footer__col .elementor-heading-title { color: #fff; margin: 0 0 8px; }
+.ez37-footer__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.ez37-footer__list a {
+	display: inline-block;
+	padding: 6px 0;
+	font-family: var(--ez37-font-body, Inter, sans-serif);
+	font-size: 15px;
+	line-height: 1.4;
+	color: #c9c6ff;
+	text-decoration: none;
+	transition: color 0.2s ease, transform 0.2s ease;
+}
+.ez37-footer__list a:hover,
+.ez37-footer__list a:focus-visible { color: #fff; transform: translateX(3px); }
+.ez37-footer__list a:focus-visible { outline: 2px solid var(--ez37-coral); outline-offset: 3px; border-radius: 4px; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner { grid-template-columns: 1fr 1fr; gap: 40px !important; }
+	.ez37-footer__col--brand { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner { grid-template-columns: 1fr; gap: 32px !important; }
+}
+.ez37-footer__bottom {
+	border-top: 1px solid rgba(255, 255, 255, 0.14);
+	padding-top: 24px;
+}
+.ez37-footer__legal {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 12px;
+	font-size: 14px;
+	color: #c9c6ff;
+}
 
 /* ---------- Mobile ---------- */
 @media (max-width: 767px) {
@@ -240,4 +670,412 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.ez37 * { transition: none !important; transform: none !important; }
+}
+
+/* ---------- Logo (image): fixed height so the top nav never grows ---------- */
+.ez37-header .ez37-logo img { height: 38px !important; width: auto !important; max-width: none; display: block; }
+.ez37-header .ez37-logo, .ez37-header .ez37-logo .elementor-widget-container { line-height: 0; }
+.ez37-footer__chip .ez37-logo img { height: 46px !important; width: auto !important; max-width: none; display: block; }
+@media (max-width: 767px) { .ez37-header .ez37-logo img { height: 34px !important; } }
+
+/* Pages with a full-bleed hero (.ezs-hero): the strip behind the rounded bar becomes transparent
+   so the hero photo shows through and the bar floats over it. */
+body:has(.ezs-hero) .ez37-header { background: transparent; }
+/* Take the bar out of the flow (it keeps its place just under the announcement bar), so the hero starts
+   flush under the announcement bar with no gap and no pull-up arithmetic. Once Elementor's sticky takes over, it behaves as before. */
+body:has(.ezs-hero) .ez37-header:not(.elementor-sticky--active) { position: absolute !important; top: auto; left: 0; right: 0; width: 100% !important; z-index: 50; }
+body:has(.ezs-hero) .ez37-topbar { position: relative; z-index: 60; }
+
+/* ---------- Second main nav: flat full-width bar (activated per page by .ezs-navflat) ---------- */
+body:has(.ezs-navflat) .ez37-header,
+body:has(.ezs-navflat) .ez37-header.elementor-sticky--effects,
+body:has(.ezs-navflat) .ez37-header.elementor-sticky--active.elementor-sticky--effects { background: #fff; padding-top: 0 !important; padding-bottom: 0 !important; border-bottom: 1px solid var(--ez37-line, #e3e2f3); }
+body:has(.ezs-navflat) .ez37-header.elementor-sticky--effects { box-shadow: 0 8px 24px rgba(20, 18, 63, 0.08); }
+body:has(.ezs-navflat) .ez37-header:not(.elementor-sticky--active) { position: relative !important; width: auto !important; left: auto; right: auto; }
+body:has(.ezs-navflat) .ez37-header .ez37-header__bar,
+body:has(.ezs-navflat) .ez37-header.elementor-sticky--effects .ez37-header__bar { max-width: none !important; border-radius: 0; border: 0; box-shadow: none; background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; padding: 10px 40px; min-height: 80px; }
+@media (max-width: 1024px) { body:has(.ezs-navflat) .ez37-header .ez37-header__bar { padding: 8px 16px; } }
+/* Flat nav, tablet/phone: the menu sheet is a flat full-width panel (square corners, edge to edge) */
+@media (max-width: 1024px) {
+	body:has(.ezs-navflat) .ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-wrapper {
+		top: 100%;
+		border-radius: 0;
+		border-width: 1px 0 0 0;
+		box-shadow: 0 18px 40px rgba(20, 18, 63, 0.14);
+		height: calc(100vh - 150px);
+		height: calc(100dvh - 150px);
+	}
+	body:has(.ezs-navflat) .ez37-header__bar { min-height: 64px; }
+	body:has(.ezs-navflat) .ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-title { border-radius: 0; }
+}
+
+/* Flat nav: even space above and below the row */
+body:has(.ezs-navflat) .ez37-header { min-height: 0 !important; height: auto !important; margin: 0 !important; row-gap: 0 !important; }
+body:has(.ezs-navflat) .ez37-header .ez37-header__bar,
+body:has(.ezs-navflat) .ez37-header.elementor-sticky--effects .ez37-header__bar { margin: 0 auto !important; padding-top: 14px; padding-bottom: 14px; min-height: 0; align-items: center; }
+body:has(.ezs-navflat) .ez37-header .elementor-widget { margin-bottom: 0 !important; }
+@media (max-width: 1024px) {
+	body:has(.ezs-navflat) .ez37-header .ez37-header__bar { padding-top: 10px; padding-bottom: 10px; min-height: 0; }
+	body:has(.ezs-navflat) .ez37-header .e-n-menu[data-layout="dropdown"] .e-n-menu-wrapper { height: calc(100vh - 140px); height: calc(100dvh - 140px); }
+}
+
+/* ---------- Search: icon in the bar + full-screen overlay ---------- */
+.ez37-header__search { flex: 0 0 auto; width: auto !important; }
+.ez37-search-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ez37-ink, #14123f); cursor: pointer; transition: background .2s ease, color .2s ease; }
+.ez37-search-btn:hover, .ez37-search-btn:focus-visible { background: var(--ez37-tint, #eef0ff); color: var(--ez37-coral-deep, #d63424); }
+.ez37-search { position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(20, 18, 63, .97); }
+.ez37-search[hidden] { display: none; }
+.ez37-search__close { position: absolute; top: 28px; right: 32px; width: 48px; height: 48px; border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.ez37-search__close:hover { background: rgba(255, 255, 255, .12); }
+.ez37-search__form { display: flex; align-items: center; width: 100%; max-width: 880px; background: #fff; border-radius: 14px; padding: 6px 8px 6px 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+.ez37-search__form input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 20px "Inter", sans-serif; color: var(--ez37-ink, #14123f); padding: 18px 8px 18px 0; }
+.ez37-search__form input::placeholder { color: #8a89a6; }
+.ez37-search__form button { flex: none; width: 52px; height: 52px; border: 0; border-radius: 12px; background: transparent; color: var(--ez37-coral-deep, #d63424); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.ez37-search__form button:hover { background: #fdeceb; }
+html.ez37-search-open { overflow: hidden; }
+@media (max-width: 1024px) {
+	.ez37-header .elementor-widget-n-menu { order: 2; }
+	.ez37-header__search { order: 1; margin-left: auto; }
+	.ez37-header .elementor-widget-n-menu { margin-left: 0 !important; }
+}
+@media (max-width: 767px) { .ez37-search__form input { font-size: 17px; } .ez37-search__close { top: 16px; right: 16px; } }
+
+/* ---------- Footer redesign: link columns + video, offices, social, logo ---------- */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-areas:
+		"company service programmes video"
+		"offices offices social video"
+		"logo logo logo logo";
+	gap: 48px 56px !important;
+}
+.ez37-footer__col--company { grid-area: company; }
+.ez37-footer__col--service { grid-area: service; }
+.ez37-footer__col--programmes { grid-area: programmes; }
+.ez37-footer__col--video { grid-area: video; }
+.ez37-footer__col--offices { grid-area: offices; }
+.ez37-footer__col--social { grid-area: social; }
+.ez37-footer__col--logo { grid-area: logo; }
+.ez37-footer__col .elementor-heading-title { margin: 0 0 14px; font-size: 24px; line-height: 1.25; }
+.ez37-footer__list { gap: 4px; }
+.ez37-footer__addresses { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 40px; }
+.ez37-footer__addr b { font: 600 17px "Poppins", sans-serif; letter-spacing: 0; text-transform: none; display: inline-flex; align-items: center; gap: 8px; }
+.ez37-footer__addr span { font-size: 16px; max-width: 300px; }
+.ez37-footer__pin { display: inline-flex; color: #c9c6ff; }
+.ez37-footer__pin svg { width: 18px; height: 18px; }
+.ez37-footer__pin:hover { color: var(--ez37-coral); }
+.ez37-footer__addr:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.ez37-footer__social { margin-top: 0; flex-wrap: wrap; }
+.ez37-footer__social a { border-radius: 0; }
+.ez37-footer__video { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: hidden; }
+.ez37-footer__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.ez37-footer__more { display: inline-block; margin-top: 12px; font: 600 15px "Poppins", sans-serif; }
+.ez37-footer__chip { border-radius: 0; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas: "company service" "programmes social" "offices offices" "video video" "logo logo";
+	}
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr;
+		grid-template-areas: "company" "service" "programmes" "social" "offices" "video" "logo";
+	}
+	.ez37-footer__addresses { grid-template-columns: 1fr; }
+}
+
+.ez37-footer__col--video { gap: 8px; }
+.ez37-footer__col--video .elementor-widget-heading:nth-of-type(2) { margin-top: 28px; }
+.ez37-footer__badges { display: flex; gap: 20px; flex-wrap: wrap; }
+.ez37-footer__badges img { width: 120px; height: 120px; display: block; }
+
+/* ---------- Footer: tidier, smaller (overrides above) ---------- */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	grid-template-columns: 0.9fr 1fr 1.35fr 1.25fr;
+	grid-template-areas:
+		"company service programmes video"
+		"offices offices offices video"
+		"logo logo logo logo";
+	gap: 36px 40px !important;
+}
+.ez37-footer__col .elementor-heading-title { font-size: 18px; margin: 0 0 8px; }
+.ez37-footer__list a { font-size: 14px; padding: 4px 0; }
+.ez37-footer__col--video { gap: 6px; }
+.ez37-footer__col--video .elementor-widget-heading ~ .elementor-widget-heading { margin-top: 22px; }
+.ez37-footer__addresses { grid-template-columns: repeat(3, 1fr); gap: 20px 32px; }
+.ez37-footer__addr b { font-size: 15px; }
+.ez37-footer__addr span { font-size: 14px; max-width: 260px; }
+.ez37-footer__pin svg { width: 16px; height: 16px; }
+.ez37-footer__addr:last-child:nth-child(odd) { grid-column: auto; }
+.ez37-footer__more { font-size: 13px; margin-top: 8px; }
+.ez37-footer__badges img { width: 92px; height: 92px; }
+.ez37-footer__social a { width: 38px; height: 38px; }
+.ez37-footer__social a svg { width: 17px; height: 17px; }
+.ez37-footer__chip { padding: 8px 12px; }
+.ez37-footer__chip .ez37-logo img { height: 38px !important; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas: "company service" "programmes programmes" "offices offices" "video video" "logo logo";
+	}
+	.ez37-footer__addresses { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr;
+		grid-template-areas: "company" "service" "programmes" "offices" "video" "logo";
+	}
+	.ez37-footer__addresses { grid-template-columns: 1fr; }
+}
+
+/* Footer: offices use the same column widths and gap as the link columns above them */
+.ez37-footer__addresses { grid-template-columns: 0.9fr 1fr 1.35fr; column-gap: 40px; row-gap: 20px; }
+.ez37-footer__addr span { max-width: none; }
+@media (max-width: 1024px) { .ez37-footer__addresses { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .ez37-footer__addresses { grid-template-columns: 1fr; } }
+
+/* Footer: accreditation sits on the offices row; Follow us sits under the logo */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	grid-template-areas:
+		"company service programmes video"
+		"offices offices offices accred"
+		"logo logo logo logo";
+}
+.ez37-footer__col--accred { grid-area: accred; }
+.ez37-footer__col--logo { gap: 14px; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-areas: "company service" "programmes programmes" "offices offices" "video video" "accred accred" "logo logo";
+	}
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-areas: "company" "service" "programmes" "offices" "video" "accred" "logo";
+	}
+}
+
+/* Footer: accreditation on the top row of the right column, YouTube video below it */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	grid-template-areas:
+		"company service programmes accred"
+		"offices offices offices video"
+		"logo logo logo logo";
+}
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-areas: "company service" "programmes programmes" "offices offices" "accred accred" "video video" "logo logo";
+	}
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-areas: "company" "service" "programmes" "offices" "accred" "video" "logo";
+	}
+}
+
+/* Footer video: size by aspect-ratio (not percentage padding) so the grid row is tall enough and nothing overlaps the "View all videos" link */
+.ez37-footer__video { padding-top: 0 !important; height: auto; aspect-ratio: 16 / 9; }
+.ez37-footer__col--video, .ez37-footer__col--accred, .ez37-footer__col--logo { overflow: visible; }
+.ez37-footer__more { position: relative; z-index: 1; display: inline-block; margin-bottom: 4px; }
+
+/* Footer video, final fix: in-flow iframe (no absolute positioning) so the column's real height pushes the logo row down */
+.ez37-footer__top, .ez37-footer__top > .e-con-inner { grid-auto-rows: auto; height: auto; min-height: 0; }
+.ez37-footer__col--video { height: auto; min-height: 0; flex-wrap: nowrap; }
+.ez37-footer__col--video > .elementor-widget { flex: 0 0 auto !important; height: auto; min-height: 0; max-width: 100%; }
+.ez37-footer__col--video .elementor-widget-container { height: auto; }
+.ez37-footer__video { position: static; display: block; width: 100%; height: auto !important; aspect-ratio: 16 / 9; padding: 0 !important; overflow: hidden; }
+.ez37-footer__video iframe { position: static; display: block; width: 100%; height: 100%; aspect-ratio: 16 / 9; inset: auto; }
+.ez37-footer__more { display: inline-block; margin: 10px 0 0; position: relative; z-index: 1; }
+.ez37-footer__col--video { padding-bottom: 8px; }
+.ez37-footer__col--logo { position: relative; z-index: 0; margin-top: 8px; }
+
+/* Footer, brand-first layout: logo + tagline + social + accreditation + video in the left column; Explore / Links / Case Studies to the right; offices underneath them */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	grid-template-columns: 1.25fr 0.9fr 1fr 1.35fr;
+	grid-template-areas:
+		"logo company service programmes"
+		"logo offices offices offices";
+	align-items: start;
+}
+.ez37-footer__col--logo { grid-area: logo; gap: 16px; align-self: start; }
+.ez37-footer__col--logo .elementor-widget-heading { margin-top: 14px; }
+.ez37-footer__tagline { margin: 0; max-width: 340px; color: #d9d8f5; font-size: 16px; line-height: 1.55; }
+.ez37-footer__col--logo .ez37-footer__social { margin-top: 0; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas: "logo logo" "company service" "programmes programmes" "offices offices";
+	}
+}
+@media (max-width: 600px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr;
+		grid-template-areas: "logo" "company" "service" "programmes" "offices";
+	}
+}
+
+/* Footer: Accredited & Certified sits in the offices grid (top row, third slot); UK drops under Ibadan */
+.ez37-footer__acc { gap: 16px; }
+.ez37-footer__acc .ez37-footer__acc-title { display: block; font: 400 20px/1.3 "Inter", sans-serif; color: #fff; max-width: none; }
+.ez37-footer__acc .ez37-footer__badges { display: flex; flex-wrap: wrap; gap: 20px; }
+.ez37-footer__acc .ez37-footer__badges img { width: 92px; height: 92px; }
+
+/* Accredited & Certified band, directly above the footer */
+.ez37-accband { background: var(--ez37-mist, #f6f6fe); align-items: stretch !important; }
+.ez37-accband > .elementor-widget, .ez37-accband .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37-accband__inner { padding: 56px clamp(24px, 4vw, 64px); }
+.ez37-accband__title { margin: 0 0 28px; color: var(--ez37-ink); font: 600 clamp(26px, 2.8vw, 36px)/1.15 "Poppins", sans-serif; text-align: left; }
+.ez37-accband__row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 24px; }
+.ez37-accband__item { display: flex; }
+.ez37-accband__logo { align-items: center; justify-content: center; padding: 16px 24px; background: #fff; border: 1px solid var(--ez37-line, #e1e0f5); }
+.ez37-accband__logo img { display: block; width: 110px; height: 110px; object-fit: contain; }
+.ez37-accband__card { flex-direction: column; justify-content: center; gap: 4px; min-width: 240px; padding: 20px 28px; background: #fff; border: 1px solid var(--ez37-line, #e1e0f5); }
+.ez37-accband__card b { color: var(--ez37-ink); font: 700 30px/1.1 "Poppins", sans-serif; }
+.ez37-accband__card strong { color: var(--ez37-coral-deep, #d6342b); font: 600 17px/1.3 "Poppins", sans-serif; }
+.ez37-accband__card span { color: var(--ez37-body, #4a4a68); font: 400 15px/1.45 "Inter", sans-serif; }
+@media (max-width: 600px) { .ez37-accband__inner { padding: 40px 24px; } .ez37-accband__row { gap: 16px; } .ez37-accband__card { min-width: 0; flex: 1 1 100%; } .ez37-accband__logo { flex: 1 1 calc(50% - 8px); } }
+
+/* Footer layout (final): row 1 = brand | Explore | Links | Case Studies; row 2 = YouTube | offices (three address columns) */
+.ez37-footer__top:not(:has(> .e-con-inner)),
+.ez37-footer__top > .e-con-inner {
+	display: grid !important;
+	grid-template-columns: 1.3fr 1fr 1fr 1fr;
+	grid-template-areas:
+		"logo company service programmes"
+		"video offices offices offices";
+	gap: 48px 48px !important;
+	align-items: start;
+}
+.ez37-footer__col--logo { grid-area: logo; }
+.ez37-footer__col--company { grid-area: company; }
+.ez37-footer__col--service { grid-area: service; }
+.ez37-footer__col--programmes { grid-area: programmes; }
+.ez37-footer__col--video { grid-area: video; }
+.ez37-footer__col--offices { grid-area: offices; }
+.ez37-footer__addresses { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 40px; }
+.ez37-footer__addr span { max-width: none; }
+.ez37-footer__addr:last-child:nth-child(odd) { grid-column: auto; }
+@media (max-width: 1024px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas: "logo logo" "company service" "programmes programmes" "video video" "offices offices";
+	}
+	.ez37-footer__addresses { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+}
+@media (max-width: 700px) {
+	.ez37-footer__top:not(:has(> .e-con-inner)),
+	.ez37-footer__top > .e-con-inner {
+		grid-template-columns: 1fr;
+		grid-template-areas: "logo" "company" "service" "programmes" "video" "offices";
+	}
+	.ez37-footer__addresses { grid-template-columns: 1fr; }
+}
+
+/* Accredited & Certified band: centred, a shade lighter than the footer */
+.ez37-accband { background: #221e66; background: color-mix(in srgb, var(--ez37-ink, #15124a) 86%, #fff); }
+.ez37-accband__title { color: #fff; text-align: center; }
+.ez37-accband__row { justify-content: center; }
+.ez37-accband__logo, .ez37-accband__card { border-color: rgba(255, 255, 255, 0.18); }
+
+/* Accredited band: closer to footer colour, centred title, more compact */
+.ez37-accband { background: #1b1752; background: color-mix(in srgb, var(--ez37-ink, #15124a) 94%, #fff); }
+.ez37-accband .ez37-accband__title { display: block; width: 100%; text-align: center !important; margin: 0 0 20px; font-size: clamp(22px, 2.4vw, 30px); }
+.ez37-accband__inner { padding: 32px clamp(24px, 4vw, 64px); }
+.ez37-accband__row { gap: 16px; }
+.ez37-accband__logo { padding: 10px 18px; }
+.ez37-accband__logo img { width: 84px; height: 84px; }
+.ez37-accband__card { padding: 14px 24px; min-width: 220px; gap: 2px; }
+.ez37-accband__card b { font-size: 24px; }
+.ez37-accband__card strong { font-size: 15px; }
+.ez37-accband__card span { font-size: 14px; }
+@media (max-width: 600px) { .ez37-accband__inner { padding: 28px 24px; } }
+.ez37-accband .ez37-accband__title { font-size: clamp(14px, 1.2vw, 16px) !important; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+
+/* Accredited band: explicit colours (win over theme/kit rules) */
+.ez37-accband, .ez37-accband.e-con { background-color: #1b1850 !important; }
+.ez37-accband .ez37-accband__title { color: #fff !important; }
+.ez37-accband .ez37-accband__card b { color: #14123f !important; }
+.ez37-accband .ez37-accband__card strong { color: #d6342b !important; }
+.ez37-accband .ez37-accband__card span { color: #2b2860 !important; }
+
+/* Mega menus: smaller type, narrower Solutions panel, panel touches the bottom of the nav bar */
+.ez37-mega__text { font-size: 14px; line-height: 1.35; }
+.ez37-mega__title { font-size: 13px; margin-bottom: 14px; padding-bottom: 12px; }
+.ez37-mega__list a { padding: 8px 12px; }
+.ez37-mega__col { padding: 24px; --padding-top: 24px; --padding-right: 24px; --padding-bottom: 24px; --padding-left: 24px; }
+@media (min-width: 1025px) {
+	.ez37-nav .e-n-menu-content > .ez37-mega:not(.ez37-mega--small) {
+		position: absolute !important;
+		left: 50% !important;
+		right: auto !important;
+		top: 0 !important;
+		transform: translateX(-50%) !important;
+		margin: 0 !important;
+		width: 860px !important;
+		max-width: calc(100vw - 32px) !important;
+	}
+	.ez37-nav .e-n-menu-content > .ez37-mega--small { margin: 0 !important; width: 340px !important; }
+}
+
+/* Footer: email and phone under the Ibadan address */
+.ez37-footer__contact { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.ez37-footer__contact > div { display: flex; flex-direction: column; gap: 2px; }
+.ez37-footer__contact em { font: 600 12px "Poppins", sans-serif; font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: #fff; margin-bottom: 2px; }
+.ez37-footer__contact a { font: 400 14px/1.6 "Inter", sans-serif; color: #c9c6ff; text-decoration: none; overflow-wrap: anywhere; }
+.ez37-footer__contact a:hover { color: var(--ez37-coral); }
+.ez37-footer__tagline strong { display: block; color: #fff; font-weight: 600; margin-bottom: 6px; }
+
+/* Mega menu, Co-Active style: accent top border, short title underline, clean bold items, generous spacing */
+.ez37-mega { border-top: 4px solid var(--ez37-coral); border-left: 1px solid var(--ez37-line); border-right: 1px solid var(--ez37-line); border-bottom: 1px solid var(--ez37-line); box-shadow: 0 18px 40px rgba(20, 18, 63, 0.14); }
+.ez37-mega--small { border-top-color: var(--ez37-indigo); }
+.ez37-mega__col { padding: 28px 32px 32px; --padding-top: 28px; --padding-right: 32px; --padding-bottom: 32px; --padding-left: 32px; }
+.ez37-mega__title { display: block; width: max-content; min-width: 55%; max-width: 100%; margin: 0 0 22px; padding-bottom: 10px; border-bottom: 2px solid var(--ez37-col); font-size: 15px; letter-spacing: 0.04em; }
+.ez37-mega__list { gap: 2px; }
+.ez37-mega__list--grid { gap: 2px 28px; }
+.ez37-mega__list a { padding: 10px 12px; }
+.ez37-mega__text { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--ez37-ink); }
+.ez37-mega__col--wide { flex: 1 1 0; }
+@media (min-width: 1025px) {
+	.ez37-nav .e-n-menu-content > .ez37-mega:not(.ez37-mega--small) { width: 1040px !important; }
+}
+
+/* Mega menu: compact. Less padding around the text, narrower panel, tighter rows (desktop and tablet) */
+.ez37-header .ez37-mega { --padding-top: 0px; --padding-right: 0px; --padding-bottom: 0px; --padding-left: 0px; padding: 0; }
+.ez37-header .ez37-mega > .e-con-inner { gap: 0; align-items: flex-start; }
+.ez37-header .ez37-mega .ez37-mega__col { padding: 20px 22px 18px; --padding-top: 20px; --padding-right: 22px; --padding-bottom: 18px; --padding-left: 22px; align-self: flex-start; }
+.ez37-header .ez37-mega .ez37-mega__title { margin: 0 0 10px; padding-bottom: 8px; min-width: 40%; font-size: 13px; }
+.ez37-header .ez37-mega .ez37-mega__list { gap: 0; }
+.ez37-header .ez37-mega .ez37-mega__list--grid { gap: 0 16px; }
+.ez37-header .ez37-mega .ez37-mega__list a { padding: 6px 10px; gap: 10px; }
+.ez37-header .ez37-mega .ez37-mega__text { font-size: 14px; line-height: 1.3; }
+@media (min-width: 1025px) {
+	.ez37-nav .e-n-menu-content > .ez37-mega:not(.ez37-mega--small) { width: 820px !important; }
+}
+
+/* Footer: social icons sit under the YouTube block; contact details sit under the company write-up. */
+.ez37-footer__col--video .ez37-footer__social { margin-top: 18px; }
+.ez37-footer__col--brand2 .ez37-footer__contact { margin-top: 22px; }
+
+/* Solutions mega menu (desktop): Service areas 40% / Coaching Programmes 60%.
+   The panel containers are full-width (no .e-con-inner wrapper), so the columns are direct children. */
+@media (min-width: 1025px) {
+	.ez37-header .ez37-mega:not(.ez37-mega--small) { --gap: 0px; gap: 0 !important; }
+	.ez37-header .ez37-mega:not(.ez37-mega--small) .ez37-mega__col--indigo { flex: 0 0 40% !important; width: 40% !important; max-width: 40% !important; box-sizing: border-box; }
+	.ez37-header .ez37-mega:not(.ez37-mega--small) .ez37-mega__col--wide { flex: 0 0 60% !important; width: 60% !important; max-width: 60% !important; box-sizing: border-box; }
 }

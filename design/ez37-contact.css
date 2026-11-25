@@ -1,0 +1,93 @@
+/* =========================================================================
+   EZ37 CONTACT (v2). Loads AFTER ez37-redesign.css, ez37-home.css and ez37-components.css.
+   Tokens only; every selector scoped under .ez37 and prefixed .ezct-.
+   ========================================================================= */
+
+.ez37 .ezct { padding: 12px 0 48px; background: linear-gradient(180deg, var(--ez37-mist) 0%, #fff 100%); } /* starts in the header strip colour so nav and hero read as one */
+.ez37 .ezct__hero { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+
+.ez37 .ezct__card { display: flex; flex-direction: column; justify-content: space-between; gap: 40px; background: var(--ez37-tint); border: 1px solid var(--ez37-line); border-radius: 28px; padding: 48px 44px; }
+.ez37 .ezct__title { margin: 0 0 20px; font: 500 52px/1.08 "Poppins", sans-serif; letter-spacing: -0.02em; color: var(--ez37-indigo); }
+.ez37 .ezct__title b { font-weight: 700; color: var(--ez37-ink); }
+.ez37 .ezct__title b span { color: var(--ez37-coral-deep); }
+.ez37 .ezct__lead { margin: 0; max-width: 46ch; font: 400 17px/1.65 "Inter", sans-serif; color: var(--ez37-body); }
+
+.ez37 .ezct__info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ez37 .ezct__box { display: flex; flex-direction: column; gap: 22px; background: #fff; border: 1px solid var(--ez37-line); border-radius: 20px; padding: 22px; }
+.ez37 .ezct__box b { display: block; margin-bottom: 8px; font: 600 18px/1.3 "Poppins", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezct__box a { display: block; font: 400 15px/1.7 "Inter", sans-serif; color: var(--ez37-body); text-decoration: none; overflow-wrap: anywhere; transition: color .25s ease; }
+.ez37 .ezct__box a:hover { color: var(--ez37-coral-deep); }
+
+.ez37 .ezct__book { border-radius: 28px; padding: 32px; background: var(--ez37-indigo-deep) center / cover no-repeat; display: flex; }
+.ez37 .ezct__panel { flex: 1; background: #fff; border-radius: 4px; overflow: hidden; min-width: 0; box-shadow: var(--ez37-shadow-card); }
+.ez37 .ezct__panel .calendly-inline-widget { width: 100%; }
+
+/* Form */
+.ez37 .ezct-form { padding: 24px 0 56px; }
+.ez37 .ezct__formgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; align-items: center; }
+.ez37 .ezct__photo { margin: 0; position: relative; min-height: 520px; border-radius: 28px; overflow: hidden; background: var(--ez37-tint); box-shadow: var(--ez37-shadow-card); }
+.ez37 .ezct__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 38% 50%; }
+.ez37 .ezct__formcol h2 { margin: 0 0 10px; font: 600 34px/1.2 "Poppins", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezct__sub { margin: 0 0 28px; font: 400 17px/1.6 "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezct__sub a { color: var(--ez37-indigo); font-weight: 600; text-decoration: none; }
+.ez37 .ezct__sub a:hover { color: var(--ez37-coral-deep); }
+.ez37 .ezct__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.ez37 .ezct__form .ez37-textarea { min-height: 150px; }
+
+/* Offices */
+.ez37 .ezct-offices { padding: 40px 0 88px; }
+.ez37 .ezct__offices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+.ez37 .ezct__office { background: #fff; border: 1px solid var(--ez37-line); border-radius: 20px; padding: 26px; box-shadow: var(--ez37-shadow-card); transition: transform .3s ease, box-shadow .3s ease; }
+.ez37 .ezct__office:hover { transform: translateY(-4px); box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezct__office h3 { margin: 18px 0 8px; font: 600 20px/1.25 "Poppins", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezct__office p { margin: 0; font: 400 15px/1.65 "Inter", sans-serif; color: var(--ez37-body); }
+
+@media (max-width: 1024px) {
+	.ez37 .ezct__hero { grid-template-columns: 1fr; }
+	.ez37 .ezct__title { font-size: 44px; }
+	.ez37 .ezct__formgrid { grid-template-columns: 1fr; gap: 32px; }
+	.ez37 .ezct__photo { min-height: 380px; }
+	.ez37 .ezct__offices { grid-template-columns: 1fr; }
+}
+@media (max-width: 767px) {
+	.ez37 .ezct__card { padding: 28px 22px; border-radius: 24px; gap: 28px; }
+	.ez37 .ezct__title { font-size: 36px; }
+	.ez37 .ezct__lead { font-size: 16px; }
+	.ez37 .ezct__info { grid-template-columns: 1fr; }
+	.ez37 .ezct__box { flex-direction: row; align-items: flex-start; gap: 16px; }
+	.ez37 .ezct__book { padding: 14px; border-radius: 24px; }
+	.ez37 .ezct__photo { min-height: 300px; border-radius: 24px; }
+	.ez37 .ezct__formcol h2 { font-size: 28px; }
+	.ez37 .ezct__row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .ez37 .ezct__office { transition: none; } .ez37 .ezct__office:hover { transform: none; } }
+
+/* ---------- Contact v3: heading + two-panel card (gradient info panel with photo, white form panel) ---------- */
+.ez37 .ezc2 { align-items: stretch !important; padding: 56px 0 72px; background: #fff; }
+.ez37 .ezc2 > .elementor-widget, .ez37 .ezc2 .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezc2 .ezh-wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
+.ez37 .ezc2__head { text-align: center; margin: 0 auto 40px; max-width: 760px; }
+.ez37 .ezc2__head h2 { margin: 0 0 16px; font: 600 clamp(28px, 3.2vw, 40px)/1.15 Poppins, sans-serif; color: var(--ez37-ink, #14123F); }
+.ez37 .ezc2__head p { margin: 0; color: var(--ez37-body, #4A4968); font-size: 17px; line-height: 1.6; }
+.ez37 .ezc2__card { display: grid; grid-template-columns: 5fr 6fr; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(20, 18, 63, 0.14); background: #fff; }
+.ez37 .ezc2__info { position: relative; padding: 40px 36px; color: #fff; display: flex; flex-direction: column; gap: 18px;
+	background: linear-gradient(160deg, rgba(30, 27, 107, 0.92) 0%, rgba(67, 56, 202, 0.82) 55%, rgba(255, 90, 71, 0.78) 120%), var(--ezc2-img, none) center / cover no-repeat, #4338CA; }
+.ez37 .ezc2__info h3, .ez37 .ezc2__formcol h3 { margin: 0 0 4px; font: 600 20px Poppins, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
+.ez37 .ezc2__formcol h3 { color: var(--ez37-ink, #14123F); margin-bottom: 20px; }
+.ez37 .ezc2__item { display: flex; gap: 14px; align-items: flex-start; font-size: 15px; line-height: 1.55; }
+.ez37 .ezc2__item > svg { flex: 0 0 20px; width: 20px; height: 20px; margin-top: 2px; fill: none; stroke: #fff; stroke-width: 2; }
+.ez37 .ezc2__label { display: block; font: 600 11px Poppins, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; margin-bottom: 2px; }
+.ez37 .ezc2__item a { display: block; color: #fff; text-decoration: none; }
+.ez37 .ezc2__item a:hover { text-decoration: underline; }
+.ez37 .ezc2__info hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.35); margin: 4px 0; width: 100%; }
+.ez37 .ezc2__info p { margin: 0; font-size: 15px; line-height: 1.55; max-width: 340px; }
+.ez37 .ezc2__call { align-self: flex-start; padding: 12px 22px; border: 1.5px solid #fff; border-radius: 14px; color: #fff; font: 600 14px Poppins, sans-serif; text-decoration: none; transition: background .2s, color .2s; }
+.ez37 .ezc2__call:hover { background: #fff; color: #1E1B6B; }
+.ez37 .ezc2__social { display: flex; gap: 10px; }
+.ez37 .ezc2__social a { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; background: #fff; color: #1E1B6B; }
+.ez37 .ezc2__social svg { width: 16px; height: 16px; }
+.ez37 .ezc2__formcol { padding: 40px 40px 44px; }
+@media (max-width: 860px) { .ez37 .ezc2__card { grid-template-columns: 1fr; } .ez37 .ezc2__info, .ez37 .ezc2__formcol { padding: 32px 24px; } }
+
+/* Contact info panel: darker overlay so the photo never competes with the text */
+.ez37 .ezc2__info { background: linear-gradient(160deg, rgba(20, 18, 63, 0.95) 0%, rgba(30, 27, 107, 0.93) 55%, rgba(67, 40, 120, 0.92) 120%), var(--ezc2-img, none) center / cover no-repeat, #1e1b6b; }

@@ -1,0 +1,353 @@
+/* =========================================================================
+   EZ37 PAID PROGRAMME PAGES (v2): PCCP and the other programmes sold through checkout.
+   Loads AFTER ez37-redesign/home/programme/bhero/leadership. Tokens only, square corners,
+   left-aligned headings, full-width bands with the shared side margins. Prefix: .ezpg-
+   ========================================================================= */
+
+.ez37 .ezpg-facts, .ez37 .ezpg-badge, .ez37 .ezpg-about, .ez37 .ezpg-overview, .ez37 .ezpg-info, .ez37 .ezpg-policies, .ez37 .ezpg-journey, .ez37 .ezpg-benefits, .ez37 .ezpg-fee, .ez37 .ezpg-faculty, .ez37 .ezpg-quotes, .ez37 .ezh-faq { align-items: stretch !important; }
+.ez37 .ezpg-facts > .elementor-widget, .ez37 .ezpg-facts .elementor-widget-container,
+.ez37 .ezpg-badge > .elementor-widget, .ez37 .ezpg-badge .elementor-widget-container,
+.ez37 .ezpg-about > .elementor-widget, .ez37 .ezpg-about .elementor-widget-container,
+.ez37 .ezpg-overview > .elementor-widget, .ez37 .ezpg-overview .elementor-widget-container,
+.ez37 .ezpg-info > .elementor-widget, .ez37 .ezpg-info .elementor-widget-container,
+.ez37 .ezpg-policies > .elementor-widget, .ez37 .ezpg-policies .elementor-widget-container,
+.ez37 .ezpg-journey > .elementor-widget, .ez37 .ezpg-journey .elementor-widget-container,
+.ez37 .ezpg-benefits > .elementor-widget, .ez37 .ezpg-benefits .elementor-widget-container,
+.ez37 .ezpg-fee > .elementor-widget, .ez37 .ezpg-fee .elementor-widget-container,
+.ez37 .ezpg-faculty > .elementor-widget, .ez37 .ezpg-faculty .elementor-widget-container,
+.ez37 .ezpg-quotes > .elementor-widget, .ez37 .ezpg-quotes .elementor-widget-container,
+.ez37 .ezh-faq > .elementor-widget, .ez37 .ezh-faq .elementor-widget-container { width: 100% !important; max-width: none !important; }
+
+.ez37 .ezpg-inner { padding: 0 clamp(24px, 4vw, 64px); }
+.ez37 .ezpg-about h2, .ez37 .ezpg-overview h2, .ez37 .ezpg-info h2, .ez37 .ezpg-policies h2, .ez37 .ezpg-journey h2, .ez37 .ezpg-benefits h2, .ez37 .ezpg-fee h2, .ez37 .ezpg-faculty h2, .ez37 .ezpg-quotes h2 { margin: 0 0 14px; text-align: left; font: 600 clamp(28px, 3.2vw, 42px)/1.15 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-about h2 .ez37-hl, .ez37 .ezpg-overview h2 .ez37-hl, .ez37 .ezpg-info h2 .ez37-hl, .ez37 .ezpg-policies h2 .ez37-hl, .ez37 .ezpg-journey h2 .ez37-hl, .ez37 .ezpg-benefits h2 .ez37-hl, .ez37 .ezpg-fee h2 .ez37-hl, .ez37 .ezpg-faculty h2 .ez37-hl, .ez37 .ezpg-quotes h2 .ez37-hl { color: var(--ez37-coral-deep); }
+.ez37 .ezpg-sub { margin: 0 0 40px; max-width: 760px; font: 400 18px/1.65 Inter, sans-serif; color: var(--ez37-body); }
+
+/* Facts strip */
+.ez37 .ezpg-facts { background: var(--ez37-indigo-deep); }
+.ez37 .ezpg-facts__list { list-style: none; margin: 0; padding: 28px clamp(24px, 4vw, 64px); display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 24px 32px; }
+.ez37 .ezpg-facts__list li { display: flex; align-items: center; gap: 14px; margin: 0; }
+.ez37 .ezpg-facts__icon { flex: none; width: 46px; height: 46px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.12); color: #fff; }
+.ez37 .ezpg-facts__icon svg { width: 22px; height: 22px; }
+.ez37 .ezpg-facts__list b { display: block; font: 600 18px/1.2 Poppins, sans-serif; color: #fff; }
+.ez37 .ezpg-facts__list small { display: block; margin-top: 2px; font: 400 14px/1.4 Inter, sans-serif; color: rgba(255, 255, 255, 0.82); }
+
+/* Learning journey */
+.ez37 .ezpg-journey { background: var(--ez37-mist); padding: 88px 0; }
+
+/* Benefits */
+.ez37 .ezpg-benefits { background: #fff; padding: 88px 0; }
+
+/* Fee + enrol panel */
+.ez37 .ezpg-fee { background: var(--ez37-mist); padding: 88px 0; }
+.ez37 .ezpg-fee__grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 56px; align-items: start; padding: 0 clamp(24px, 4vw, 64px); }
+.ez37 .ezpg-how { list-style: none; counter-reset: ezpgs; margin: 0; padding: 0; display: grid; gap: 20px; }
+.ez37 .ezpg-how li { counter-increment: ezpgs; position: relative; margin: 0; padding-left: 56px; }
+.ez37 .ezpg-how li::before { content: counter(ezpgs); position: absolute; left: 0; top: 0; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; background: var(--ez37-indigo); color: #fff; font: 600 16px/1 Poppins, sans-serif; }
+.ez37 .ezpg-how b { display: block; font: 600 17px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-how span { display: block; margin-top: 3px; font: 400 16px/1.6 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-fee__card { position: sticky; top: 32px; display: flex; flex-direction: column; gap: 14px; padding: 36px 32px; background: #fff; border: 1px solid var(--ez37-line); border-top: 4px solid var(--ez37-coral-deep); box-shadow: var(--ez37-shadow-card-hover); box-sizing: border-box; }
+.ez37 .ezpg-fee__label { font: 600 12px/1 Poppins, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--ez37-indigo); }
+.ez37 .ezpg-fee__price { font: 700 clamp(34px, 4vw, 46px)/1.1 Poppins, sans-serif; color: var(--ez37-coral-deep); }
+.ez37 .ezpg-fee__name { font: 500 16px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-fee__card .ez37-btn { justify-content: center; margin-top: 6px; }
+.ez37 .ezpg-fee__note { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 500 13px/1 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-fee__note svg { width: 15px; height: 15px; }
+.ez37 .ezpg-fee__link { text-align: center; font: 600 15px/1.4 Poppins, sans-serif; color: var(--ez37-indigo); text-decoration: none; }
+.ez37 .ezpg-fee__link:hover { color: var(--ez37-indigo-deep); text-decoration: underline; }
+
+/* Faculty */
+.ez37 .ezpg-faculty { background: #fff; padding: 88px 0; }
+.ez37 .ezpg-faculty__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 280px)); gap: 28px; }
+.ez37 .ezpg-person img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 20%; margin-bottom: 16px; background: var(--ez37-tint); }
+.ez37 .ezpg-person h3 { margin: 0 0 4px; font: 600 18px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-person p { margin: 0; font: 400 15px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+
+/* Testimonials */
+.ez37 .ezpg-quotes { background: var(--ez37-mist); padding: 88px 0; }
+.ez37 .ezpg-quotes__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.ez37 .ezpg-quotes .ezh-quote { border-radius: 0; box-sizing: border-box; }
+
+/* Closing band keeps the shared programme band; give it room above the footer */
+.ez37 .ezp-enrol { margin-top: 72px; }
+
+@media (max-width: 1100px) {
+	.ez37 .ezpg-quotes__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+	.ez37 .ezpg-fee__grid { grid-template-columns: 1fr; gap: 36px; }
+	.ez37 .ezpg-fee__card { position: static; }
+	.ez37 .ezpg-about, .ez37 .ezpg-overview, .ez37 .ezpg-info, .ez37 .ezpg-policies, .ez37 .ezpg-journey, .ez37 .ezpg-benefits, .ez37 .ezpg-fee, .ez37 .ezpg-faculty, .ez37 .ezpg-quotes { padding: 56px 0; }
+}
+@media (max-width: 600px) {
+	.ez37 .ezpg-quotes__grid { grid-template-columns: 1fr; }
+	.ez37 .ezpg-inner { padding: 0 20px; }
+	.ez37 .ezpg-fee__grid { padding: 0 20px; }
+	.ez37 .ezpg-facts__list { padding: 24px 20px; }
+}
+
+
+/* ---- Facts strip: ICF badge ---- */
+
+/* ---- Rich text inside tabs / accordions ---- */
+.ez37 .ezpg-rich { font: 400 17px/1.7 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-rich p { margin: 0 0 14px; font: inherit; color: inherit; max-width: none; }
+.ez37 .ezpg-rich ul, .ez37 .ezpg-rich ol { margin: 0 0 14px; padding-left: 22px; }
+.ez37 .ezpg-rich li { margin: 0 0 8px; font: inherit; color: inherit; }
+.ez37 .ezpg-rich strong { color: var(--ez37-ink); font-weight: 600; }
+.ez37 .ezpg-rich a { color: var(--ez37-indigo); font-weight: 600; }
+.ez37 .ezpg-rich > :last-child { margin-bottom: 0; }
+
+/* ---- Tab component (one per group). Labels centred in every tab ---- */
+.ez37 .ezpg-tabs__nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; margin-bottom: 0; }
+.ez37 .ezpg-tab { appearance: none; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; min-height: 72px; padding: 14px 18px; border: 1px solid var(--ez37-line); margin: 0 -1px -1px 0; background: #fff; color: var(--ez37-ink); font: 600 15px/1.3 Poppins, sans-serif; transition: background .2s ease, color .2s ease; }
+.ez37 .ezpg-tab:hover { border-color: var(--ez37-indigo); position: relative; z-index: 1; }
+.ez37 .ezpg-tab[aria-selected="true"] { background: linear-gradient(135deg, var(--ez37-indigo-deep), var(--ez37-indigo)); border-color: transparent; color: #fff; position: relative; z-index: 2; }
+.ez37 .ezpg-tab:focus-visible { outline: 3px solid var(--ez37-coral-deep); outline-offset: 2px; position: relative; z-index: 3; }
+.ez37 .ezpg-panel { padding: 32px 28px; background: #fff; border: 1px solid var(--ez37-line); border-top: 0; box-sizing: border-box; }
+.ez37 .ezpg-panel[hidden] { display: none; }
+.ez37 .ezpg-about { background: #fff; padding: 88px 0; }
+.ez37 .ezpg-cta { margin-top: 28px; }
+.ez37 .ezpg-policies { background: var(--ez37-mist); padding: 88px 0; }
+
+/* ---- Modules A-E ---- */
+.ez37 .ezpg-eyebrow { display: block; margin-bottom: 10px; font: 600 12px/1 Poppins, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ez37-indigo); }
+.ez37 .ezpg-mods { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 20px; }
+.ez37 .ezpg-mod { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 32px; align-items: center; margin: 0; padding: 24px; background: #fff; border: 1px solid var(--ez37-line); box-sizing: border-box; }
+.ez37 .ezpg-mod__letter { display: flex; align-items: center; justify-content: center; align-self: stretch; min-height: 110px; background: linear-gradient(135deg, var(--ez37-indigo-deep), var(--ez37-indigo)); color: #fff; font: 700 56px/1 Poppins, sans-serif; }
+.ez37 .ezpg-mod small { display: block; font: 600 13px/1.3 Poppins, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ez37-coral-deep); }
+.ez37 .ezpg-mod h3 { margin: 4px 0 8px; font: 600 22px/1.25 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-mod p { margin: 0; max-width: 860px; font: 400 16px/1.65 Inter, sans-serif; color: var(--ez37-body); }
+
+/* ---- Overview ---- */
+.ez37 .ezpg-overview { background: #fff; padding: 0; }
+.ez37 .ezpg-overview__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
+.ez37 .ezpg-overview__media { position: relative; min-height: 460px; }
+.ez37 .ezpg-overview__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.ez37 .ezpg-overview__text { padding: 72px clamp(24px, 4vw, 64px) 72px 56px; align-self: center; }
+.ez37 .ezpg-overview__text ul, .ez37 .ezpg-benefits ul { margin: 0 0 24px; padding-left: 22px; }
+.ez37 .ezpg-overview__text li, .ez37 .ezpg-benefits li { margin: 0 0 8px; font: 400 18px/1.6 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-overview__text h3, .ez37 .ezpg-delivery h3 { margin: 24px 0 10px; font: 600 22px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+
+/* ---- Benefits + delivery ---- */
+.ez37 .ezpg-benefits { background: var(--ez37-mist); }
+.ez37 .ezpg-benefits__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.ez37 .ezpg-delivery dl { margin: 0 0 8px; display: grid; gap: 10px; }
+.ez37 .ezpg-delivery dl div { display: flex; gap: 10px; flex-wrap: wrap; }
+.ez37 .ezpg-delivery dt { font: 600 17px/1.5 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-delivery dt::after { content: ":"; }
+.ez37 .ezpg-delivery dd { margin: 0; font: 400 17px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-delivery p { margin: 0 0 20px; font: 400 17px/1.6 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-delivery h2 { margin-top: 0; }
+
+/* ---- Programme information accordion ---- */
+.ez37 .ezpg-info { background: #fff; padding: 88px 0; }
+.ez37 .ezpg-acc { max-width: none; }
+
+@media (max-width: 860px) {
+	.ez37 .ezpg-overview__grid, .ez37 .ezpg-benefits__grid { grid-template-columns: 1fr; gap: 32px; }
+	.ez37 .ezpg-overview__media { min-height: 0; aspect-ratio: 4 / 3; }
+	.ez37 .ezpg-overview__text { padding: 40px 20px; }
+	.ez37 .ezpg-mod { grid-template-columns: 1fr; gap: 16px; }
+	.ez37 .ezpg-mod__letter { min-height: 84px; font-size: 44px; }
+	.ez37 .ezpg-panel { padding: 24px 18px; }
+	.ez37 .ezpg-tabs__nav { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+}
+
+/* ---- ICF badge on its own row ---- */
+.ez37 .ezpg-badge { background: #fff; }
+.ez37 .ezpg-badge__row { display: flex; align-items: center; gap: 24px; padding: 40px clamp(24px, 4vw, 64px) 0; }
+.ez37 .ezpg-badge__row img { width: 120px; height: 120px; display: block; flex: none; }
+.ez37 .ezpg-badge__row p { margin: 0; display: grid; gap: 4px; }
+.ez37 .ezpg-badge__row b { font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-badge__row span { font: 400 16px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+
+/* ---- Policies: library pill tabs inside a library-style card (curved border, soft shadow) ---- */
+.ez37 .ezpg-ptabs .ez37-tablist { display: flex; flex-wrap: wrap; gap: 4px; overflow: visible; border-radius: 28px; }
+.ez37 .ezpg-ptabs .ez37-tab { white-space: normal; text-align: center; padding: 10px 20px; }
+.ez37 .ezpg-ptabs .ez37-tabpanel { padding-top: 28px; }
+.ez37 .ezpg-ptabs h3 { margin: 0 0 16px; font: 600 24px/1.25 Poppins, sans-serif; color: var(--ez37-ink); }
+@media (max-width: 600px) { .ez37 .ezpg-badge__row { padding: 28px 20px 0; } .ez37 .ezpg-badge__row img { width: 88px; height: 88px; } }
+
+/* About tabs: library underline tabs, left aligned in the page width */
+.ez37 .ezpg-linetabs .ez37-tab { padding: 14px 22px; }
+.ez37 .ezpg-linetabs .ez37-tabpanel { padding-top: 28px; }
+
+/* About tabs sit in a library-style card: curved border and soft shadow (same as .ezx-spec) */
+.ez37 .ezpg-card { background: #fff; border: 1px solid var(--ez37-line); border-radius: 24px; padding: 32px; box-shadow: var(--ez37-shadow-card); }
+.ez37 .ezpg-card .ezpg-cta { margin-top: 28px; }
+.ez37 .ezpg-card .ezpg-rich h3 { font-size: 20px; line-height: 1.3; color: var(--ez37-ink); margin: 24px 0 8px; }
+@media (max-width: 767px) { .ez37 .ezpg-card { padding: 22px 18px; border-radius: 20px; } }
+
+/* Tab cards follow the library tab copy: Inter 16px body, Poppins 20px headings, ink check lists */
+.ez37 .ezpg-card .ezpg-rich { font: 400 16px/1.65 Inter, sans-serif; }
+.ez37 .ezpg-card .ezpg-rich p { font: 400 16px/1.65 Inter, sans-serif; margin: 0 0 18px; }
+.ez37 .ezpg-card .ezpg-rich h3, .ez37 .ezpg-ptabs h3 { font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); margin: 0 0 10px; }
+.ez37 .ezpg-card .ezpg-rich * + h3 { margin-top: 24px; }
+.ez37 .ezpg-card .ezpg-rich .ezx-list { margin: 0 0 18px; }
+.ez37 .ezpg-card .ezpg-rich .ezx-list li { align-items: flex-start; margin: 0; font: 400 15px/1.55 Inter, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-card .ezpg-rich .ezx-list .ezh-ico { margin-top: 2px; }
+.ez37 .ezpg-card .ezpg-rich ol { font: 400 15px/1.6 Inter, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-card > .ezpg-eyebrow { margin-bottom: 20px; }
+
+/* Programme Information accordion: full-width, one left edge, library tick lists */
+.ez37 .ezpg-acc details .ezpg-acc__body { padding: 0 32px 30px; max-width: none; font: 400 17px/1.7 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-acc details .ezpg-acc__body p { margin: 0 0 14px; padding: 0; max-width: none; font: 400 17px/1.7 Inter, sans-serif; color: var(--ez37-body); animation: none; }
+.ez37 .ezpg-acc details .ezpg-acc__body h4 { margin: 24px 0 6px; font: 600 18px/1.35 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-acc details .ezpg-acc__body h4:first-child { margin-top: 0; }
+.ez37 .ezpg-acc details .ezpg-acc__body .ezx-list { margin: 0 0 16px; padding: 0; gap: 12px; }
+.ez37 .ezpg-acc details .ezpg-acc__body .ezx-list li { align-items: flex-start; margin: 0; font: 400 17px/1.6 Inter, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-acc details .ezpg-acc__body .ezx-list .ezh-ico { margin-top: 3px; }
+.ez37 .ezpg-acc details .ezpg-acc__body > :last-child { margin-bottom: 0; }
+@media (max-width: 767px) { .ez37 .ezpg-acc details .ezpg-acc__body { padding: 0 20px 22px; } .ez37 .ezpg-acc details .ezpg-acc__body, .ez37 .ezpg-acc details .ezpg-acc__body p, .ez37 .ezpg-acc details .ezpg-acc__body .ezx-list li { font-size: 16px; } }
+
+/* FAQ: full-width tinted band, same side margins as the other sections, wide accordion */
+.ez37 .ezh-faq { padding: 0; background: var(--ez37-tint); }
+.ez37 .ezh-faq__inner { background: transparent; border-radius: 0; padding: 88px 0; }
+.ez37 .ezh-faq .ezh-wrap { max-width: none; width: 100%; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); }
+.ez37 .ezh-faq .ezh-center { text-align: left; }
+.ez37 .ezh-faq .ezh-acc { max-width: none; margin: 0; }
+.ez37 .ezh-faq .ezh-acc details p { max-width: none; }
+@media (max-width: 767px) { .ez37 .ezh-faq__inner { padding: 56px 0; } }
+
+/* Closing enrol band: plain white, no tinted box or border (the section and its inner box both carry .ezp-enrol) */
+.ez37 .ezp-enrol, .ez37 .ezp-enrol .ezp-enrol { background: #fff; border: 0; border-radius: 0; box-shadow: none; }
+.ez37 .ezp-enrol { margin-top: 0; }
+.ez37 .ezp-enrol .ezp-enrol { margin: 0; padding: 40px 0; }
+
+/* Faculty sits under the enrolment steps, in the left column beside the sticky fee card */
+.ez37 .ezpg-fee__faculty { margin-top: 56px; padding-top: 48px; border-top: 1px solid var(--ez37-line); }
+.ez37 .ezpg-fee__faculty .ezpg-faculty__grid { grid-template-columns: repeat(auto-fill, minmax(200px, 260px)); }
+
+/* Programme Policies: white surround */
+.ez37 .ezpg-policies { background: #fff; }
+
+/* Closing enrol band: tighter vertical space */
+.ez37 .ezp-enrol { margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+.ez37 .ezp-enrol .ezp-enrol { padding: 28px 0 !important; }
+@media (max-width: 767px) { .ez37 .ezp-enrol .ezp-enrol { padding: 20px 0 !important; } }
+
+/* Sticky fee card: sit below the fixed site header so the whole card stays visible (desktop only) */
+@media (min-width: 1025px) { .ez37 .ezpg-fee__card { top: 110px; } }
+
+/* Benefits and course details, left column of Fee and Enrolment */
+.ez37 .ezpg-fee__block { margin-top: 56px; padding-top: 48px; border-top: 1px solid var(--ez37-line); }
+.ez37 .ezpg-fee__block + .ezpg-fee__block { margin-top: 32px; padding-top: 0; border-top: 0; }
+.ez37 .ezpg-fee__block .ezx-list { margin: 0; padding: 0; display: grid; gap: 12px; }
+.ez37 .ezpg-fee__block .ezx-list li { display: flex; gap: 12px; align-items: flex-start; font: 400 17px/1.6 Inter, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-fee__block .ezx-list .ezh-ico { width: 20px; height: 20px; margin-top: 3px; color: var(--ez37-teal); flex: none; }
+.ez37 .ezpg-fee__block.ezpg-delivery h3 { margin: 0 0 10px; font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-fee__block.ezpg-delivery h3:not(:first-child) { margin-top: 24px; }
+.ez37 .ezpg-fee__faculty { margin-top: 32px; }
+
+/* Course details: small note inside the sticky fee card */
+.ez37 .ezpg-fee__facts { margin-top: 6px; padding-top: 20px; border-top: 1px solid var(--ez37-line); text-align: left; }
+.ez37 .ezpg-fee__facts h3 { margin: 0 0 8px; font: 600 14px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-fee__facts h3:not(:first-child) { margin-top: 16px; }
+.ez37 .ezpg-fee__facts dl { margin: 0; display: grid; gap: 8px; }
+.ez37 .ezpg-fee__facts dl div { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.ez37 .ezpg-fee__facts dt { font: 600 13px/1.5 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-fee__facts dt::after { content: ":"; }
+.ez37 .ezpg-fee__facts dd { margin: 0; font: 400 13px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-fee__facts p { margin: 0; font: 400 13px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+
+/* Overview block (left column) and a tighter gap between the ICF badge and the tabs card */
+.ez37 .ezpg-fee__block.ezpg-fee__block--rule { margin-top: 56px; padding-top: 48px; border-top: 1px solid var(--ez37-line); }
+.ez37 .ezpg-fee__block h3 { margin: 28px 0 12px; font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-badge__row { padding-bottom: 0; }
+.ez37 .ezpg-badge { padding-bottom: 0 !important; }
+.ez37 .ezpg-about { padding-top: 24px; }
+
+/* About card: tabs on the left, ICF badge and caption on the right */
+.ez37 .ezpg-about { padding-top: 56px; }
+.ez37 .ezpg-about__grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
+.ez37 .ezpg-about__main { min-width: 0; }
+.ez37 .ezpg-about__badge { display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; padding: 32px 24px; border-left: 1px solid var(--ez37-line); align-self: stretch; justify-content: center; }
+.ez37 .ezpg-about__badge img { width: 200px; height: 200px; display: block; }
+.ez37 .ezpg-about__badge p { margin: 0; display: grid; gap: 6px; }
+.ez37 .ezpg-about__badge b { font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-about__badge span { font: 400 16px/1.5 Inter, sans-serif; color: var(--ez37-body); }
+@media (max-width: 1024px) {
+	.ez37 .ezpg-about__grid { grid-template-columns: 1fr; gap: 28px; }
+	.ez37 .ezpg-about__badge { border-left: 0; border-top: 1px solid var(--ez37-line); padding: 28px 0 0; }
+	.ez37 .ezpg-about__badge img { width: 140px; height: 140px; }
+}
+
+/* Faculty slider: two members per view on desktop and tablet, one on mobile */
+.ez37 .ezpg-slider__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.ez37 .ezpg-slider__head h2 { margin: 0; }
+.ez37 .ezpg-slider__nav { display: flex; gap: 10px; flex: none; }
+.ez37 .ezpg-slider__btn { appearance: none; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--ez37-line); background: #fff; color: var(--ez37-indigo); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.ez37 .ezpg-slider__btn:hover:not(:disabled) { background: var(--ez37-indigo); border-color: var(--ez37-indigo); color: #fff; }
+.ez37 .ezpg-slider__btn:focus-visible { outline: 3px solid var(--ez37-indigo); outline-offset: 2px; }
+.ez37 .ezpg-slider__btn:disabled { opacity: .35; cursor: default; }
+.ez37 .ezpg-slider__btn svg { width: 18px; height: 18px; }
+.ez37 .ezpg-slider__btn--prev svg { transform: rotate(180deg); }
+.ez37 .ezpg-slider__track { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.ez37 .ezpg-slider__track::-webkit-scrollbar { display: none; }
+.ez37 .ezpg-slider__track:focus-visible { outline: 3px solid var(--ez37-indigo); outline-offset: 4px; }
+.ez37 .ezpg-slider__track .ezpg-person { flex: 0 0 calc((100% - 24px) / 2); scroll-snap-align: start; min-width: 0; }
+@media (max-width: 600px) { .ez37 .ezpg-slider__track .ezpg-person { flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { .ez37 .ezpg-slider__track { scroll-behavior: auto; } }
+
+/* After you graduate: alumni support cards */
+.ez37 .ezpg-alumni { align-items: stretch !important; background: #fff; padding: 88px 0; }
+.ez37 .ezpg-alumni > .elementor-widget, .ez37 .ezpg-alumni .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezpg-alumni h2 { margin: 0 0 14px; text-align: left; font: 600 clamp(28px, 3.2vw, 42px)/1.15 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-alumni h2 .ez37-hl { color: var(--ez37-coral-deep); }
+.ez37 .ezpg-alumni__lead { margin: 0 0 12px; max-width: 78ch; font: 400 17px/1.7 Inter, sans-serif; color: var(--ez37-body); }
+.ez37 .ezpg-alumni__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 36px; }
+.ez37 .ezpg-acard { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--ez37-line); border-radius: 24px; padding: 20px; box-shadow: var(--ez37-shadow-card); }
+.ez37 .ezpg-acard__img { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 10; margin-bottom: 20px; border-radius: 16px; background: var(--ez37-mist); overflow: hidden; padding: 12px; box-sizing: border-box; }
+.ez37 .ezpg-acard__img img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.ez37 .ezpg-acard h3 { margin: 0 0 8px; font: 600 18px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpg-acard p { margin: 0; font: 400 15px/1.65 Inter, sans-serif; color: var(--ez37-body); }
+@media (max-width: 1200px) { .ez37 .ezpg-alumni__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1024px) { .ez37 .ezpg-alumni { padding: 56px 0; } }
+@media (max-width: 640px) { .ez37 .ezpg-alumni__grid { grid-template-columns: 1fr; } }
+.ez37 .ezpg-alumni { border-top: 1px solid var(--ez37-line); }
+
+/* Mobile/tablet fix: the faculty slider's wide track was stretching the single grid column past the screen */
+.ez37 .ezpg-fee__grid > *, .ez37 .ezpg-fee__text, .ez37 .ezpg-fee__faculty, .ez37 .ezpg-slider, .ez37 .ezpg-slider__track { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.ez37 .ezpg-fee__faculty { overflow: hidden; }
+@media (max-width: 1024px) {
+	.ez37 .ezpg-fee__grid { grid-template-columns: minmax(0, 1fr); }
+	.ez37 .ezpg-fee__card { width: 100%; }
+}
+@media (max-width: 600px) {
+	.ez37 .ezpg-slider__head { flex-wrap: wrap; }
+	.ez37 .ezpg-slider__head h2 { flex: 1 1 100%; }
+}
+
+/* Alumni: full-width lead text, square cards */
+.ez37 .ezpg-alumni__lead { max-width: none; }
+.ez37 .ezpg-acard, .ez37 .ezpg-acard__img { border-radius: 0; }
+
+/* Order is now Fee and Enrolment, alumni, policies: the alumni section sits on a white band after the tinted fee section, and policies get a divider */
+.ez37 .ezpg-alumni { border-top: 0; }
+.ez37 .ezpg-policies { border-top: 1px solid var(--ez37-line); }
+
+/* Alumni card: title row with an optional info tooltip (hover, keyboard focus or tap) */
+.ez37 .ezpg-acard__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.ez37 .ezpg-acard__head h3 { margin: 0; }
+.ez37 .ezpg-tip { position: relative; flex: none; }
+.ez37 .ezpg-tip__btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: var(--ez37-tint); color: var(--ez37-indigo); cursor: help; }
+.ez37 .ezpg-tip__btn:hover, .ez37 .ezpg-tip__btn:focus-visible { background: var(--ez37-indigo); color: #fff; }
+.ez37 .ezpg-tip__btn:focus-visible { outline: 3px solid var(--ez37-indigo); outline-offset: 2px; }
+.ez37 .ezpg-tip__box { position: absolute; z-index: 20; right: 0; top: calc(100% + 10px); width: min(300px, 78vw); padding: 14px 16px; background: var(--ez37-ink); color: #fff; font: 400 14px/1.6 Inter, sans-serif; text-align: left; box-shadow: 0 12px 32px rgba(20, 18, 63, .28); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .18s ease, transform .18s ease, visibility .18s; pointer-events: none; }
+.ez37 .ezpg-tip__box::before { content: ""; position: absolute; right: 9px; top: -6px; width: 12px; height: 12px; background: var(--ez37-ink); transform: rotate(45deg); }
+.ez37 .ezpg-tip:hover .ezpg-tip__box, .ez37 .ezpg-tip:focus-within .ezpg-tip__box { opacity: 1; visibility: visible; transform: none; }
+.ez37 .ezpg-acard h3 { margin: 0; }
+.ez37 .ezpg-acard p { margin-top: 0; }
+
+/* Programme hero: the title keeps its measure; the one-sentence lead runs the full width and only wraps when it must */
+.ez37 .ezpg-hero-wide .ezs-bhero__copy, .ez37 .ezs-bhero__copy { max-width: none; }
+.ez37 .ezs-bhero__copy h1 { max-width: 1000px; }
+.ez37 .ezs-bhero__copy p { max-width: none; }
+
+/* Tick lists: the text (with any inline link) is one flex item, so links never become separate columns */
+.ez37 .ezx-list li > .ezx-list__t { flex: 1 1 auto; min-width: 0; display: block; }
+.ez37 .ezx-list li > .ezx-list__t a { display: inline; color: var(--ez37-indigo); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+
+/* No accreditation badge: let the tab content use the full card width. */
+.ez37 .ezpg-about__grid--full { grid-template-columns: minmax(0, 1fr); }

@@ -1,0 +1,59 @@
+/* =========================================================================
+   EZ37 PROGRAMME / SERVICE PAGES (v2). Loads AFTER ez37-redesign.css + ez37-home.css.
+   Tokens only; selectors scoped under .ez37 and prefixed .ezp-.
+   ========================================================================= */
+
+.ez37 .ezp-hero { padding: 24px 0 40px; background: linear-gradient(180deg, var(--ez37-mist) 0%, #fff 100%); }
+.ez37 .ezp-hero__grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 56px; align-items: center; }
+
+.ez37 .ezp-hero__badge { display: inline-block; margin-bottom: 22px; padding: 9px 18px; border-radius: 999px; background: var(--ez37-tint); color: var(--ez37-indigo); font: 600 12px/1 "Poppins", sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.ez37 .ezp-hero h1 { margin: 0 0 22px; font: 600 56px/1.1 "Poppins", sans-serif; letter-spacing: -0.02em; color: var(--ez37-ink); }
+.ez37 .ezp-hero h1 .is-indigo { color: var(--ez37-indigo); }
+.ez37 .ezp-hero h1 .is-coral { color: var(--ez37-coral-deep); }
+.ez37 .ezp-hero__copy > p { margin: 0 0 36px; max-width: 520px; font: 400 18px/1.7 "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezp-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px; }
+.ez37 .ezp-hero__link { display: inline-flex; align-items: center; gap: 8px; font: 600 16px/1 "Poppins", sans-serif; color: var(--ez37-indigo); text-decoration: none; transition: color .25s ease; }
+.ez37 .ezp-hero__link svg { width: 18px; height: 18px; transition: transform .25s ease; }
+.ez37 .ezp-hero__link:hover { color: var(--ez37-indigo-deep); }
+.ez37 .ezp-hero__link:hover svg { transform: translateY(4px); }
+.ez37 p.ezp-hero__note { margin: 18px 0 0; max-width: none; font: 500 13px/1.5 "Inter", sans-serif; color: var(--ez37-body); }
+
+.ez37 .ezp-hero__media { position: relative; margin: 0; min-height: 520px; border-radius: 28px; overflow: hidden; background: var(--ez37-tint); box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezp-hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 45% 40%; transition: transform 1.2s cubic-bezier(.22, .61, .36, 1); }
+.ez37 .ezp-hero__media:hover img { transform: scale(1.04); }
+.ez37 .ezp-hero__play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
+.ez37 .ezp-hero__play span { width: 76px; height: 76px; border-radius: 50%; background: var(--ez37-indigo); display: flex; align-items: center; justify-content: center; box-shadow: var(--ez37-shadow-cta); transition: transform .25s ease, background .25s ease; }
+.ez37 .ezp-hero__play span svg { width: 28px; height: 28px; fill: currentColor; stroke: none; }
+.ez37 .ezp-hero__play:hover span { transform: scale(1.08); background: var(--ez37-coral-deep); }
+.ez37 .ezp-hero__play b { font: 600 15px/1 "Poppins", sans-serif; text-shadow: 0 1px 8px rgba(20, 18, 63, .6); }
+
+@media (max-width: 1024px) {
+	.ez37 .ezp-hero__grid { grid-template-columns: 1fr; gap: 36px; }
+	.ez37 .ezp-hero h1 { font-size: 46px; }
+	.ez37 .ezp-hero__media { min-height: 420px; }
+}
+@media (max-width: 767px) {
+	.ez37 .ezp-hero { padding: 12px 0 24px; }
+	.ez37 .ezp-hero h1 { font-size: 36px; }
+	.ez37 .ezp-hero__copy > p { font-size: 16px; margin-bottom: 28px; }
+	.ez37 .ezp-hero__media { min-height: 320px; border-radius: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ez37 .ezp-hero__media img, .ez37 .ezp-hero__link svg, .ez37 .ezp-hero__play span { transition: none; }
+	.ez37 .ezp-hero__media:hover img, .ez37 .ezp-hero__link:hover svg { transform: none; }
+}
+
+/* ---- Enrol band ---- */
+.ez37 .ezp-enrol { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; margin: 8px 0 72px; padding: 40px 44px; background: var(--ez37-tint); border: 1px solid var(--ez37-line); border-radius: 28px; }
+.ez37 .ezp-enrol h2 { margin: 0 0 10px; font: 600 30px/1.2 "Poppins", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezp-enrol p { margin: 0; max-width: 56ch; font: 400 16px/1.65 "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezp-enrol__cta { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ez37 .ezp-enrol__note { display: inline-flex; align-items: center; gap: 6px; font: 500 13px/1 "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezp-enrol__note svg { width: 15px; height: 15px; }
+@media (max-width: 767px) {
+	.ez37 .ezp-enrol { grid-template-columns: 1fr; padding: 26px 22px; border-radius: 22px; text-align: left; gap: 22px; margin-bottom: 48px; }
+	.ez37 .ezp-enrol h2 { font-size: 24px; }
+	.ez37 .ezp-enrol__cta { align-items: stretch; }
+	.ez37 .ezp-enrol__cta .ez37-btn { justify-content: center; }
+	.ez37 .ezp-enrol__note { justify-content: center; }
+}

@@ -1,0 +1,44 @@
+/* Leadership page: course intro bands + "Who this course is for". Same full-bleed width system as the Home Coaching Programmes band. */
+.ez37 .ezl-band, .ez37 .ezl-for { align-items: stretch !important; }
+.ez37 .ezl-band > .elementor-widget, .ez37 .ezl-band .elementor-widget-container,
+.ez37 .ezl-for > .elementor-widget, .ez37 .ezl-for .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezl-band { background: #fff; }
+.ez37 .ezl-band.is-flip { background: var(--ez37-mist); }
+.ez37 .ezl-band__grid { display: grid; grid-template-columns: 1.3fr 1fr; align-items: stretch; }
+.ez37 .ezl-band.is-flip .ezl-band__grid { grid-template-columns: 1fr 1.3fr; }
+.ez37 .ezl-band__grid > * { min-width: 0; }
+.ez37 .ezl-band__text { align-self: center; padding: 80px 56px 80px clamp(24px, 4vw, 64px); }
+.ez37 .ezl-band.is-flip .ezl-band__text { padding: 80px clamp(24px, 4vw, 64px) 80px 56px; }
+.ez37 .ezl-band__text h2 { margin: 0 0 24px; font: 600 clamp(30px, 3.4vw, 46px)/1.12 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezl-band__text h2 .ez37-hl { color: var(--ez37-coral-deep); }
+.ez37 .ezl-band__lead { font: 600 20px/1.55 Poppins, sans-serif !important; color: var(--ez37-indigo-deep) !important; }
+.ez37 .ezl-band__text p { margin: 0 0 20px; font: 400 18px/1.7 Inter, sans-serif; color: var(--ez37-body); max-width: 680px; }
+.ez37 .ezl-band__text .ez37-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; }
+.ez37 .ezl-band__media { position: relative; min-height: 520px; }
+.ez37 .ezl-band__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.ez37 .ezl-badge { position: absolute; z-index: 2; left: -75px; top: 50%; transform: translateY(-50%); width: 150px; height: 150px; filter: drop-shadow(0 10px 24px rgba(20, 18, 63, 0.25)); }
+/* Who this course is for */
+.ez37 .ezl-for { background: radial-gradient(circle at 12% 110%, rgba(255, 90, 71, 0.4), rgba(255, 90, 71, 0) 55%), linear-gradient(135deg, #1E1B6B 0%, #4338CA 100%); padding: 88px 0; }
+.ez37 .ezl-for__inner { padding: 0 clamp(24px, 4vw, 64px); }
+.ez37 .ezl-for h2 { margin: 0 0 16px; text-align: center; color: #fff; font: 600 clamp(30px, 3.4vw, 46px)/1.12 Poppins, sans-serif; }
+.ez37 .ezl-for__sub { margin: 0 auto 48px; max-width: 880px; text-align: center; color: rgba(255, 255, 255, 0.9); font-size: 18px; line-height: 1.6; }
+.ez37 .ezl-for__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.ez37 .ezl-for__card { background: #fff; border-radius: 20px; padding: 24px 24px 32px; box-shadow: 0 14px 40px rgba(20, 18, 63, 0.25); }
+.ez37 .ezl-for__img { aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--ez37-tint); margin-bottom: 20px; }
+.ez37 .ezl-for__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ez37 .ezl-for__card h3 { margin: 0 0 10px; font: 600 20px/1.3 Poppins, sans-serif; color: var(--ez37-ink); }
+.ez37 .ezl-for__card p { margin: 0; font: 400 16px/1.6 Inter, sans-serif; color: var(--ez37-body); }
+@media (max-width: 1024px) { .ez37 .ezl-for__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 860px) {
+	.ez37 .ezl-band__grid, .ez37 .ezl-band.is-flip .ezl-band__grid { grid-template-columns: 1fr; }
+	.ez37 .ezl-band__media { order: -1; min-height: 0; aspect-ratio: 4 / 3; }
+	.ez37 .ezl-badge { left: 16px; top: auto; bottom: -40px; transform: none; width: 110px; height: 110px; }
+	.ez37 .ezl-band__text, .ez37 .ezl-band.is-flip .ezl-band__text { padding: 56px 20px 48px; }
+	.ez37 .ezl-for { padding: 56px 0; }
+}
+@media (max-width: 600px) { .ez37 .ezl-for__grid { grid-template-columns: 1fr; } }
+
+/* Space above and below the band photos (none at the sides); square image frames in "Who This Course Is For" */
+.ez37 .ezl-band__img { inset: 56px 0; height: calc(100% - 112px); }
+.ez37 .ezl-for__img { border-radius: 0; }
+@media (max-width: 860px) { .ez37 .ezl-band__img { inset: 0; height: 100%; } }

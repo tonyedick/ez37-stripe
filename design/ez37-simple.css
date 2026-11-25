@@ -1,0 +1,530 @@
+/* EZ37 plain/standard layout layer (.ezs-*): card grid + alternating bands. Loaded after ez37-home.css. */
+.ez37 .ezs-h2 { font: 600 40px/1.2 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 32px; }
+.ez37 .ezs-eyebrow { display: block; font: 600 13px "Poppins", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ez37-indigo); margin-bottom: 12px; }
+
+.ez37 .ezs-grid { background: var(--ez37-mist); padding: 80px 0; }
+.ez37 .ezs-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.ez37 .ezs-card { background: #fff; border: 0; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; transition: transform .25s ease, box-shadow .25s ease; }
+.ez37 .ezs-card:hover { transform: translateY(-4px); box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezs-card__img { aspect-ratio: 4 / 3; background: linear-gradient(145deg, var(--ez37-indigo-deep), var(--ez37-indigo)); overflow: hidden; }
+.ez37 .ezs-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+.ez37 .ezs-card:hover .ezs-card__img img { transform: scale(1.05); }
+.ez37 .ezs-card__body { padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.ez37 .ezs-card h3 { font: 600 20px/1.3 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0; }
+.ez37 .ezs-card p { font: 400 15px/1.6 "Inter", sans-serif; color: var(--ez37-body); margin: 0; flex: 1; }
+.ez37 .ezs-link { align-self: flex-start; margin-top: 8px; font: 600 13px "Poppins", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--ez37-coral-deep); text-decoration: none; border-bottom: 2px solid var(--ez37-coral-deep); padding-bottom: 3px; }
+.ez37 .ezs-link:hover { color: var(--ez37-indigo); border-color: var(--ez37-indigo); }
+
+.ez37 .ezs-band { padding: 72px 0; background: #fff; }
+.ez37 .ezs-band.is-flip { background: var(--ez37-mist); }
+.ez37 .ezs-band__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.ez37 .ezs-band__grid > * { min-width: 0; }
+.ez37 .ezs-band__text p { font: 400 17px/1.7 "Inter", sans-serif; color: var(--ez37-body); margin: 0 0 20px; }
+.ez37 .ezs-band__text ul { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 10px; }
+.ez37 .ezs-band__text li { position: relative; padding-left: 22px; font: 500 16px "Inter", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezs-band__text li::before { content: ""; position: absolute; left: 0; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--ez37-coral-deep); }
+.ez37 .ezs-band__img { border-radius: 24px; overflow: hidden; aspect-ratio: 4 / 3.6; background: linear-gradient(145deg, var(--ez37-indigo-deep), var(--ez37-indigo)); box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezs-band__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 1024px) { .ez37 .ezs-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ez37 .ezs-band__grid { gap: 40px; } }
+@media (max-width: 767px) {
+	.ez37 .ezs-h2 { font-size: 30px; }
+	.ez37 .ezs-cards { grid-template-columns: 1fr; }
+	.ez37 .ezs-grid, .ez37 .ezs-band { padding: 48px 0; }
+	.ez37 .ezs-band__grid { grid-template-columns: 1fr; }
+	.ez37 .ezs-band.is-flip .ezs-band__img { order: -1; }
+}
+
+/* ---------- Hero: full-bleed photo carousel (First Ally style) ---------- */
+.ez37 .ezs-hero { background: var(--ez37-indigo-deep); }
+.ez37 .ezs-hero__stage { position: relative; width: 100%; min-height: 600px; display: flex; align-items: center; overflow: hidden; background: var(--ez37-indigo-deep); }
+.ez37 .ezs-hero__slides, .ez37 .ezs-hero__shade { position: absolute; inset: 0; }
+.ez37 .ezs-hero__slide { position: absolute; inset: 0; background-size: cover; background-position: var(--pos, center 30%); opacity: 0; transition: opacity 1s ease; }
+.ez37 .ezs-hero__slide.is-on { opacity: 1; }
+.ez37 .ezs-hero__shade { background: linear-gradient(90deg, rgba(20, 18, 63, .88) 0%, rgba(20, 18, 63, .62) 45%, rgba(20, 18, 63, .1) 100%); }
+.ez37 .ezs-hero__inner { position: relative; width: 100%; padding-top: 110px; padding-bottom: 110px; }
+.ez37 .ezs-hero__copy { max-width: 640px; }
+.ez37 .ezs-hero h1, .ez37 .ezs-hero .ezs-hero__title { font: 700 56px/1.12 "Poppins", sans-serif; color: #fff; margin: 0 0 20px; }
+.ez37 .ezs-hero .ezs-hero__title span { color: #fff; }
+.ez37 .ezs-hero p { font: 400 20px/1.6 "Inter", sans-serif; color: #e6e5ff; margin: 0 0 32px; }
+.ez37 .ezs-hero__btns { display: flex; flex-wrap: wrap; gap: 14px; }
+.ez37 .ezs-hero__ghost { display: inline-flex; align-items: center; padding: 14px 26px; border: 2px solid rgba(255, 255, 255, .7); border-radius: 14px; color: #fff; font: 600 16px "Poppins", sans-serif; text-decoration: none; transition: background .2s ease, color .2s ease; }
+.ez37 .ezs-hero__ghost:hover { background: #fff; color: var(--ez37-ink); }
+.ez37 .ezs-hero__dots { position: absolute; left: 0; right: 0; bottom: 22px; display: flex; justify-content: center; gap: 10px; }
+.ez37 .ezs-hero__dot { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .5); cursor: pointer; transition: width .3s ease, background .3s ease; }
+.ez37 .ezs-hero__dot.is-on { width: 28px; border-radius: 6px; background: #fff; }
+@media (max-width: 767px) {
+	.ez37 .ezs-hero__stage { min-height: 560px; }
+	.ez37 .ezs-hero__slide { background-position: var(--posm, center 30%); }
+	.ez37 .ezs-hero h1, .ez37 .ezs-hero .ezs-hero__title { font-size: 34px; }
+	.ez37 .ezs-hero p { font-size: 17px; }
+	.ez37 .ezs-hero__inner { padding-top: 72px; padding-bottom: 80px; }
+	.ez37 .ezs-hero__shade { background: linear-gradient(180deg, rgba(20, 18, 63, .8) 0%, rgba(20, 18, 63, .65) 100%); }
+}
+
+.ez37 .ezs-hero__shade { background: linear-gradient(90deg, rgba(20, 18, 63, .9) 0%, rgba(20, 18, 63, .66) 42%, rgba(20, 18, 63, .08) 85%); }
+.ez37 .ezh-logos { padding-top: 36px; }
+
+/* ---------- Header floats over the hero (Home): no coloured strip behind the rounded bar ---------- */
+.ez37 .ezs-hero { --ezs-hh: 100px; position: relative; z-index: 0; }
+.ez37 .ezs-hero__stage { min-height: calc(600px + var(--ezs-hh)); padding-top: var(--ezs-hh); box-sizing: border-box; }
+.ez37 .ezs-hero__inner { padding-top: 60px; padding-bottom: 100px; }
+.ez37 .ezs-hero__shade { background:
+	linear-gradient(180deg, rgba(20, 18, 63, .55) 0%, rgba(20, 18, 63, 0) 28%),
+	linear-gradient(90deg, rgba(20, 18, 63, .9) 0%, rgba(20, 18, 63, .66) 42%, rgba(20, 18, 63, .08) 85%); }
+@media (max-width: 767px) {
+	.ez37 .ezs-hero { --ezs-hh: 84px; }
+	.ez37 .ezs-hero__stage { min-height: calc(540px + var(--ezs-hh)); }
+	.ez37 .ezs-hero__inner { padding-top: 24px; padding-bottom: 80px; }
+	.ez37 .ezs-hero__shade { background: linear-gradient(180deg, rgba(20, 18, 63, .85) 0%, rgba(20, 18, 63, .65) 100%); }
+}
+
+/* Flat nav sits above the hero in normal flow: no overlap, no extra top padding. */
+body:has(.ezs-navflat) .ez37 .ezs-hero__stage { padding-top: 0; min-height: 600px; }
+body:has(.ezs-navflat) .ez37 .ezs-hero__inner { padding-top: 100px; padding-bottom: 110px; }
+body:has(.ezs-navflat) .ez37 .ezs-hero__shade { background: linear-gradient(90deg, rgba(20, 18, 63, .9) 0%, rgba(20, 18, 63, .66) 42%, rgba(20, 18, 63, .08) 85%); }
+@media (max-width: 767px) {
+	body:has(.ezs-navflat) .ez37 .ezs-hero__stage { min-height: 540px; }
+	body:has(.ezs-navflat) .ez37 .ezs-hero__inner { padding-top: 64px; padding-bottom: 80px; }
+	body:has(.ezs-navflat) .ez37 .ezs-hero__shade { background: linear-gradient(180deg, rgba(20, 18, 63, .85) 0%, rgba(20, 18, 63, .65) 100%); }
+}
+
+/* DEV ONLY nav switch (home-local.php $nav_switch) */
+.ezs-navswitch { position: fixed; left: 12px; bottom: 12px; z-index: 99999; padding: 10px 14px; border: 0; border-radius: 999px; background: #14123f; color: #fff; font: 600 12px "Poppins", sans-serif; box-shadow: 0 8px 24px rgba(20, 18, 63, .35); cursor: pointer; }
+
+/* Per-slide copy: stacked in one grid cell, cross-faded with the photo */
+.ez37 .ezs-hero__copies { display: grid; max-width: 640px; }
+.ez37 .ezs-hero__copies .ezs-hero__copy { grid-area: 1 / 1; max-width: none; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .8s ease, transform .8s ease, visibility 0s linear .8s; }
+.ez37 .ezs-hero__copies .ezs-hero__copy.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity .8s ease .15s, transform .8s ease .15s, visibility 0s; }
+@media (prefers-reduced-motion: reduce) { .ez37 .ezs-hero__copies .ezs-hero__copy, .ez37 .ezs-hero__copies .ezs-hero__copy.is-on { transition: none; transform: none; } }
+
+/* Section titles: accent words */
+.ez37 .ezs-h2 span { color: var(--ez37-coral-deep); }
+.ez37 .ezs-grid .ezs-eyebrow { margin-bottom: 8px; }
+.ez37 .ezh-about__text > .ezs-eyebrow { align-self: flex-start; }
+
+/* ---------- Quote band ---------- */
+.ez37 .ezs-quote { background: var(--ez37-indigo-deep); padding: 72px 0; position: relative; overflow: hidden; }
+.ez37 .ezs-quote::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 85% 20%, rgba(255, 90, 71, .22) 0, rgba(255, 90, 71, 0) 45%), radial-gradient(circle at 10% 90%, rgba(67, 56, 202, .55) 0, rgba(67, 56, 202, 0) 50%); pointer-events: none; }
+.ez37 .ezs-quote__fig { position: relative; margin: 0 auto; max-width: 860px; text-align: center; }
+.ez37 .ezs-quote__mark { display: block; font: 700 96px/0.6 "Poppins", sans-serif; color: var(--ez37-coral); margin-bottom: 18px; }
+.ez37 .ezs-quote blockquote { margin: 0; padding: 0; border: 0; font: 600 32px/1.4 "Poppins", sans-serif; color: #fff; }
+.ez37 .ezs-quote figcaption { margin-top: 22px; font: 500 14px "Inter", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #c9c6ff; }
+.ez37 .ezs-quote figcaption::before { content: ""; display: block; width: 48px; height: 2px; margin: 0 auto 16px; background: var(--ez37-coral); }
+@media (max-width: 767px) { .ez37 .ezs-quote { padding: 48px 0; } .ez37 .ezs-quote blockquote { font-size: 22px; } .ez37 .ezs-quote__mark { font-size: 72px; } }
+
+/* ===== Round 2 ===== */
+/* Small section labels: bold, plain text (no outline) */
+.ez37 .ezs-eyebrow { font-weight: 700; }
+.ez37 .ezh-center .ezs-eyebrow { display: block; text-align: center; }
+
+/* Quote band: ~40% shorter and truly centred */
+.ez37 .ezs-quote .elementor-widget-html, .ez37 .ezs-quote .elementor-widget-container { width: 100%; }
+.ez37 .ezs-quote { padding: 34px 0; }
+.ez37 .ezs-quote__fig { max-width: 980px; width: 100%; margin: 0 auto; text-align: center; }
+.ez37 .ezs-quote__mark { font-size: 52px; line-height: .55; height: 24px; margin: 0 0 8px; }
+.ez37 .ezs-quote blockquote { font-size: 26px; line-height: 1.35; text-align: center; margin: 0 auto; }
+.ez37 .ezs-quote figcaption { margin-top: 10px; font-size: 13px; }
+.ez37 .ezs-quote figcaption::before { display: none; }
+@media (max-width: 767px) { .ez37 .ezs-quote { padding: 28px 0; } .ez37 .ezs-quote blockquote { font-size: 19px; } .ez37 .ezs-quote__mark { font-size: 44px; height: 20px; } }
+
+/* Testimonials carousel: 2 per view (desktop), 1 (mobile) */
+.ez37 .ezs-tcar { max-width: 1100px; margin: 8px auto 0; }
+.ez37 .ezs-tcar__track { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 8px 4px 28px; margin: 0 -4px; }
+.ez37 .ezs-tcar__track::-webkit-scrollbar { display: none; }
+.ez37 .ezs-tcar__track > .ezh-quote { flex: 0 0 calc((100% - 24px) / 2); scroll-snap-align: start; box-sizing: border-box; }
+.ez37 .ezs-tcar__nav { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.ez37 .ezs-tcar.is-single .ezs-tcar__nav { display: none; }
+.ez37 .ezs-tcar__prev, .ez37 .ezs-tcar__next { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--ez37-indigo); background: #fff; color: var(--ez37-indigo); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s ease, color .2s ease, opacity .2s ease; }
+.ez37 .ezs-tcar__prev:hover:not(:disabled), .ez37 .ezs-tcar__next:hover:not(:disabled) { background: var(--ez37-indigo); color: #fff; }
+.ez37 .ezs-tcar__prev:disabled, .ez37 .ezs-tcar__next:disabled { opacity: .35; cursor: default; }
+.ez37 .ezs-tcar__dots { display: flex; gap: 8px; align-items: center; }
+.ez37 .ezs-tcar__dot { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: #b9b6e6; cursor: pointer; transition: width .25s ease, background .25s ease; }
+.ez37 .ezs-tcar__dot.is-on { width: 26px; border-radius: 6px; background: var(--ez37-indigo); }
+@media (max-width: 767px) { .ez37 .ezs-tcar__track > .ezh-quote { flex-basis: 100%; } .ez37 .ezs-tcar__track { gap: 16px; } }
+
+/* Meet your coaching team: bigger circle stroke */
+.ez37 .ezh-circle path { stroke-width: 9; }
+
+/* Meet your coaching team (desktop): full width, square edges, 40 / 60, equal heights */
+@media (min-width: 1025px) {
+	.ez37 .ezh-team { padding-left: 0; padding-right: 0; }
+	.ez37 .ezh-team > .ezh-wrap { max-width: none; padding: 0; }
+	.ez37 .ezh-team .ezh-sec-head { padding: 0 24px; }
+	.ez37 .ezh-team__grid { max-width: none; margin: 0; width: 100%; grid-template-columns: 2fr 3fr; gap: 0; align-items: stretch; }
+	.ez37 .ezh-team .ezh-tcard { border-radius: 0; border: 0; padding: 48px 56px; box-sizing: border-box; }
+	.ez37 .ezh-team .ezh-tcard.ezh-coach { background: var(--ez37-mist); display: flex; flex-direction: column; }
+	.ez37 .ezh-team .ezh-tcard:not(.ezh-coach) { background: var(--ez37-tint); }
+	.ez37 .ezh-coach__panel:not([hidden]) { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+	.ez37 .ezh-coach .ezh-portrait { flex: 1; aspect-ratio: auto; min-height: 360px; margin-bottom: 28px; }
+	.ez37 .ezh-coach .ezh-coach__portfolio { margin-bottom: 18px; }
+	.ez37 .ezh-coach .ez37-btn-outline { align-self: flex-start; }
+	.ez37 .ezh-team .ezh-avatars { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 24px; }
+}
+
+/* Feature bands: square image edges */
+.ez37 .ezs-band__img { border-radius: 0; }
+
+/* Quote band: force full-width layout box so the content is truly centred */
+.ez37 .ezs-quote { align-items: stretch !important; }
+.ez37 .ezs-quote > .elementor-widget, .ez37 .ezs-quote .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezs-quote .ezh-wrap { width: 100%; margin-left: auto; margin-right: auto; }
+.ez37 .ezs-quote blockquote { padding: 0 !important; border: 0 !important; margin: 0 auto !important; max-width: 100%; }
+
+/* Full-bleed band (preview): big title near the left margin; image fills the whole height and runs to the right edge */
+.ez37 .ezs-band.is-bleed { padding: 0; align-items: stretch !important; }
+.ez37 .ezs-band.is-bleed > .elementor-widget, .ez37 .ezs-band.is-bleed .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezs-band.is-bleed .ezs-band__grid { grid-template-columns: 1.3fr 1fr; gap: 0; align-items: stretch; }
+.ez37 .ezs-band.is-bleed .ezs-band__text { padding: 80px 56px 80px clamp(24px, 4vw, 64px); align-self: center; }
+.ez37 .ezs-band.is-bleed .ezs-h2 { font-size: 50px; line-height: 1.1; margin-bottom: 28px; }
+.ez37 .ezs-band.is-bleed .ezs-band__text p { font-size: 18px; max-width: 640px; }
+.ez37 .ezs-band.is-bleed .ezs-band__img { position: relative; aspect-ratio: auto; min-height: 560px; border-radius: 0; box-shadow: none; }
+.ez37 .ezs-band.is-bleed .ezs-band__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 20%; }
+@media (max-width: 1024px) {
+	.ez37 .ezs-band.is-bleed .ezs-h2 { font-size: 44px; }
+	.ez37 .ezs-band.is-bleed .ezs-band__grid { grid-template-columns: 1fr; }
+	.ez37 .ezs-band.is-bleed .ezs-band__img { order: -1; min-height: 0; aspect-ratio: 4 / 3; }
+	.ez37 .ezs-band.is-bleed .ezs-band__text { padding: 40px 20px 48px; }
+}
+@media (max-width: 767px) { .ez37 .ezs-band.is-bleed .ezs-h2 { font-size: 34px; } }
+
+/* Full-bleed band with the image on the left (Assessments): image runs to the left edge */
+@media (min-width: 1025px) {
+	.ez37 .ezs-band.is-bleed.is-flip .ezs-band__grid { grid-template-columns: 1fr 1.3fr; }
+	.ez37 .ezs-band.is-bleed.is-flip .ezs-band__text { padding: 80px clamp(24px, 4vw, 64px) 80px 56px; }
+}
+
+/* Full-bleed bands share one background (white) with breathing space between them */
+.ez37 .ezs-band.is-bleed { background: #fff !important; }
+.ez37 .ezs-band.is-bleed.is-flip { background: var(--ez37-mist) !important; }
+/* No extra gap between Coaching Programmes and Assessments; Assessments image sits inset top and bottom, flush to the left edge */
+.ez37 .ezs-band.is-bleed { padding-bottom: 0 !important; }
+.ez37 .ezs-band.is-bleed.is-flip { padding: 56px 0 56px 56px !important; }
+.ez37 .ezs-band.is-bleed.is-flip .ezs-band__img { min-height: 480px; }
+@media (max-width: 1024px) { .ez37 .ezs-band.is-bleed.is-flip { padding-top: 0 !important; padding-bottom: 0 !important; } }
+
+/* Extra closing paragraph in a band (no list / no button) */
+.ez37 .ezs-band.is-bleed .ezs-band__extra { margin-top: 18px; font-size: 18px; max-width: 640px; }
+.ez37 .ezs-band.is-bleed .ezs-band__extra strong { color: var(--ez37-ink); }
+@media (max-width: 1024px) { .ez37 .ezs-band.is-bleed.is-flip { padding: 0 !important; } }
+
+/* Testimonials intro + call-out */
+.ez37 .ezs-proof__intro { max-width: 860px; margin: 22px auto 0; font-size: 18px; line-height: 1.7; color: var(--ez37-body); text-align: center; }
+.ez37 .ezs-proof__intro a { color: var(--ez37-indigo); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.ez37 .ezs-proof__intro a:hover { color: var(--ez37-coral-deep); }
+.ez37 .ezs-proof__call { margin: 36px auto 0; display: flex; flex-direction: column; align-items: center; gap: 16px; font: 700 34px/1.2 "Poppins", sans-serif; letter-spacing: -0.01em; color: var(--ez37-ink); text-align: center; }
+.ez37 .ezs-proof__call em { font-style: normal; color: var(--ez37-coral); background: linear-gradient(var(--ez37-coral), var(--ez37-coral)) 0 100% / 100% 6px no-repeat; padding-bottom: 4px; }
+.ez37 .ezs-proof__rule { display: block; width: 64px; height: 4px; background: var(--ez37-coral); }
+@media (max-width: 767px) { .ez37 .ezs-proof__call { font-size: 24px; } .ez37 .ezs-proof__intro { font-size: 16px; } }
+
+/* Highlighted line before the button (Coaching Programmes) */
+.ez37 .ezs-band.is-bleed .ezs-band__extra.is-callout { margin: 28px 0 30px; padding: 4px 0 4px 20px; border-left: 4px solid var(--ez37-coral); font: 600 21px/1.45 "Poppins", sans-serif; color: var(--ez37-indigo-deep); max-width: 600px; }
+@media (max-width: 767px) { .ez37 .ezs-band.is-bleed .ezs-band__extra.is-callout { font-size: 18px; } }
+
+/* Discover section: square corners on the MD photo (and its ring) and on the "17 years" box */
+.ez37 .ezh-ceo img { border-radius: 0 !important; }
+.ez37 .ezh-years { border-radius: 0 !important; }
+
+.ez37 .ezs-band.is-bleed .ezs-band__extra.is-callout strong { font-weight: 700; color: var(--ez37-indigo-deep); }
+
+/* Quote band, desktop centring (hard reset): plain block layout so nothing in the Elementor flex container can push the content off-centre */
+.ez37 .ezs-quote.e-con, .ez37 .ezs-quote { display: block !important; padding-left: 0 !important; padding-right: 0 !important; text-align: center; }
+.ez37 .ezs-quote > .elementor-widget, .ez37 .ezs-quote > .e-con-inner { display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+.ez37 .ezs-quote .elementor-widget-container { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+.ez37 .ezs-quote .ezh-wrap { display: block; width: 100%; max-width: 1200px; margin: 0 auto !important; padding: 0 24px; box-sizing: border-box; text-align: center; }
+.ez37 .ezs-quote__fig { display: block; width: 100%; max-width: 980px; margin: 0 auto !important; padding: 0 !important; text-align: center; }
+.ez37 .ezs-quote__mark, .ez37 .ezs-quote blockquote, .ez37 .ezs-quote figcaption { display: block; width: 100%; margin-left: auto !important; margin-right: auto !important; padding-left: 0 !important; padding-right: 0 !important; text-align: center !important; }
+
+.ez37 .ezs-band__text .ezs-link { display: inline-block; margin-top: 14px; }
+
+
+/* Meet your coaching team: soft grey section background for a clear break from the section above */
+.ez37 .ezh-team { background: #ECECF1 !important; }
+
+/* Meet your coaching team: content spans wider, with the same side margin as the Learning and Certification text, equal left and right */
+.ez37 .ezh-team { align-items: stretch !important; }
+.ez37 .ezh-team > .elementor-widget, .ez37 .ezh-team .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezh-team > .elementor-widget .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+@media (min-width: 1025px) {
+	.ez37 .ezh-team .ezh-sec-head { padding-left: 0; padding-right: 0; }
+	.ez37 .ezh-team__grid { width: 100%; max-width: none; margin: 0; }
+}
+
+/* Coach profile link: text link like the Our Solutions cards */
+.ez37 .ezh-coach .ezs-link { display: inline-block; align-self: flex-start; margin-top: 4px; }
+
+/* Meet your coaching team: very light tint of the portrait backdrop colour (coral) */
+.ez37 .ezh-team { background: #FDEFEC !important; }
+
+/* Discover the EZ37 Difference + How We Support You: same width and side margins as Meet Your Coaching Team (equal left and right) */
+.ez37 .ezh-about, .ez37 .ezs-grid { align-items: stretch !important; }
+.ez37 .ezh-about > .elementor-widget, .ez37 .ezs-grid > .elementor-widget,
+.ez37 .ezh-about .elementor-widget-container, .ez37 .ezs-grid .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezh-about .ezh-wrap, .ez37 .ezs-grid .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+
+/* Meet Your Coaching Team: section takes the old left-panel lavender; the left (main image) panel becomes white */
+.ez37 .ezh-team { background: var(--ez37-mist) !important; }
+.ez37 .ezh-team .ezh-tcard.ezh-coach { background: #fff !important; }
+
+/* ---------- Home: hero sized so the client logo slide shows above the fold ---------- */
+body:has(.ezs-navflat) .ez37 .ezs-hero__stage { min-height: clamp(440px, calc(100svh - 250px), 600px); }
+body:has(.ezs-navflat) .ez37 .ezs-hero__inner { padding-top: 56px; padding-bottom: 72px; }
+.ez37 .ezs-hero h1, .ez37 .ezs-hero .ezs-hero__title { font-size: clamp(38px, 4.4vw, 56px); margin-bottom: 16px; }
+.ez37 .ezs-hero p { margin-bottom: 26px; }
+.ez37 .ezh-logos { padding-top: 22px; padding-bottom: 28px; }
+.ez37 .ezh-logos p { font-size: 16px; margin-bottom: 12px; }
+@media (max-width: 767px) {
+	body:has(.ezs-navflat) .ez37 .ezs-hero__stage { min-height: 500px; }
+	body:has(.ezs-navflat) .ez37 .ezs-hero__inner { padding-top: 48px; padding-bottom: 64px; }
+}
+
+/* ---------- Home: halve the gap between Our Solutions and the Coaching Team (was 80 + 96 = 176px) ---------- */
+.ez37 .ezs-grid { padding-bottom: 40px; }
+.ez37 .ezh-team { padding-top: 48px; }
+@media (max-width: 767px) {
+	.ez37 .ezs-grid { padding-bottom: 24px; }
+	.ez37 .ezh-team { padding-top: 32px; }
+}
+
+/* ---------- Home: halve the gap between the Coaching Team and Testimonials (was 96 + 96 = 192px) ---------- */
+.ez37 .ezh-team { padding-bottom: 48px; }
+.ez37 .ezh-numbers { padding-top: 48px; }
+@media (max-width: 767px) {
+	.ez37 .ezh-team { padding-bottom: 32px; }
+	.ez37 .ezh-numbers { padding-top: 32px; }
+}
+
+/* ---------- Home: Case study card, full width like the other Home sections; tighter gap after Testimonials ---------- */
+.ez37 .ezh-numbers { padding-bottom: 48px; }
+.ez37 .ezh-case { padding: 48px 0 72px; align-items: stretch !important; }
+.ez37 .ezh-case > .elementor-widget, .ez37 .ezh-case .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezh-case .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+.ez37 .ezh-case__card { max-width: none; border-radius: 0; }
+@media (max-width: 767px) {
+	.ez37 .ezh-numbers { padding-bottom: 32px; }
+	.ez37 .ezh-case { padding: 32px 0 48px; }
+	.ez37 .ezh-case__body { grid-template-columns: 1fr; }
+}
+
+/* ---------- Case study: no curved edges anywhere in the card ---------- */
+.ez37 .ezh-case__card, .ez37 .ezh-case__img, .ez37 .ezh-case__res { border-radius: 0 !important; }
+.ez37 .ezh-case .ezh-tag { border-radius: 0; }
+.ez37 .ezh-case .ezh-res div { border-radius: 0; }
+.ez37 .ezh-case__item .ezh-chipx { border-radius: 0; }
+
+/* ---------- Home: quote band sits flush against the logo slide above and tight to Our Solutions below ---------- */
+.ez37 .ezh-logos { padding-bottom: 0; }
+.ez37 .ezh-logos .ezh-marquee { margin-bottom: 0; }
+.ez37 .ezs-quote { margin: 0; }
+.ez37 .ezs-grid { padding-top: 32px; }
+@media (max-width: 767px) { .ez37 .ezs-grid { padding-top: 24px; } }
+
+/* ---------- Home: section headings left-aligned (like Our Solutions); Testimonials, Case study and Resources full width ---------- */
+.ez37 .ezh-team .ezh-center, .ez37 .ezh-numbers .ezh-center, .ez37 .ezh-case .ezh-center, .ez37 .ezh-res-band .ezh-center { text-align: left; }
+.ez37 .ezh-team .ezh-center .ezs-eyebrow, .ez37 .ezh-numbers .ezh-center .ezs-eyebrow, .ez37 .ezh-case .ezh-center .ezs-eyebrow, .ez37 .ezh-res-band .ezh-center .ezs-eyebrow { text-align: left; margin-bottom: 8px; }
+.ez37 .ezh-team .ezh-center .ezh-lead, .ez37 .ezh-numbers .ezs-proof__intro { text-align: left; margin-left: 0; margin-right: 0; max-width: 860px; }
+.ez37 .ezh-numbers, .ez37 .ezh-res-band { align-items: stretch !important; }
+.ez37 .ezh-numbers > .elementor-widget, .ez37 .ezh-numbers .elementor-widget-container,
+.ez37 .ezh-res-band > .elementor-widget, .ez37 .ezh-res-band .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezh-numbers .ezh-wrap, .ez37 .ezh-res-band .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+.ez37 .ezh-numbers .ezs-tcar { max-width: none; }
+.ez37 .ezh-res-band .ezh-cta-center { text-align: left; }
+
+/* ---------- Case study: no icons, bigger bolder headings, larger body text ---------- */
+.ez37 .ezh-case__item { display: block; }
+.ez37 .ezh-case__text { gap: 28px; }
+.ez37 .ezh-case__text h5 { font: 700 15px/1.3 "Poppins", sans-serif; letter-spacing: 0.12em; margin: 0 0 8px; }
+.ez37 .ezh-case__text p { font-size: 18px; line-height: 1.7; }
+.ez37 .ezh-case__text a.lnk { font-size: 17px; }
+.ez37 .ezh-case__res h5 { font: 700 15px/1.3 "Poppins", sans-serif; letter-spacing: 0.12em; margin: 0 0 22px; }
+.ez37 .ezh-case .ezh-res span { font-size: 16px; }
+
+/* ---------- Case study: outcome column starts on the Challenge row and its tiles fill the full height ---------- */
+.ez37 .ezh-case__res { align-items: stretch; }
+.ez37 .ezh-case__resin { display: flex; flex-direction: column; }
+.ez37 .ezh-case .ezh-res { flex: 1 1 auto; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.ez37 .ezh-case .ezh-res div { min-height: 0; }
+@media (max-width: 767px) { .ez37 .ezh-case .ezh-res { grid-template-rows: none; } }
+
+/* ---------- Testimonials intro spans the full content width ---------- */
+.ez37 .ezh-numbers .ezs-proof__intro { max-width: none; width: 100%; }
+
+/* ---------- Programme tabs (Home): two programmes, Enrol Now goes to each programme page ---------- */
+.ez37 .ezpt-sec { background: #fff; padding: 72px 0; align-items: stretch !important; }
+.ez37 .ezpt-sec > .elementor-widget, .ez37 .ezpt-sec .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezpt-sec .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+.ez37 .ezpt-sec .ezh-center { text-align: left; }
+.ez37 .ezpt-sec .ezh-center .ezs-eyebrow { text-align: left; margin-bottom: 8px; }
+.ez37 .ezpt-sec .ezs-proof__intro { text-align: left; margin-left: 0; max-width: none; }
+.ez37 .ezpt__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 24px; }
+.ez37 .ezpt__tab { appearance: none; cursor: pointer; text-align: center; padding: 22px 24px; border: 2px solid var(--ez37-line); background: #fff; color: var(--ez37-ink); display: flex; flex-direction: column; gap: 6px; align-items: center; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.ez37 .ezpt__tab b { font: 600 19px/1.3 "Poppins", sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+.ez37 .ezpt__tab i { font: 500 15px/1.3 "Inter", sans-serif; font-style: normal; color: var(--ez37-body); }
+.ez37 .ezpt__tab:hover { border-color: var(--ez37-indigo); }
+.ez37 .ezpt__tab.is-on { background: var(--ez37-indigo); border-color: var(--ez37-indigo); color: #fff; }
+.ez37 .ezpt__tab.is-on i { color: #e4e2ff; }
+.ez37 .ezpt__tab:focus-visible { outline: 3px solid var(--ez37-coral-deep); outline-offset: 3px; }
+.ez37 .ezpt__panel[hidden] { display: none; }
+.ez37 .ezpt__panel.is-on { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); border: 1px solid var(--ez37-line); background: #fff; box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezpt__img { min-height: 380px; background: var(--ez37-tint); }
+.ez37 .ezpt__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ez37 .ezpt__text { padding: 48px 52px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 18px; }
+.ez37 .ezpt__text h3 { font: 600 30px/1.2 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0; }
+.ez37 .ezpt__text p { font: 400 18px/1.7 "Inter", sans-serif; color: var(--ez37-body); margin: 0; }
+.ez37 .ezpt__text ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ez37 .ezpt__text li { position: relative; padding-left: 26px; font: 500 17px/1.5 "Inter", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezpt__text li::before { content: ""; position: absolute; left: 0; top: 9px; width: 9px; height: 9px; background: var(--ez37-coral-deep); }
+@media (max-width: 900px) {
+	.ez37 .ezpt-sec { padding: 40px 0; }
+	.ez37 .ezpt__tabs { grid-template-columns: 1fr; gap: 12px; }
+	.ez37 .ezpt__panel.is-on { grid-template-columns: 1fr; }
+	.ez37 .ezpt__img { min-height: 240px; }
+	.ez37 .ezpt__text { padding: 28px 22px; }
+}
+
+/* ---------- Programme tabs: tabs line up with the image and text columns; background swapped with Resources ---------- */
+.ez37 .ezpt__tabs { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0; }
+.ez37 .ezpt__tab + .ezpt__tab { margin-left: -2px; }
+.ez37 .ezpt__tab.is-on { position: relative; z-index: 1; }
+.ez37 .ezpt__panel.is-on { border: 0; box-shadow: 0 0 0 1px var(--ez37-line), var(--ez37-shadow-card-hover); }
+.ez37 .ezpt-sec { background: var(--ez37-tint); }
+.ez37 .ezh-res-band { background: #fff; }
+@media (max-width: 900px) {
+	.ez37 .ezpt__tabs { grid-template-columns: 1fr; gap: 12px; }
+	.ez37 .ezpt__tab + .ezpt__tab { margin-left: 0; }
+}
+
+/* ---------- Programme tabs: both panels share one fixed size so the page never jumps when switching tabs ---------- */
+.ez37 .ezpt__panel.is-on { grid-template-rows: 560px; }
+.ez37 .ezpt__img { position: relative; min-height: 0; height: 560px; overflow: hidden; }
+.ez37 .ezpt__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.ez37 .ezpt__text { height: 560px; box-sizing: border-box; overflow: hidden; }
+@media (max-width: 900px) {
+	.ez37 .ezpt__panel.is-on { grid-template-rows: 260px auto; }
+	.ez37 .ezpt__img { height: 260px; }
+	.ez37 .ezpt__text { height: auto; overflow: visible; }
+}
+
+/* ---------- Home: less space under the EZ37 Difference section, before the quote band (was 96px) ---------- */
+.ez37 .ezh-about { padding-bottom: 32px; }
+@media (max-width: 767px) { .ez37 .ezh-about { padding-bottom: 24px; } }
+
+/* ---------- Programme tabs: three tabs; taller fixed panel so every tab fits ---------- */
+.ez37 .ezpt__tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ez37 .ezpt__tab b { font-size: 16px; }
+.ez37 .ezpt__panel.is-on { grid-template-rows: 640px; }
+.ez37 .ezpt__img, .ez37 .ezpt__text { height: 640px; }
+.ez37 .ezpt__text { padding: 40px 52px; gap: 16px; }
+.ez37 .ezpt__text p { font-size: 17px; line-height: 1.65; }
+.ez37 .ezpt__text li { font-size: 16px; }
+@media (max-width: 900px) {
+	.ez37 .ezpt__tabs { grid-template-columns: 1fr; }
+	.ez37 .ezpt__panel.is-on { grid-template-rows: 260px auto; }
+	.ez37 .ezpt__img { height: 260px; }
+	.ez37 .ezpt__text { height: auto; }
+}
+
+/* Programme tabs: compact, wrap-safe text */
+.ez37 .ezpt__tab { padding: 16px 14px; min-width: 0; gap: 4px; overflow: hidden; }
+.ez37 .ezpt__tab b { font-size: 13px; line-height: 1.3; letter-spacing: .02em; overflow-wrap: anywhere; white-space: normal; max-width: 100%; }
+.ez37 .ezpt__tab i { font-size: 13px; line-height: 1.35; max-width: 100%; }
+@media (max-width: 900px) {
+	.ez37 .ezpt__tab { padding: 14px 16px; }
+	.ez37 .ezpt__tab b { font-size: 13px; }
+	.ez37 .ezpt__tab i { font-size: 13px; }
+}
+
+/* Programme tabs: larger titles (wrap allowed); swipe row on mobile */
+.ez37 .ezpt__tab { padding: 20px 18px; }
+.ez37 .ezpt__tab b { font-size: 17px; line-height: 1.3; }
+.ez37 .ezpt__tab i { font-size: 14px; }
+@media (max-width: 900px) {
+	.ez37 .ezpt__tabs { display: flex; grid-template-columns: none; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 8px; scrollbar-width: thin; }
+	.ez37 .ezpt__tab, .ez37 .ezpt__tab + .ezpt__tab { flex: 0 0 82%; scroll-snap-align: center; margin-left: 0; justify-content: center; }
+	.ez37 .ezpt__tab b { font-size: 16px; }
+}
+.ez37 .ezh-case .ezh-case__cta { text-align: left; margin-top: 32px; }
+.ez37 .ezh-quote p + p { margin-top: 12px; }
+
+/* Testimonials: tighter paragraph spacing, only the last paragraph stretches */
+.ez37 .ezh-quote p { flex: 0 0 auto; }
+.ez37 .ezh-quote p:last-of-type { flex: 1 1 auto; }
+.ez37 .ezh-quote p + p { margin-top: -8px; }
+
+/* How We Partner With You (Home): full width, left-aligned head, square corners, white band */
+.ez37 .ezh-process { align-items: stretch !important; background: #fff; margin-top: 0; padding: 64px 0; }
+.ez37 .ezh-process > .elementor-widget, .ez37 .ezh-process .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezh-process .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+.ez37 .ezh-process .ezh-center { text-align: left; }
+.ez37 .ezh-process .ezh-center .ezs-eyebrow { text-align: left; margin-bottom: 8px; }
+.ez37 .ezh-process .ezh-tl { max-width: none; margin-top: 32px; }
+.ez37 .ezh-process .ezh-step__media { border-radius: 0; min-height: 260px; }
+.ez37 .ezh-process .ezh-step__text h3 { font-size: 28px; margin-bottom: 10px; }
+.ez37 .ezh-process .ezh-step__text p { font-size: 18px; line-height: 1.65; }
+.ez37 .ezh-process .ezh-step__text small { font-size: 13px; }
+.ez37 .ezh-process .ezh-step__media.m4 img { object-position: 50% 60%; }
+@media (max-width: 767px) { .ez37 .ezh-process { padding: 40px 0; } }
+
+/* How We Partner With You: horizontal four-step row, no photos */
+.ez37 .ezh-process .ezh-tl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin-top: 48px; position: relative; }
+.ez37 .ezh-process .ezh-tl::before { left: 24px; right: 24px; top: 24px; bottom: auto; width: auto; height: 2px; transform: none; background: var(--ez37-line); }
+.ez37 .ezh-process .ezh-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+.ez37 .ezh-process .ezh-step__dot { opacity: 1; width: 48px; height: 48px; flex: 0 0 auto; }
+.ez37 .ezh-process .ezh-step__text small { display: none; }
+.ez37 .ezh-process .ezh-step__text h3 { font-size: 22px; margin: 0 0 8px; }
+.ez37 .ezh-process .ezh-step__text p { font-size: 16px; line-height: 1.6; margin: 0 auto; max-width: 260px; }
+@media (max-width: 900px) {
+	.ez37 .ezh-process .ezh-tl { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+	.ez37 .ezh-process .ezh-tl::before { display: none; }
+}
+@media (max-width: 560px) {
+	.ez37 .ezh-process .ezh-tl { grid-template-columns: 1fr; }
+	.ez37 .ezh-process .ezh-step { flex-direction: row; text-align: left; align-items: flex-start; gap: 16px; }
+	.ez37 .ezh-process .ezh-step__text p { margin: 0; max-width: none; }
+}
+
+/* Home: How We Partner With You — lead line */
+.ezh-process .ezh-process__lead{margin:14px 0 0 !important;max-width:640px;text-align:left !important;font-size:18px;line-height:1.6;color:#4a4a68 !important}
+
+/* Home: tighter gap between How We Partner With You and Learn With Us */
+.ez37 .ezh-process { padding-bottom: 16px !important; }
+.ez37 .ezh-res-band { padding-top: 56px !important; }
+
+/* Home: How We Partner With You now sits between the Case study and Your Path — tight above, roomy below */
+.ez37 .ezh-process { padding-top: 24px !important; padding-bottom: 88px !important; }
+@media (max-width: 767px) { .ez37 .ezh-process { padding-top: 16px !important; padding-bottom: 56px !important; } }
+
+/* Home: Get Started button now sits under How We Partner With You (moved from the Case study) */
+.ez37 .ezh-process .ezh-process__cta { text-align: left; margin-top: 48px; }
+
+/* Programme tabs: label and sub-label centred horizontally and vertically in every tab */
+.ez37 .ezpt__tab { display: flex !important; flex-direction: column; align-items: center !important; justify-content: center !important; text-align: center !important; }
+.ez37 .ezpt__tab b, .ez37 .ezpt__tab i { display: block; width: 100%; text-align: center; }
+
+/* Transformational outcome tiles: larger figures and labels on desktop */
+@media (min-width: 1025px) {
+	.ez37 .ezh-case .ezh-res b { font-size: 60px; }
+	.ez37 .ezh-case .ezh-res b i { font-size: 30px; }
+	.ez37 .ezh-case .ezh-res b em { font-size: 32px; }
+	.ez37 .ezh-case .ezh-res span { font-size: 21px; margin-top: 10px; }
+}
+
+/* Alumni band (Peer to Peer Coaching) on the home page */
+.ez37 .ezs-alumni { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; background: #fff; border: 1px solid var(--ez37-line); border-radius: 24px; padding: 32px; box-shadow: var(--ez37-shadow-card); }
+.ez37 .ezs-alumni > * { min-width: 0; }
+.ez37 .ezs-alumni__img img { display: block; width: 100%; height: auto; border-radius: 16px; }
+.ez37 .ezs-alumni__text .ezh-h2 { text-align: left; margin: 6px 0 14px; }
+.ez37 .ezs-alumni__text p { font: 400 17px/1.7 "Inter", sans-serif; color: var(--ez37-body); margin: 0 0 16px; }
+.ez37 .ezs-alumni__text ul { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 10px; }
+.ez37 .ezs-alumni__text li { position: relative; padding-left: 22px; font: 500 16px "Inter", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezs-alumni__text li::before { content: ""; position: absolute; left: 0; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--ez37-coral-deep); }
+@media (max-width: 900px) { .ez37 .ezs-alumni { grid-template-columns: 1fr; gap: 24px; padding: 20px; } }
+
+/* Learn With Us band: soft indigo tint to separate it from the alumni band above. */
+.ez37 .ezh-res-band { background: var(--ez37-tint) !important; padding-top: 80px !important; padding-bottom: 80px !important; }
+.ez37 .ezh-res-band .ezh-rcard:not(.is-solid) { background: #fff; border-color: transparent; }
+
+/* Mobile fix: image-left bands (is-flip) kept a 480px min-height, which with the 4:3 ratio forced the image ~640px wide and pushed the page wider than the phone */
+@media (max-width: 1024px) {
+	.ez37 .ezs-band.is-bleed.is-flip .ezs-band__img { min-height: 0 !important; width: 100%; max-width: 100%; }
+	.ez37 .ezs-band.is-bleed .ezs-band__grid > * { min-width: 0; }
+}

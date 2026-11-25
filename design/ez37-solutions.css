@@ -1,0 +1,67 @@
+/* ---------- Solutions page: "Where do you want to start?" ---------- */
+.ez37 .ezsol-start { background: #fff; padding: 56px 0 32px; align-items: stretch !important; }
+.ez37 .ezsol-start > .elementor-widget, .ez37 .ezsol-start .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezsol-start .ezh-wrap { width: 100%; max-width: none; margin: 0; padding-left: clamp(24px, 4vw, 64px); padding-right: clamp(24px, 4vw, 64px); box-sizing: border-box; }
+.ez37 .ezsol-eyebrow { display: flex; align-items: center; gap: 16px; font: 600 13px "Poppins", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ez37-indigo); margin: 0 0 20px; }
+.ez37 .ezsol-eyebrow::before { content: ""; width: 48px; height: 2px; background: var(--ez37-indigo); }
+.ez37 .ezsol-start__box { border: 1px solid var(--ez37-line); background: #fff; box-shadow: var(--ez37-shadow-card-hover); }
+.ez37 .ezsol-start__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ez37 .ezsol-start__card { display: flex; flex-direction: column; padding: 48px 50px 40px; text-decoration: none; background: #fff; border-right: 1px solid var(--ez37-line); transition: background .2s ease; }
+.ez37 .ezsol-start__card:nth-child(2) { background: var(--ez37-mist); }
+.ez37 .ezsol-start__card:last-child { border-right: 0; }
+.ez37 .ezsol-start__card:hover { background: var(--ez37-tint); }
+.ez37 .ezsol-start__card .ezh-chipx { width: 56px; height: 56px; border-radius: 0; margin-bottom: 28px; }
+.ez37 .ezsol-start__card .ezh-chipx .ezh-ico { width: 26px; height: 26px; }
+.ez37 .ezsol-start__card h3 { font: 600 30px/1.2 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 12px; }
+.ez37 .ezsol-start__card p { font: 400 17px/1.6 "Inter", sans-serif; color: var(--ez37-body); margin: 0 0 32px; }
+.ez37 .ezsol-start__link { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid var(--ez37-line); font: 600 17px "Poppins", sans-serif; color: var(--ez37-ink); }
+.ez37 .ezsol-start__link i { flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--ez37-indigo); color: #fff; display: inline-flex; align-items: center; justify-content: center; transition: transform .25s ease; }
+.ez37 .ezsol-start__card.is-coral .ezsol-start__link i { background: var(--ez37-coral-deep); }
+.ez37 .ezsol-start__link i .ezh-ico { width: 22px; height: 22px; }
+.ez37 .ezsol-start__card:hover .ezsol-start__link i { transform: translateX(4px); }
+.ez37 .ezsol-start__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 28px 50px; background: var(--ez37-tint); border-top: 1px solid var(--ez37-line); }
+.ez37 .ezsol-start__foot p { margin: 0; font: 400 18px/1.5 "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezsol-start__foot p b { font-family: "Poppins", sans-serif; font-weight: 600; color: var(--ez37-ink); margin-right: 6px; }
+@media (max-width: 900px) {
+	.ez37 .ezsol-start__grid { grid-template-columns: 1fr; }
+	.ez37 .ezsol-start__card { border-right: 0; border-bottom: 1px solid var(--ez37-line); padding: 32px 24px; }
+	.ez37 .ezsol-start__foot { padding: 24px; }
+}
+
+/* Contained width (not full-bleed like the other sections); no icons */
+.ez37 .ezsol-start .ezh-wrap { max-width: 1080px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+.ez37 .ezsol-start__card { padding: 44px 44px 36px; }
+.ez37 .ezsol-start__card h3 { font-size: 28px; }
+.ez37 .ezsol-start__foot { padding: 26px 44px; }
+@media (max-width: 900px) { .ez37 .ezsol-start__card { padding: 28px 22px; } .ez37 .ezsol-start__foot { padding: 22px; } }
+
+/* Consistent, smaller type across the three paths and the footer strip */
+.ez37 .ezsol-start__card { padding: 36px 36px 30px; }
+.ez37 .ezsol-start__card h3 { font-size: 22px; line-height: 1.25; margin-bottom: 10px; }
+.ez37 .ezsol-start__card p { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+.ez37 .ezsol-start__link { font-size: 15px; line-height: 1.35; padding-top: 18px; }
+.ez37 .ezsol-start__link i { width: 44px; height: 44px; }
+.ez37 .ezsol-start__link i .ezh-ico { width: 18px; height: 18px; }
+.ez37 .ezsol-start__foot { padding: 22px 36px; }
+.ez37 .ezsol-start__foot p { font-size: 16px; }
+.ez37 .ezsol-start__foot a.ez37-btn-outline { font-size: 15px; }
+@media (max-width: 900px) { .ez37 .ezsol-start__card { padding: 26px 22px; } .ez37 .ezsol-start__foot { padding: 20px 22px; } }
+
+/* Less space between the banner and "Where do you want to start?" */
+.ez37 .ezsol-start { padding-top: 24px; }
+@media (max-width: 900px) { .ez37 .ezsol-start { padding-top: 16px; } }
+
+.ez37 .ezs-band__grid[id] { scroll-margin-top: 120px; }
+html { scroll-behavior: smooth; }
+
+.ez37 .ezsol-start.is-label { padding-bottom: 0 !important; }
+.ez37 .ezsol-start.is-label + .ezs-band { margin-top: 0; }
+
+.ez37 .ezs-band.is-bleed.is-flip.is-white { background: #fff !important; }
+.ez37 .ezs-band.is-white .ezs-band__text ul { margin-bottom: 22px; }
+.ez37 .ezs-band.is-white .ezs-band__text li { font-weight: 400; line-height: 1.55; }
+
+/* Public Sector photo: same proportions as the Assessment services image, whatever the text length */
+.ez37 .ezs-band.is-bleed .ezs-band__img.is-fixed { aspect-ratio: 836 / 736; min-height: 0 !important; height: auto; align-self: center; }
+.ez37 .ezs-band.is-bleed .ezs-band__img.is-fixed img { position: static; width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 1024px) { .ez37 .ezs-band.is-bleed .ezs-band__img.is-fixed { aspect-ratio: 4 / 3 !important; } }

@@ -1,0 +1,112 @@
+/* EZ Peer to Peer Coaching page (alumni, free registration). Uses the design tokens only. */
+.ez37 .ezpe-intro { padding: 72px clamp(24px, 4vw, 64px) 24px; background: #fff; }
+.ez37 .ezpe-intro__inner { max-width: 1000px; margin: 0 auto; }
+.ez37 .ezpe-intro h2 { font: 700 clamp(26px, 3vw, 38px)/1.2 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 18px; text-align: left; }
+.ez37 .ezpe-intro p { font: 400 17px/1.7 "Inter", sans-serif; color: var(--ez37-body); margin: 0 0 18px; }
+.ez37 .ezpe-video { margin: 28px 0 0; border-radius: 20px; overflow: hidden; box-shadow: var(--ez37-shadow-card); background: #fff; border: 1px solid var(--ez37-line); }
+.ez37 .ezpe-video video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #fff; }
+.ez37 .ezpe-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 28px; }
+.ez37 .ezpe-cta small { font: 500 14px "Inter", sans-serif; color: var(--ez37-body); }
+.ez37 .ezpe-rows { padding: 24px clamp(24px, 4vw, 64px) 72px; background: #fff; display: grid; gap: 40px; }
+.ez37 .ezpe-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; background: var(--ez37-mist); border-radius: 24px; padding: 32px; }
+.ez37 .ezpe-row > * { min-width: 0; }
+.ez37 .ezpe-row.is-flip .ezpe-row__img { order: 2; }
+.ez37 .ezpe-row__img img { display: block; width: 100%; height: auto; border-radius: 16px; }
+.ez37 .ezpe-row h2 { font: 700 clamp(22px, 2.4vw, 30px)/1.25 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 18px; text-align: left; }
+.ez37 .ezpe-row ol, .ez37 .ezpe-row ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; counter-reset: pe; }
+.ez37 .ezpe-row li { position: relative; padding-left: 40px; font: 400 16px/1.6 "Inter", sans-serif; color: var(--ez37-body); counter-increment: pe; }
+.ez37 .ezpe-row ol li::before { content: counter(pe); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--ez37-tint); color: var(--ez37-indigo); font: 700 14px/28px "Poppins", sans-serif; text-align: center; }
+.ez37 .ezpe-row ul li::before { content: ""; position: absolute; left: 8px; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--ez37-coral-deep); }
+.ez37 .ezpe-rules { padding: 72px clamp(24px, 4vw, 64px); background: #fff; }
+.ez37 .ezpe-rules__inner { max-width: 1000px; margin: 0 auto; }
+.ez37 .ezpe-rules h2 { font: 700 clamp(26px, 3vw, 38px)/1.2 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 14px; text-align: left; }
+.ez37 .ezpe-rules > .ezpe-rules__inner > p { font: 400 17px/1.7 "Inter", sans-serif; color: var(--ez37-body); margin: 0 0 18px; }
+.ez37 .ezpe-rules ol { margin: 0; padding: 0 0 0 22px; display: grid; gap: 10px; font: 400 16px/1.6 "Inter", sans-serif; color: var(--ez37-body); }
+@media (max-width: 900px) { .ez37 .ezpe-row { grid-template-columns: 1fr; gap: 24px; padding: 20px; } .ez37 .ezpe-row.is-flip .ezpe-row__img { order: 0; } }
+
+/* Intro: text + button left, video right (same split as About > Who We Are). */
+.ez37 .ezpe-intro { align-items: stretch !important; background: var(--ez37-mist); padding: 72px 0; }
+.ez37 .ezpe-intro > .elementor-widget, .ez37 .ezpe-intro .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezpe-intro__grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 5vw, 80px); align-items: center; padding: 0 clamp(24px, 4vw, 64px); }
+.ez37 .ezpe-intro__grid > * { min-width: 0; }
+.ez37 .ezpe-intro__text h2 { margin: 0 0 24px; }
+.ez37 .ezpe-intro__text p { font-size: 18px; line-height: 1.7; margin: 0 0 18px; }
+.ez37 .ezpe-intro__media .ezpe-video { margin: 0; border-radius: 0; }
+@media (max-width: 900px) { .ez37 .ezpe-intro { padding: 48px 0; } .ez37 .ezpe-intro__grid { grid-template-columns: 1fr; } }
+
+/* Rules sit inside the intro text column, above the register button. */
+.ez37 .ezpe-rules-in { margin: 8px 0 8px; }
+.ez37 .ezpe-rules-in h3 { font: 700 clamp(20px, 2vw, 26px)/1.25 "Poppins", sans-serif; color: var(--ez37-ink); margin: 0 0 12px; text-align: left; }
+.ez37 .ezpe-rules-in p { font-size: 16.5px; margin: 0 0 12px; }
+.ez37 .ezpe-rules-in ol { margin: 0 0 8px; padding-left: 22px; display: grid; gap: 8px; font: 400 16px/1.6 "Inter", sans-serif; color: var(--ez37-body); }
+
+/* How it works / Requirements: full-width bands. */
+.ez37 .ezpe-rows { padding: 0 !important; background: transparent !important; gap: 0 !important; align-items: stretch !important; }
+.ez37 .ezpe-rows > .elementor-widget, .ez37 .ezpe-rows .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezpe-row { background: var(--ez37-mist); border-radius: 0; padding: 72px clamp(24px, 4vw, 64px); }
+.ez37 .ezpe-row + .ezpe-row { border-top: 1px solid var(--ez37-line); }
+@media (max-width: 900px) { .ez37 .ezpe-row { padding: 44px clamp(24px, 4vw, 64px); } }
+
+/* Intro video: same column split and height as About > Who We Are image (fills the text column's height). */
+.ez37 .ezpe-intro__grid { grid-template-columns: 1.15fr 1fr; align-items: stretch; }
+.ez37 .ezpe-intro__media { position: relative; min-height: 360px; }
+.ez37 .ezpe-intro__media .ezpe-video { position: absolute; inset: 0; border: 0; box-shadow: none; background: #fff; }
+.ez37 .ezpe-intro__media .ezpe-video video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; background: #fff; }
+@media (max-width: 900px) { .ez37 .ezpe-intro__media { min-height: 0; aspect-ratio: 16 / 9; } }
+
+/* Requirements: mirrors About > Why Clients Choose EZ37. */
+.ez37 .ezpr-req { align-items: stretch !important; background: var(--ez37-ink); padding: 0; }
+.ez37 .ezpr-req > .elementor-widget, .ez37 .ezpr-req .elementor-widget-container { width: 100% !important; max-width: none !important; }
+.ez37 .ezpr-req__inner { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 0; align-items: stretch; }
+.ez37 .ezpr-req__media { margin: 0; position: relative; min-height: 100%; }
+.ez37 .ezpr-req__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+.ez37 .ezpr-req__text { padding: 80px clamp(24px, 4vw, 64px) 80px clamp(32px, 5vw, 80px); align-self: center; }
+.ez37 .ezpr-req h2 { margin: 0 0 24px; color: #fff; font: 600 clamp(28px, 3vw, 40px)/1.15 Poppins, sans-serif; text-align: left; }
+.ez37 .ezpr-list { list-style: none; margin: 0; padding: 0; }
+.ez37 .ezpr-list > li { border-bottom: 2px solid var(--ez37-coral); padding: 20px 0; color: rgba(255, 255, 255, 0.92); font: 400 18px/1.6 "Inter", sans-serif; }
+.ez37 .ezpr-rules { position: relative; padding-bottom: 22px; }
+.ez37 .ezpr-tip { position: relative; display: inline-block; cursor: help; color: #fff; font: 600 20px/1.3 Poppins, sans-serif; border-bottom: 2px dotted var(--ez37-coral); outline: none; }
+.ez37 .ezpr-tip::after { content: "i"; display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 10px; border-radius: 50%; background: var(--ez37-coral); color: #fff; font: 700 12px/1 Poppins, sans-serif; vertical-align: 2px; }
+.ez37 .ezpr-tip:focus-visible { outline: 3px solid var(--ez37-coral); outline-offset: 4px; }
+.ez37 .ezpr-tip__box { position: absolute; left: 0; bottom: calc(100% + 14px); z-index: 20; width: min(560px, 80vw); padding: 22px 24px; background: #fff; color: var(--ez37-body); border-radius: 14px; box-shadow: 0 18px 48px rgba(10, 8, 60, .35); font: 400 15.5px/1.65 "Inter", sans-serif; cursor: default; opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease, visibility .18s; }
+.ez37 .ezpr-tip__box::after { content: ""; position: absolute; left: 28px; bottom: -8px; width: 16px; height: 16px; background: #fff; transform: rotate(45deg); }
+.ez37 .ezpr-tip__box strong { color: var(--ez37-ink); }
+.ez37 .ezpr-tip__box ol { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 8px; }
+.ez37 .ezpr-tip__box li { color: var(--ez37-body); }
+.ez37 .ezpr-tip:hover .ezpr-tip__box, .ez37 .ezpr-tip:focus .ezpr-tip__box, .ez37 .ezpr-tip:focus-within .ezpr-tip__box { opacity: 1; visibility: visible; transform: none; }
+@media (max-width: 900px) {
+	.ez37 .ezpr-req__inner { grid-template-columns: 1fr; }
+	.ez37 .ezpr-req__media { min-height: 300px; }
+	.ez37 .ezpr-req__text { padding: 40px 24px 56px; }
+}
+
+/* How it works: image left, text right (as the Solutions "Equip every leader to coach" band). */
+.ez37 .ezpe-row { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 0; align-items: stretch; padding: 56px 0 56px clamp(24px, 4vw, 64px); }
+.ez37 .ezpe-row__img { order: -1; position: relative; min-height: 480px; }
+.ez37 .ezpe-row__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+.ez37 .ezpe-row > div:not(.ezpe-row__img) { align-self: center; padding: 24px clamp(24px, 4vw, 64px) 24px clamp(32px, 5vw, 80px); }
+@media (max-width: 900px) {
+	.ez37 .ezpe-row { grid-template-columns: 1fr; padding: 0 0 40px; }
+	.ez37 .ezpe-row__img { min-height: 0; aspect-ratio: 4 / 3; }
+	.ez37 .ezpe-row > div:not(.ezpe-row__img) { padding: 32px clamp(24px, 4vw, 64px) 0; }
+}
+
+/* Requirements: text panel left, image right; Rules sits below the last line. */
+.ez37 .ezpr-req__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+.ez37 .ezpr-req__text { order: 1; padding: 80px clamp(32px, 5vw, 80px) 80px clamp(24px, 4vw, 64px); }
+.ez37 .ezpr-req__media { order: 2; }
+.ez37 .ezpr-list > li.ezpr-rules { border-bottom: 0; padding: 22px 0 0; }
+@media (max-width: 900px) {
+	.ez37 .ezpr-req__inner { grid-template-columns: 1fr; }
+	.ez37 .ezpr-req__media { order: -1; }
+	.ez37 .ezpr-req__text { padding: 40px 24px 56px; }
+}
+
+/* Mobile/tablet: intro stacks (must come after the desktop overrides above). */
+@media (max-width: 900px) {
+	.ez37 .ezpe-intro__grid { grid-template-columns: 1fr; gap: 28px; align-items: start; }
+	.ez37 .ezpe-intro__media { position: relative; min-height: 0; aspect-ratio: 16 / 9; width: 100%; }
+	.ez37 .ezpe-intro__text h2 { font-size: clamp(24px, 6.5vw, 32px); }
+	.ez37 .ezpe-intro__text p { font-size: 16.5px; }
+	.ez37 .ezpe-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
