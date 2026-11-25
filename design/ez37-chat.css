@@ -1,19 +1,19 @@
 /* Floating WhatsApp chat (EZ37 footer template). Opens WhatsApp with the visitor's message pre-filled.
-   Brand indigo (lighter tint). Selectors are doubled and button styles are reset so the theme's default button colours/padding cannot leak in. */
+   WhatsApp green. Selectors are doubled and button styles are reset so the theme's default button colours/padding cannot leak in. */
 .ez37-wa { position: fixed; right: 20px; bottom: 20px; z-index: 9990; font-family: "Inter", sans-serif; }
 .ez37-wa *, .ez37-wa *::before, .ez37-wa *::after { box-sizing: border-box; }
 .ez37-wa button { -webkit-appearance: none; appearance: none; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; text-transform: none; letter-spacing: 0; font-family: inherit; line-height: 1; cursor: pointer; }
 
-.ez37-wa .ez37-wa__fab { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 22px; border-radius: 999px; background: #5a52e0 !important; color: #fff !important; font: 600 16px/1 "Inter", sans-serif; box-shadow: 0 10px 28px rgba(67, 56, 202, .38); transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease; }
-.ez37-wa .ez37-wa__fab:hover, .ez37-wa .ez37-wa__fab:focus-visible { background: #4a41d2 !important; color: #fff !important; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(67, 56, 202, .46); }
+.ez37-wa .ez37-wa__fab { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 22px; border-radius: 999px; background: #1fb85a !important; color: #fff !important; font: 600 16px/1 "Inter", sans-serif; box-shadow: 0 10px 28px rgba(15, 80, 40, .35); transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease; }
+.ez37-wa .ez37-wa__fab:hover, .ez37-wa .ez37-wa__fab:focus-visible { background: #179a49 !important; color: #fff !important; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(15, 80, 40, .42); }
 .ez37-wa .ez37-wa__fab svg { display: block; width: 22px; height: 22px; fill: #fff; flex: none; }
 .ez37-wa.is-open .ez37-wa__fab { display: none; }
 
 .ez37-wa .ez37-wa__panel { position: absolute; right: 0; bottom: 0; width: 360px; max-width: calc(100vw - 32px); border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(20, 18, 63, .28); opacity: 0; visibility: hidden; transform: translateY(12px) scale(.98); transform-origin: bottom right; transition: opacity .2s ease, transform .2s ease, visibility .2s; }
 .ez37-wa.is-open .ez37-wa__panel { opacity: 1; visibility: visible; transform: none; }
 
-.ez37-wa .ez37-wa__head { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 56px 18px 18px; background: linear-gradient(135deg, #5a52e0 0%, #7b73f0 100%); color: #fff; }
-.ez37-wa .ez37-wa__avatar { flex: none; display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; margin: 0; border-radius: 50%; background: #fff; color: #3a33b8; font: 700 15px/1 "Poppins", sans-serif; letter-spacing: .02em; text-align: center; }
+.ez37-wa .ez37-wa__head { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 56px 18px 18px; background-color: #1fb85a !important; background-image: none !important; color: #fff; }
+.ez37-wa .ez37-wa__avatar { flex: none; display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; margin: 0; border-radius: 50%; background: #fff; color: #14123f; font: 700 15px/1 "Poppins", sans-serif; letter-spacing: .02em; text-align: center; }
 .ez37-wa .ez37-wa__who { min-width: 0; }
 .ez37-wa .ez37-wa__who b { display: block; margin: 0; font: 600 16px/1.3 "Poppins", sans-serif; color: #fff; }
 .ez37-wa .ez37-wa__who span { display: block; margin: 3px 0 0; font: 400 13.5px/1.45 "Inter", sans-serif; color: rgba(255, 255, 255, .95); }
@@ -26,9 +26,9 @@
 
 .ez37-wa .ez37-wa__form { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 14px; background: #fff; border-top: 1px solid #e3e6f2; }
 .ez37-wa .ez37-wa__form input { flex: 1; min-width: 0; height: 44px; margin: 0; padding: 0 16px; border: 1px solid #d7daee; border-radius: 999px; background: #fff; box-shadow: none; font: 400 15px "Inter", sans-serif; color: #14123f; }
-.ez37-wa .ez37-wa__form input:focus { outline: 2px solid #5a52e0; outline-offset: 1px; border-color: transparent; }
-.ez37-wa .ez37-wa__send { flex: none; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #5a52e0 !important; color: #fff !important; }
-.ez37-wa .ez37-wa__send:hover, .ez37-wa .ez37-wa__send:focus-visible { background: #4a41d2 !important; }
+.ez37-wa .ez37-wa__form input:focus { outline: 2px solid #1fb85a; outline-offset: 1px; border-color: transparent; }
+.ez37-wa .ez37-wa__send { flex: none; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #1fb85a !important; color: #fff !important; }
+.ez37-wa .ez37-wa__send:hover, .ez37-wa .ez37-wa__send:focus-visible { background: #179a49 !important; }
 .ez37-wa .ez37-wa__send svg { display: block; width: 20px; height: 20px; fill: #fff; margin-left: 2px; }
 
 @media (max-width: 600px) {
