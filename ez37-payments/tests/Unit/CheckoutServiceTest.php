@@ -10,10 +10,13 @@ declare( strict_types=1 );
 namespace EZ37\Payments\Tests\Unit;
 
 use Brain\Monkey\Functions;
+use EZ37\Payments\Agreements\AgreementCatalogue;
 use EZ37\Payments\Checkout\CheckoutException;
 use EZ37\Payments\Checkout\CheckoutInput;
 use EZ37\Payments\Checkout\CheckoutService;
 use EZ37\Payments\Config;
+use EZ37\Payments\Email\InvoiceRequestMailer;
+use EZ37\Payments\Transactions\PaymentStatus;
 use EZ37\Payments\Offerings\Offering;
 use EZ37\Payments\Offerings\OfferingCatalogue;
 use EZ37\Payments\Stripe\GatewayException;
@@ -161,7 +164,7 @@ final class CheckoutServiceTest extends TestCase {
 
 		$this->transactions->shouldReceive( 'create_pending' )
 			->once()
-			->with( Mockery::type( Offering::class ), 'price_TEST123', 'test', 'Jane Doe', 'jane@example.com' )
+			->with( Mockery::type( Offering::class ), 'price_TEST123', 'test', 'Jane Doe', 'jane@example.com', null, null )
 			->andReturn(
 				array(
 					'id'        => 42,
@@ -395,5 +398,262 @@ final class CheckoutServiceTest extends TestCase {
 
 		$this->assertSame( 'https://ez37.test/thank-you/?session_id={CHECKOUT_SESSION_ID}', $params['success_url'] );
 		$this->assertSame( 'https://ez37.test/checkout/?offering=leadership-coaching', $params['cancel_url'] );
+	}
+
+	/**
+	 * An offering that needs enrolment answers and an accepted agreement.
+	 */
+	private static function pccp_catalogue(): OfferingCatalogue {
+		return self::catalogue(
+			array(
+				'agreement' => 'pccp-enrolment',
+				'enrolment' => array(
+					array(
+						'key'      => 'first_name',
+						'label'    => 'First name',
+						'required' => true,
+					),
+					array(
+						'key'      => 'last_name',
+						'label'    => 'Last name',
+						'required' => true,
+					),
+					array(
+						'key'   => 'country',
+						'label' => 'Country',
+					),
+				),
+			)
+		);
+	}
+
+	private static function agreements(): AgreementCatalogue {
+		return new AgreementCatalogue(
+			array(
+				'pccp-enrolment' => array(
+					'version'  => 'v1',
+					'title'    => 'Enrolment Agreement',
+					'label'    => 'I agree',
+					'sections' => array(
+						array(
+							'heading'    => 'Terms',
+							'paragraphs' => array( 'Text.' ),
+						),
+					),
+				),
+			)
+		);
+	}
+
+	private function agreement_service(): CheckoutService {
+		return new CheckoutService(
+			self::config(),
+			self::pccp_catalogue(),
+			$this->gateway,
+			$this->transactions,
+			new Logger( 'debug', static function ( string $line ): void {} ),
+			self::agreements()
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $extra Extra request values.
+	 */
+	private static function pccp_input( array $extra = array() ): CheckoutInput {
+		return CheckoutInput::from_request(
+			array_merge(
+				array(
+					'offering'           => 'leadership-coaching',
+					'customer_email'     => 'jane@example.com',
+					'enrol'              => array(
+						'first_name' => 'Jane',
+						'last_name'  => 'Doe',
+						'country'    => 'Nigeria',
+						'injected'   => 'ignored',
+					),
+					'agreement_accepted' => '1',
+					'agreement_version'  => 'v1',
+				),
+				$extra
+			)
+		);
+	}
+
+	public function test_agreement_and_enrolment_are_stored_with_the_order(): void {
+		Functions\when( 'wp_json_encode' )->alias( static fn ( $v ) => json_encode( $v ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		$this->gateway->shouldReceive( 'retrieve_price' )->andReturn( self::stripe_price() );
+
+		$this->transactions->shouldReceive( 'create_pending' )
+			->once()
+			->withArgs(
+				function ( $offering, $price, $mode, $name, $email, $enrolment, $agreement ): bool {
+					return 'Jane Doe' === $name
+						&& array(
+							'first_name' => 'Jane',
+							'last_name'  => 'Doe',
+							'country'    => 'Nigeria',
+						) === $enrolment
+						&& 'pccp-enrolment' === $agreement['key']
+						&& 'v1' === $agreement['version']
+						&& 1 === preg_match( '/^[a-f0-9]{64}$/', $agreement['hash'] )
+						&& 1 === preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $agreement['accepted_at'] );
+				}
+			)
+			->andReturn(
+				array(
+					'id'        => 5,
+					'public_id' => 'p5',
+				)
+			);
+		$this->gateway->shouldReceive( 'create_checkout_session' )->andReturn(
+			array(
+				'id'         => 'cs_test_5',
+				'url'        => 'https://checkout.stripe.com/x',
+				'expires_at' => 0,
+			)
+		);
+		$this->transactions->shouldReceive( 'attach_checkout_session' )->once();
+
+		$this->assertSame( 'https://checkout.stripe.com/x', $this->agreement_service()->start( self::pccp_input() ) );
+	}
+
+	public function test_unticked_agreement_blocks_checkout_before_any_stripe_call(): void {
+		$this->gateway->shouldNotReceive( 'retrieve_price' );
+		$this->transactions->shouldNotReceive( 'create_pending' );
+
+		$this->expect_reason( CheckoutException::AGREEMENT_REQUIRED, fn () => $this->agreement_service()->start( self::pccp_input( array( 'agreement_accepted' => '' ) ) ) );
+	}
+
+	public function test_stale_agreement_version_blocks_checkout(): void {
+		$this->gateway->shouldNotReceive( 'retrieve_price' );
+		$this->transactions->shouldNotReceive( 'create_pending' );
+
+		$this->expect_reason( CheckoutException::AGREEMENT_REQUIRED, fn () => $this->agreement_service()->start( self::pccp_input( array( 'agreement_version' => 'v0' ) ) ) );
+	}
+
+	public function test_missing_required_enrolment_field_is_refused(): void {
+		$this->gateway->shouldNotReceive( 'retrieve_price' );
+		$this->transactions->shouldNotReceive( 'create_pending' );
+
+		$this->expect_reason(
+			CheckoutException::INVALID_INPUT,
+			fn () => $this->agreement_service()->start( self::pccp_input( array( 'enrol' => array( 'first_name' => 'Jane' ) ) ) )
+		);
+	}
+
+	public function test_offering_with_unconfigured_agreement_is_unavailable(): void {
+		$this->gateway->shouldNotReceive( 'retrieve_price' );
+		$this->transactions->shouldNotReceive( 'create_pending' );
+
+		$service = new CheckoutService(
+			self::config(),
+			self::pccp_catalogue(),
+			$this->gateway,
+			$this->transactions,
+			new Logger( 'debug', static function ( string $line ): void {} )
+		);
+
+		$this->expect_reason( CheckoutException::UNAVAILABLE, fn () => $service->start( self::pccp_input() ) );
+	}
+
+	/**
+	 * Offering with a payment-option field: full payment goes to Stripe, anything else is invoiced.
+	 */
+	private function invoice_service( InvoiceRequestMailer $mailer ): CheckoutService {
+		$catalogue = self::catalogue(
+			array(
+				'agreement' => 'pccp-enrolment',
+				'enrolment' => array(
+					array(
+						'key'      => 'payment_option',
+						'label'    => 'Payment option',
+						'type'     => 'select',
+						'required' => true,
+						'options'  => array( 'Full payment', '2 instalments', 'Other' ),
+					),
+				),
+			)
+		);
+
+		return new CheckoutService(
+			self::config(),
+			$catalogue,
+			$this->gateway,
+			$this->transactions,
+			new Logger( 'debug', static function ( string $line ): void {} ),
+			self::agreements(),
+			$mailer
+		);
+	}
+
+	private static function option_input( string $option ): CheckoutInput {
+		return self::pccp_input( array( 'enrol' => array( 'first_name' => 'Jane', 'last_name' => 'Doe', 'payment_option' => $option ) ) );
+	}
+
+	public function test_only_full_payment_goes_to_stripe(): void {
+		$service = $this->invoice_service( Mockery::mock( InvoiceRequestMailer::class ) );
+
+		$this->assertFalse( $service->wants_invoice( self::option_input( 'Full payment' ) ) );
+		$this->assertTrue( $service->wants_invoice( self::option_input( '2 instalments' ) ) );
+		$this->assertTrue( $service->wants_invoice( self::option_input( 'Other' ) ) );
+	}
+
+	public function test_offering_without_payment_option_always_goes_to_stripe(): void {
+		$service = new CheckoutService(
+			self::config(),
+			self::pccp_catalogue(),
+			$this->gateway,
+			$this->transactions,
+			new Logger( 'debug', static function ( string $line ): void {} ),
+			self::agreements(),
+			Mockery::mock( InvoiceRequestMailer::class )
+		);
+
+		$this->assertFalse( $service->wants_invoice( self::pccp_input() ) );
+	}
+
+	public function test_invoice_request_is_stored_as_invoice_requested_and_never_touches_stripe(): void {
+		Functions\when( 'wp_json_encode' )->alias( static fn ( $v ) => json_encode( $v ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_js
+		Functions\when( 'home_url' )->justReturn( 'https://ez37.test/enrolment-received/' );
+		Functions\when( 'add_query_arg' )->justReturn( 'https://ez37.test/enrolment-received/?offering=leadership-coaching' );
+
+		$this->gateway->shouldNotReceive( 'retrieve_price' );
+		$this->gateway->shouldNotReceive( 'create_checkout_session' );
+
+		$this->transactions->shouldReceive( 'create_pending' )
+			->once()
+			->withArgs(
+				function ( $offering, $price, $mode, $name, $email, $enrolment, $agreement, $status ): bool {
+					return '' === $price && PaymentStatus::InvoiceRequested === $status && '2 instalments' === $enrolment['payment_option'];
+				}
+			)
+			->andReturn(
+				array(
+					'id'        => 9,
+					'public_id' => 'abcdef123456',
+				)
+			);
+
+		$mailer = Mockery::mock( InvoiceRequestMailer::class );
+		$mailer->shouldReceive( 'send' )->once();
+
+		$url = $this->invoice_service( $mailer )->request_invoice( self::option_input( '2 instalments' ) );
+
+		$this->assertStringContainsString( '/enrolment-received/', $url );
+	}
+
+	public function test_invoice_request_still_needs_the_agreement(): void {
+		$this->transactions->shouldNotReceive( 'create_pending' );
+		$mailer = Mockery::mock( InvoiceRequestMailer::class );
+		$mailer->shouldNotReceive( 'send' );
+
+		$input = self::pccp_input(
+			array(
+				'enrol'              => array( 'first_name' => 'Jane', 'last_name' => 'Doe', 'payment_option' => '2 instalments' ),
+				'agreement_accepted' => '',
+			)
+		);
+
+		$this->expect_reason( CheckoutException::AGREEMENT_REQUIRED, fn () => $this->invoice_service( $mailer )->request_invoice( $input ) );
 	}
 }

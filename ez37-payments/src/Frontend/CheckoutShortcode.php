@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments\Frontend;
 
+use EZ37\Payments\Agreements\AgreementCatalogue;
 use EZ37\Payments\Checkout\CheckoutException;
 use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Config;
@@ -39,10 +40,12 @@ final class CheckoutShortcode {
 	 *
 	 * @param Config            $config    Configuration.
 	 * @param OfferingCatalogue $catalogue Offerings.
+	 * @param AgreementCatalogue|null $agreements Agreements (for offerings that need one accepted).
 	 */
 	public function __construct(
 		private readonly Config $config,
-		private readonly OfferingCatalogue $catalogue
+		private readonly OfferingCatalogue $catalogue,
+		private readonly ?AgreementCatalogue $agreements = null
 	) {}
 
 	/**
@@ -88,16 +91,31 @@ final class CheckoutShortcode {
 
 		Styles::enqueue();
 
-		if ( null === $offering || ! $offering->is_purchasable( $mode ) || ! $this->config->can_accept_payments() ) {
+		if ( null === $offering || ! $offering->is_purchasable( $mode ) || ( ! $offering->free && ! $this->config->can_accept_payments() ) ) {
 			return Template::render(
 				'checkout-unavailable.php',
 				array( 'message' => __( 'This programme is not available for online purchase at the moment. Please contact us for details.', 'ez37-payments' ) )
 			);
 		}
 
+		$agreement = '' === $offering->agreement_key || null === $this->agreements ? null : $this->agreements->find( $offering->agreement_key );
+
+		// An offering that needs an agreement is unavailable until the agreement is configured.
+		if ( '' !== $offering->agreement_key && null === $agreement ) {
+			return Template::render(
+				'checkout-unavailable.php',
+				array( 'message' => __( 'This programme is not available for online purchase at the moment. Please contact us for details.', 'ez37-payments' ) )
+			);
+		}
+
+		if ( null !== $agreement ) {
+			Styles::enqueue_drawer();
+		}
+
 		return Template::render(
 			'checkout-form.php',
 			array(
+				'agreement'      => $agreement,
 				'offering'       => $offering,
 				'action_url'     => admin_url( 'admin-post.php' ),
 				'action'         => CheckoutRequestHandler::ACTION,
@@ -117,7 +135,8 @@ final class CheckoutShortcode {
 	public static function error_message( string $code ): string {
 		return match ( $code ) {
 			''                              => '',
-			CheckoutException::INVALID_INPUT => __( 'Please enter your full name and a valid email address.', 'ez37-payments' ),
+			CheckoutException::INVALID_INPUT => __( 'Please complete the required details and enter a valid email address.', 'ez37-payments' ),
+			CheckoutException::AGREEMENT_REQUIRED => __( 'Please read and accept the Enrolment Agreement to continue.', 'ez37-payments' ),
 			CheckoutException::SECURITY      => __( 'Your session expired. Please try again.', 'ez37-payments' ),
 			CheckoutException::RATE_LIMITED  => __( 'Too many attempts. Please wait a few minutes and try again.', 'ez37-payments' ),
 			CheckoutException::UNAVAILABLE,

@@ -122,6 +122,16 @@ final class CheckoutRequestHandler {
 			throw new CheckoutException( CheckoutException::RATE_LIMITED, 'Too many attempts for this email.' );
 		}
 
+		// Free offering: no payment at all. Record the registration; the team follows up.
+		if ( $this->service->is_free_registration( $input ) ) {
+			return $this->service->register_free( $input );
+		}
+
+		// Instalments / other terms: no card payment. Record the request; the team sends an invoice.
+		if ( $this->service->wants_invoice( $input ) ) {
+			return $this->service->request_invoice( $input );
+		}
+
 		$url = $this->service->start( $input );
 
 		if ( ! self::is_stripe_checkout_url( $url ) ) {

@@ -131,6 +131,23 @@ Result legend: ✅ pass · ❌ fail · ⏳ not run yet · — not applicable.
 | TAX-04 | Future tax tolerated | Unit | `EventProcessorTest::test_consistent_tax_is_accepted` | Unit suite passing | ✅ |
 | TAX-05 | No tax wording | Script | No "tax included / plus tax / VAT" text in templates | Script run 17 Nov 2026: pass | ✅ |
 
+## Enrolment and agreement (PCCP)
+
+| ID | Scenario | Input | Expected result | Actual | P/F |
+|---|---|---|---|---|---|
+| ENR-01 | Complete enrolment | All required fields, agreement accepted | Pending order has `enrolment_json` and agreement columns; redirect to Stripe | | |
+| ENR-02 | Agreement not ticked | POST without `agreement_accepted` | `agreement_required`; no order; no Stripe call | | |
+| ENR-03 | Stale agreement version | POST `agreement_version` not equal to current | `agreement_required`; no order | | |
+| ENR-04 | Missing required field | Blank phone | `invalid_input`; no order | | |
+| ENR-05 | Option not in list | Gender = `Other` (not configured) | `invalid_input`; no order | | |
+| ENR-06 | Extra field injected | `enrol[admin]=1` | Dropped; not stored | | |
+| ENR-07 | Drawer opens on tick | Click the box | Right-side panel opens; box still unticked; Esc, backdrop and Close leave it unticked | | |
+| ENR-08 | Accept in drawer | Click "I have read and agree" | Panel closes; box ticked; focus returns to the box | | |
+| ENR-09 | No JavaScript | Disable JS, follow the link | Panel shown via `#ez37-agreement-drawer`; box can be ticked | | |
+| ENR-10 | Admin view | Open the transaction | Enrolment details, agreement version, hash and time shown | | |
+| ENR-11 | Price manipulation | `amount=1` in POST | Ignored; Price from config | | |
+| ENR-12 | PCCP without Price ID | Test Price ID empty | Checkout page says not available | | |
+
 ## UX
 
 | ID | Scenario | Method | Expected (as built) | Actual | P/F |

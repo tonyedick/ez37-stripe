@@ -94,4 +94,39 @@ final class CheckoutInputTest extends TestCase {
 			$this->expect_invalid( $raw );
 		}
 	}
+
+	public function test_first_and_last_name_compose_the_customer_name(): void {
+		$input = CheckoutInput::from_request(
+			array(
+				'offering'           => 'pccp',
+				'customer_email'     => 'jane@example.com',
+				'enrol'              => array(
+					'first_name' => 'Jane',
+					'last_name'  => 'Doe',
+					'bad'        => array( 'x' ),
+				),
+				'agreement_accepted' => '1',
+				'agreement_version'  => 'v1',
+			)
+		);
+
+		$this->assertSame( 'Jane Doe', $input->name );
+		$this->assertSame(
+			array(
+				'first_name' => 'Jane',
+				'last_name'  => 'Doe',
+			),
+			$input->enrolment
+		);
+		$this->assertTrue( $input->agreement_accepted );
+		$this->assertSame( 'v1', $input->agreement_version );
+	}
+
+	public function test_agreement_is_not_accepted_unless_exactly_ticked(): void {
+		foreach ( array( '', '0', 'on', 'true' ) as $value ) {
+			$raw                       = self::valid();
+			$raw['agreement_accepted'] = $value;
+			$this->assertFalse( CheckoutInput::from_request( $raw )->agreement_accepted, $value );
+		}
+	}
 }

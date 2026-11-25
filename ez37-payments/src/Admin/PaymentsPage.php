@@ -297,6 +297,8 @@ final class PaymentsPage {
 			'review'           => __( 'Needs review', 'ez37-payments' ),
 			'not_started'      => __( 'Not started', 'ez37-payments' ),
 			'in_progress'      => __( 'In progress', 'ez37-payments' ),
+			'invoice_requested' => __( 'Invoice requested', 'ez37-payments' ),
+			'registered'       => __( 'Registered (free)', 'ez37-payments' ),
 			'completed'        => __( 'Delivered', 'ez37-payments' ),
 			'failed_permanent' => __( 'Failed — action needed', 'ez37-payments' ),
 			'active'           => __( 'Active', 'ez37-payments' ),
@@ -308,7 +310,8 @@ final class PaymentsPage {
 		$tone = match ( $status ) {
 			'paid', 'completed', 'active', 'sent'                => 'good',
 			'failed', 'failed_permanent', 'review', 'revoked'    => 'bad',
-			'pending', 'processing', 'in_progress', 'sending'    => 'wait',
+			'pending', 'processing', 'in_progress', 'sending', 'invoice_requested' => 'wait',
+			'registered'                                         => 'good',
 			default                                              => 'neutral',
 		};
 

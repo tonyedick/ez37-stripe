@@ -51,6 +51,12 @@
 	function next() {
 		if ( attempts >= cfg.maxAttempts ) {
 			showSlowNotice();
+			// Keep checking, more slowly, for about ten more minutes: the page switches by itself
+			// as soon as the payment is confirmed, without the customer having to refresh.
+			if ( attempts >= cfg.maxAttempts + 60 ) {
+				return;
+			}
+			window.setTimeout( check, 10000 );
 			return;
 		}
 		window.setTimeout( check, cfg.intervalMs );

@@ -96,7 +96,25 @@ class FulfilmentService {
 	 * @param int $id Transaction ID.
 	 */
 	public function queue( int $id ): void {
+		// Safety net: WP-Cron retries if the immediate run below does not happen or fails.
 		wp_schedule_single_event( time(), self::JOB_HOOK, array( (int) $id ) );
+
+		/*
+		 * Run it right after this request's response is sent, instead of waiting for a WP-Cron
+		 * loopback request (slow, and unreliable on some hosts / local setups). The claim lock in
+		 * fulfil() means the cron job above cannot duplicate it. Filter to false to use cron only.
+		 */
+		if ( apply_filters( 'ez37_payments_fulfil_after_response', true ) ) {
+			add_action(
+				'shutdown',
+				function () use ( $id ): void {
+					if ( function_exists( 'fastcgi_finish_request' ) ) {
+						fastcgi_finish_request();
+					}
+					$this->fulfil( (int) $id );
+				}
+			);
+		}
 	}
 
 	/**

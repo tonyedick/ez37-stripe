@@ -34,6 +34,11 @@ final class OfferingCatalogue {
 	public const TAX_MODES = array( 'none' );
 
 	/**
+	 * Enrolment field types the checkout form can render.
+	 */
+	public const FIELD_TYPES = array( 'text', 'tel', 'select', 'textarea' );
+
+	/**
 	 * Valid offerings keyed by offering key.
 	 *
 	 * @var array<string, Offering>
@@ -140,8 +145,19 @@ final class OfferingCatalogue {
 			$problems[] = 'currency must be one of: ' . implode( ', ', self::SUPPORTED_CURRENCIES );
 		}
 
+		$free = $definition['free'] ?? false;
+		if ( ! is_bool( $free ) ) {
+			$problems[] = 'free must be true or false';
+			$free       = false;
+		}
+
 		$amount = $definition['amount'] ?? null;
-		if ( ! is_int( $amount ) || $amount < 1 ) {
+		if ( $free ) {
+			// A free registration never reaches Stripe, so it must not carry a price.
+			if ( 0 !== $amount ) {
+				$problems[] = 'a free offering must have amount 0';
+			}
+		} elseif ( ! is_int( $amount ) || $amount < 1 ) {
 			$problems[] = 'amount must be a positive integer in cents';
 		}
 
@@ -171,6 +187,14 @@ final class OfferingCatalogue {
 			$problems[] = 'fulfilment must be an array';
 		}
 
+		$enrolment_fields = $this->clean_enrolment_fields( $definition['enrolment'] ?? array(), $problems );
+
+		$agreement_key = $definition['agreement'] ?? '';
+		if ( ! is_string( $agreement_key ) || ( '' !== $agreement_key && 1 !== preg_match( self::KEY_PATTERN, $agreement_key ) ) ) {
+			$problems[]    = 'agreement must be empty or an agreement key';
+			$agreement_key = '';
+		}
+
 		if ( array() !== $problems ) {
 			$this->errors[] = sprintf( 'Offering "%s" is disabled: %s.', $key, implode( '; ', $problems ) );
 			return null;
@@ -184,7 +208,75 @@ final class OfferingCatalogue {
 			(int) $amount,
 			$clean_price_ids,
 			(string) $tax,
-			(array) $fulfilment
+			(array) $fulfilment,
+			$enrolment_fields,
+			$agreement_key,
+			$free
 		);
+	}
+
+	/**
+	 * Validate the optional enrolment field definitions.
+	 *
+	 * Each field: key (a-z, 0-9, underscore), label, type (see FIELD_TYPES),
+	 * required (bool), optional max (length), options (select), autocomplete.
+	 *
+	 * @param mixed        $raw      Definition value.
+	 * @param list<string> $problems Problems list, appended to.
+	 * @return list<array<string, mixed>>
+	 */
+	private function clean_enrolment_fields( mixed $raw, array &$problems ): array {
+		if ( ! is_array( $raw ) ) {
+			$problems[] = 'enrolment must be a list of fields';
+			return array();
+		}
+
+		$fields = array();
+		$seen   = array();
+
+		foreach ( $raw as $field ) {
+			$key   = is_array( $field ) ? ( $field['key'] ?? null ) : null;
+			$label = is_array( $field ) ? ( $field['label'] ?? null ) : null;
+			$type  = is_array( $field ) ? ( $field['type'] ?? 'text' ) : null;
+
+			if ( ! is_string( $key ) || 1 !== preg_match( '/^[a-z][a-z0-9_]{0,31}$/', $key ) || isset( $seen[ $key ] ) ) {
+				$problems[] = 'enrolment field keys must be unique, lowercase letters, digits and underscores';
+				return array();
+			}
+			if ( ! is_string( $label ) || '' === trim( $label ) || ! is_string( $type ) || ! in_array( $type, self::FIELD_TYPES, true ) ) {
+				$problems[] = sprintf( 'enrolment field "%s" needs a label and a valid type', $key );
+				return array();
+			}
+
+			$options = array();
+			if ( 'select' === $type ) {
+				$options = $field['options'] ?? null;
+				if ( ! is_array( $options ) || array() === $options || array_filter( $options, 'is_string' ) !== $options ) {
+					$problems[] = sprintf( 'enrolment field "%s" needs a list of option strings', $key );
+					return array();
+				}
+				$options = array_values( $options );
+			}
+
+			$max = $field['max'] ?? ( 'textarea' === $type ? 1000 : 120 );
+			if ( ! is_int( $max ) || $max < 1 || $max > 2000 ) {
+				$problems[] = sprintf( 'enrolment field "%s" has an invalid max', $key );
+				return array();
+			}
+
+			$seen[ $key ] = true;
+			$fields[]     = array(
+				'key'          => $key,
+				'label'        => trim( $label ),
+				'type'         => $type,
+				'required'     => true === ( $field['required'] ?? false ),
+				'options'      => $options,
+				'max'          => $max,
+				'autocomplete' => is_string( $field['autocomplete'] ?? null ) ? $field['autocomplete'] : '',
+				'half'         => true === ( $field['half'] ?? false ),
+			);
+		}
+
+		return $fields;
 	}
 }

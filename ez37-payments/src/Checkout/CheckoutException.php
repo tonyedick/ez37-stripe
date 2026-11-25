@@ -16,12 +16,13 @@ namespace EZ37\Payments\Checkout;
  */
 final class CheckoutException extends \RuntimeException {
 
-	public const UNAVAILABLE   = 'unavailable';
-	public const INVALID_INPUT = 'invalid_input';
-	public const SECURITY      = 'security';
-	public const RATE_LIMITED  = 'rate_limited';
-	public const DISABLED      = 'disabled';
-	public const STRIPE_ERROR  = 'stripe_error';
+	public const UNAVAILABLE        = 'unavailable';
+	public const INVALID_INPUT      = 'invalid_input';
+	public const SECURITY           = 'security';
+	public const RATE_LIMITED       = 'rate_limited';
+	public const DISABLED           = 'disabled';
+	public const STRIPE_ERROR       = 'stripe_error';
+	public const AGREEMENT_REQUIRED = 'agreement_required';
 
 	/**
 	 * Constructor.

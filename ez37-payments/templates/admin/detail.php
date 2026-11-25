@@ -71,6 +71,25 @@ $ez37_payments_buttons = array(
 			<tr><th scope="row"><?php esc_html_e( 'Full reference', 'ez37-payments' ); ?></th><td><code><?php echo esc_html( (string) $ez37_payments_t['public_id'] ); ?></code></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Programme', 'ez37-payments' ); ?></th><td><?php echo esc_html( (string) $ez37_payments_t['offering_name'] ); ?> <span class="description">(<?php echo esc_html( (string) $ez37_payments_t['offering_key'] ); ?>)</span></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Customer', 'ez37-payments' ); ?></th><td><?php echo esc_html( (string) $ez37_payments_t['customer_name'] ); ?> — <a href="mailto:<?php echo esc_attr( (string) $ez37_payments_t['customer_email'] ); ?>"><?php echo esc_html( (string) $ez37_payments_t['customer_email'] ); ?></a></td></tr>
+			<?php
+			$ez37_payments_enrol = ! empty( $ez37_payments_t['enrolment_json'] ) ? json_decode( (string) $ez37_payments_t['enrolment_json'], true ) : array();
+			if ( is_array( $ez37_payments_enrol ) && array() !== $ez37_payments_enrol ) :
+				?>
+				<tr><th scope="row"><?php esc_html_e( 'Enrolment details', 'ez37-payments' ); ?></th><td>
+					<?php foreach ( $ez37_payments_enrol as $ez37_payments_k => $ez37_payments_v ) : ?>
+						<?php if ( is_string( $ez37_payments_v ) && '' !== $ez37_payments_v ) : ?>
+							<?php echo esc_html( ucfirst( str_replace( '_', ' ', (string) $ez37_payments_k ) ) ); ?>: <?php echo esc_html( $ez37_payments_v ); ?><br>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</td></tr>
+			<?php endif; ?>
+			<?php if ( ! empty( $ez37_payments_t['agreement_key'] ) ) : ?>
+				<tr><th scope="row"><?php esc_html_e( 'Agreement accepted', 'ez37-payments' ); ?></th><td>
+					<?php echo esc_html( (string) $ez37_payments_t['agreement_key'] ); ?>, version <?php echo esc_html( (string) $ez37_payments_t['agreement_version'] ); ?>,
+					<?php echo esc_html( (string) $ez37_payments_t['agreement_accepted_at'] ); ?> UTC<br>
+					<code><?php echo esc_html( (string) $ez37_payments_t['agreement_hash'] ); ?></code>
+				</td></tr>
+			<?php endif; ?>
 			<tr><th scope="row"><?php esc_html_e( 'Price', 'ez37-payments' ); ?></th><td><?php echo esc_html( Offering::format_amount( (int) $ez37_payments_t['amount'], (string) $ez37_payments_t['currency'] ) ); ?></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Amount paid (from Stripe)', 'ez37-payments' ); ?></th><td><?php echo esc_html( null === $ez37_payments_t['amount_paid'] ? '—' : Offering::format_amount( (int) $ez37_payments_t['amount_paid'], (string) $ez37_payments_t['currency'] ) ); ?></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Payment', 'ez37-payments' ); ?></th><td><?php echo PaymentsPage::status_badge( (string) $ez37_payments_t['payment_status'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in status_badge(). ?></td></tr>

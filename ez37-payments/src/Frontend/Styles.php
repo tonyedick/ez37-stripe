@@ -36,6 +36,19 @@ final class Styles {
 	}
 
 	/**
+	 * Enqueue the agreement drawer script (called when a form shows an agreement).
+	 */
+	public static function enqueue_drawer(): void {
+		wp_enqueue_script(
+			'ez37-agreement-drawer',
+			plugins_url( 'assets/agreement-drawer.js', EZ37_PAYMENTS_FILE ),
+			array(),
+			EZ37_PAYMENTS_VERSION,
+			true
+		);
+	}
+
+	/**
 	 * Enqueue the stylesheet (called from shortcode callbacks).
 	 */
 	public static function enqueue(): void {

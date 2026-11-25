@@ -5,6 +5,16 @@ All notable changes to the EZ37 Payments plugin.
 ## [Unreleased]
 
 ### Added
+- Programme enrolment (PCCP): offerings can define `enrolment` fields (collected before payment) and an
+  `agreement` the customer must accept. Schema 1.1.0 adds `enrolment_json`, `agreement_key`,
+  `agreement_version`, `agreement_hash`, `agreement_accepted_at` to `ez37_transactions`.
+- `config/agreements.php` (versioned agreement text; `draft` flag), `Agreements\Agreement(Catalogue)`,
+  `Checkout\EnrolmentForm` (server-side validation of the configured fields only).
+- Agreement drawer: ticking the agreement box (or its link) opens a panel fixed to the right of the screen;
+  "I have read and agree" ticks the box. `assets/agreement-drawer.js`, no-JavaScript fallback via `:target`.
+- `pccp` offering ($2,699.00 USD; Stripe Price IDs still to be added) and `pccp-programme-brochure` placeholder resource.
+- Admin transaction screen shows enrolment details and the agreement acceptance.
+- `bin/programme-local.php` + `design/ez37-pcert.css`: reusable paid-programme page (PCCP first).
 - Phase 10: `docs/test-matrix.md` (formal test matrix, manual session M1–M14) and
   `bin/phase10-local.py` (automated checks against the local DDEV site, sandbox only).
 - Phase 10 complete (17 Nov 2026): automated 61/61, manual M1–M14 all passed, in Stripe test mode.

@@ -156,3 +156,262 @@
 .ez37-price {
 	white-space: nowrap;
 }
+
+/* ---- Enrolment form (offerings with extra fields) ---- */
+.ez37-checkout--wide {
+	max-width: 680px;
+}
+
+.ez37-checkout__grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 16px;
+}
+
+.ez37-checkout__grid > .ez37-checkout__field {
+	grid-column: 1 / -1;
+}
+
+.ez37-checkout__grid > .ez37-checkout__field--half {
+	grid-column: auto;
+}
+
+.ez37-checkout__field select,
+.ez37-checkout__field textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--ez37-border);
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-surface);
+	font: inherit;
+}
+
+.ez37-checkout__field select:focus,
+.ez37-checkout__field textarea:focus {
+	outline: 2px solid var(--ez37-accent);
+	outline-offset: 1px;
+}
+
+.ez37-checkout__optional {
+	color: var(--ez37-muted);
+	font-weight: 400;
+	font-size: 0.875em;
+}
+
+.ez37-checkout__agree {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 4px 0 16px;
+}
+
+.ez37-checkout__agree input {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	margin-top: 3px;
+}
+
+@media (max-width: 600px) {
+	.ez37-checkout__grid {
+		grid-template-columns: 1fr;
+	}
+
+	.ez37-checkout__grid > .ez37-checkout__field--half {
+		grid-column: 1 / -1;
+	}
+}
+
+/* ---- Agreement drawer: fixed to the right edge of the screen ---- */
+.ez37-drawer {
+	position: fixed;
+	z-index: 100001;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: min(480px, 100vw);
+	visibility: hidden;
+	transform: translateX(100%);
+	transition: transform 0.28s ease, visibility 0s linear 0.28s;
+	outline: none;
+}
+
+.ez37-drawer.is-open,
+.ez37-drawer:target {
+	visibility: visible;
+	transform: none;
+	transition: transform 0.28s ease;
+}
+
+.ez37-drawer__panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: var(--ez37-surface);
+	box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+	color: inherit;
+}
+
+.ez37-drawer__head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 20px 24px;
+	border-bottom: 1px solid var(--ez37-border);
+}
+
+.ez37-drawer__title {
+	margin: 0;
+	font-size: 1.15em;
+	line-height: 1.3;
+}
+
+.ez37-drawer__close {
+	flex: none;
+	font-size: 28px;
+	line-height: 1;
+	text-decoration: none;
+	color: inherit;
+}
+
+.ez37-drawer__body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 20px 24px;
+	overscroll-behavior: contain;
+}
+
+.ez37-drawer__body h3 {
+	margin: 20px 0 6px;
+	font-size: 1em;
+}
+
+.ez37-drawer__body h3:first-child {
+	margin-top: 0;
+}
+
+.ez37-drawer__body p {
+	margin: 0 0 10px;
+}
+
+.ez37-drawer__draft {
+	padding: 8px 12px;
+	background: var(--ez37-notice-bg);
+	color: var(--ez37-notice-text);
+	font-size: 0.9em;
+}
+
+.ez37-drawer__version {
+	color: var(--ez37-muted);
+	font-size: 0.8em;
+}
+
+.ez37-drawer__foot {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 16px 24px;
+	border-top: 1px solid var(--ez37-border);
+}
+
+.ez37-drawer__accept {
+	padding: 12px 20px;
+	border: 0;
+	border-radius: var(--ez37-radius);
+	background: var(--ez37-accent);
+	color: var(--ez37-accent-text);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.ez37-drawer__cancel {
+	color: inherit;
+}
+
+.ez37-drawer-backdrop {
+	position: fixed;
+	z-index: 100000;
+	inset: 0;
+	background: rgba(20, 18, 63, 0.45);
+}
+
+.ez37-drawer-backdrop[hidden] {
+	display: none;
+}
+
+html.ez37-drawer-lock {
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ez37-drawer,
+	.ez37-drawer.is-open {
+		transition: none;
+	}
+}
+
+/* ---- Agreement drawer buttons: EZ37 brand buttons (primary + ghost) ----
+   Hard overrides so theme/Elementor button styles cannot restyle them. */
+html body .ez37-drawer .ez37-drawer__foot { gap: 12px; }
+html body .ez37-drawer button.ez37-drawer__accept,
+html body .ez37-drawer a.ez37-drawer__cancel {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 14px 28px !important;
+	border-radius: 14px !important;
+	font-family: "Poppins", sans-serif !important;
+	font-size: 15px !important;
+	font-weight: 600 !important;
+	line-height: 1 !important;
+	text-decoration: none !important;
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+html body .ez37-drawer button.ez37-drawer__accept {
+	background: #d63424 !important;
+	border: 1.5px solid #d63424 !important;
+	color: #fff !important;
+	box-shadow: 0 10px 24px rgba(214, 52, 36, 0.25);
+}
+html body .ez37-drawer button.ez37-drawer__accept:hover,
+html body .ez37-drawer button.ez37-drawer__accept:focus-visible {
+	background: #e8503f !important;
+	border-color: #e8503f !important;
+	transform: translateY(-1px);
+}
+html body .ez37-drawer a.ez37-drawer__cancel {
+	background: transparent !important;
+	border: 1.5px solid #4338ca !important;
+	color: #4338ca !important;
+	box-shadow: none;
+}
+html body .ez37-drawer a.ez37-drawer__cancel:hover,
+html body .ez37-drawer a.ez37-drawer__cancel:focus-visible {
+	background: rgba(67, 56, 202, 0.08) !important;
+}
+
+/* ---- Agreement drawer buttons, final: both ghost; hover fills indigo; left / right edges ---- */
+html body .ez37-drawer .ez37-drawer__foot { justify-content: space-between; }
+html body .ez37-drawer button.ez37-drawer__accept,
+html body .ez37-drawer a.ez37-drawer__cancel {
+	background: transparent !important;
+	border: 1.5px solid #4338ca !important;
+	color: #4338ca !important;
+	box-shadow: none !important;
+	transform: none !important;
+	transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
+}
+html body .ez37-drawer button.ez37-drawer__accept:hover,
+html body .ez37-drawer button.ez37-drawer__accept:focus-visible,
+html body .ez37-drawer a.ez37-drawer__cancel:hover,
+html body .ez37-drawer a.ez37-drawer__cancel:focus-visible {
+	background: #4338ca !important;
+	border-color: #4338ca !important;
+	color: #fff !important;
+}

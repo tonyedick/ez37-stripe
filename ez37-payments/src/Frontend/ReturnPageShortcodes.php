@@ -24,6 +24,7 @@ final class ReturnPageShortcodes {
 
 	public const STATUS_TAG    = 'ez37_payment_status';
 	public const CANCELLED_TAG = 'ez37_payment_cancelled';
+	public const RECEIVED_TAG  = 'ez37_enrolment_received';
 
 	/**
 	 * How often the success page re-checks while pending (milliseconds), and how many times.
@@ -48,6 +49,7 @@ final class ReturnPageShortcodes {
 	public function register(): void {
 		add_shortcode( self::STATUS_TAG, array( $this, 'render_status' ) );
 		add_shortcode( self::CANCELLED_TAG, array( $this, 'render_cancelled' ) );
+		add_shortcode( self::RECEIVED_TAG, array( $this, 'render_received' ) );
 		add_action( 'send_headers', array( $this, 'send_privacy_headers' ) );
 	}
 
@@ -124,5 +126,33 @@ final class ReturnPageShortcodes {
 				'retry_url'     => $retry,
 			)
 		);
+	}
+
+	/**
+	 * [ez37_enrolment_received]: shown after an enrolment that will be invoiced (nothing was charged).
+	 */
+	public function render_received(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display of a public offering name.
+		$key      = isset( $_GET['offering'] ) ? sanitize_key( wp_unslash( $_GET['offering'] ) ) : '';
+		$offering = '' !== $key ? $this->catalogue->find( $key ) : null;
+		$name     = null !== $offering ? $offering->name : __( 'the programme', 'ez37-payments' );
+
+		if ( function_exists( 'wp_enqueue_style' ) ) {
+			wp_enqueue_style( Styles::HANDLE );
+		}
+
+		if ( null !== $offering && $offering->free ) {
+			return '<div class="ez37-status ez37-status--paid" role="status">'
+				. '<h2 class="ez37-status__title">' . esc_html__( 'Registration received', 'ez37-payments' ) . '</h2>'
+				. '<p>' . esc_html( sprintf( /* translators: %s: programme name */ __( 'Thank you for registering for %s. We have your details and your acceptance of the Peer-to-Peer Agreement.', 'ez37-payments' ), $name ) ) . '</p>'
+				. '<p>' . esc_html__( 'There is no charge. Our team will email you shortly with the link to the list of participants so you can choose your peer coaching partner(s).', 'ez37-payments' ) . '</p>'
+				. '</div>';
+		}
+
+		return '<div class="ez37-status ez37-status--paid" role="status">'
+			. '<h2 class="ez37-status__title">' . esc_html__( 'Enrolment received', 'ez37-payments' ) . '</h2>'
+			. '<p>' . esc_html( sprintf( /* translators: %s: programme name */ __( 'Thank you for enrolling in the %s. We have your details and your acceptance of the Enrolment Agreement.', 'ez37-payments' ), $name ) ) . '</p>'
+			. '<p>' . esc_html__( 'You have not been charged. Our team will contact you shortly with an invoice based on the payment option you chose. A confirmation has also been sent to your email.', 'ez37-payments' ) . '</p>'
+			. '</div>';
 	}
 }

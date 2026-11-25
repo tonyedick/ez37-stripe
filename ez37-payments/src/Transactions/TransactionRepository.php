@@ -34,34 +34,52 @@ class TransactionRepository {
 	 * @param string   $email    Validated customer email.
 	 * @return array{id: int, public_id: string}
 	 *
+	 * @param array<string, string>|null $enrolment Validated enrolment answers, or null.
+	 * @param array{key: string, version: string, hash: string, accepted_at: string}|null $agreement Agreement acceptance, or null.
+	 *
 	 * @throws \RuntimeException When the row cannot be inserted.
 	 */
-	public function create_pending( Offering $offering, string $price_id, string $mode, string $name, string $email ): array {
+	public function create_pending( Offering $offering, string $price_id, string $mode, string $name, string $email, ?array $enrolment = null, ?array $agreement = null, PaymentStatus $status = PaymentStatus::Pending ): array {
 		global $wpdb;
 
 		$public_id = self::new_public_id();
 		$now       = self::now();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table; caching not appropriate for payment writes.
-		$inserted = $wpdb->insert(
-			Schema::table( Schema::TRANSACTIONS ),
-			array(
-				'public_id'         => $public_id,
-				'offering_key'      => $offering->key,
-				'offering_name'     => $offering->name,
-				'stripe_price_id'   => $price_id,
-				'amount'            => $offering->amount,
-				'currency'          => $offering->currency,
-				'customer_name'     => $name,
-				'customer_email'    => $email,
-				'stripe_mode'       => $mode,
-				'payment_status'    => PaymentStatus::Pending->value,
-				'fulfilment_status' => FulfilmentStatus::NotStarted->value,
-				'created_at'        => $now,
-				'updated_at'        => $now,
-			),
-			array( '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+		$row     = array(
+			'public_id'         => $public_id,
+			'offering_key'      => $offering->key,
+			'offering_name'     => $offering->name,
+			'stripe_price_id'   => $price_id,
+			'amount'            => $offering->amount,
+			'currency'          => $offering->currency,
+			'customer_name'     => $name,
+			'customer_email'    => $email,
+			'stripe_mode'       => $mode,
+			'payment_status'    => $status->value,
+			'fulfilment_status' => FulfilmentStatus::NotStarted->value,
+			'created_at'        => $now,
+			'updated_at'        => $now,
 		);
+		$formats = array( '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' );
+
+		// Enrolment answers and the agreement acceptance are stored with the order.
+		if ( null !== $enrolment && array() !== $enrolment ) {
+			$json = wp_json_encode( $enrolment );
+			if ( is_string( $json ) ) {
+				$row['enrolment_json'] = $json;
+				$formats[]             = '%s';
+			}
+		}
+		if ( null !== $agreement ) {
+			$row['agreement_key']         = $agreement['key'];
+			$row['agreement_version']     = $agreement['version'];
+			$row['agreement_hash']        = $agreement['hash'];
+			$row['agreement_accepted_at'] = $agreement['accepted_at'];
+			array_push( $formats, '%s', '%s', '%s', '%s' );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table; caching not appropriate for payment writes.
+		$inserted = $wpdb->insert( Schema::table( Schema::TRANSACTIONS ), $row, $formats );
 
 		if ( 1 !== $inserted ) {
 			throw new \RuntimeException( 'Could not create transaction: ' . (string) $wpdb->last_error );

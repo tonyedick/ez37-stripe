@@ -27,6 +27,9 @@ final class Offering {
 	 * @param array<string, string> $price_ids  Stripe Price ID per mode ("test", "live").
 	 * @param string                $tax_mode   Tax handling; "none" until confirmed (D7).
 	 * @param array<string, mixed>  $fulfilment Fulfilment definition (Phase 6).
+	 * @param list<array<string, mixed>> $enrolment_fields Extra fields collected before payment (validated by OfferingCatalogue).
+	 * @param string                $agreement_key Agreement the customer must accept before paying, or "".
+	 * @param bool                  $free       True for a free registration: no payment, no Stripe; the form is stored and the team follows up.
 	 */
 	public function __construct(
 		public readonly string $key,
@@ -36,7 +39,10 @@ final class Offering {
 		public readonly int $amount,
 		private readonly array $price_ids,
 		public readonly string $tax_mode,
-		public readonly array $fulfilment
+		public readonly array $fulfilment,
+		public readonly array $enrolment_fields = array(),
+		public readonly string $agreement_key = '',
+		public readonly bool $free = false
 	) {}
 
 	/**
@@ -56,7 +62,7 @@ final class Offering {
 	 * @param string $mode "test" or "live".
 	 */
 	public function is_purchasable( string $mode ): bool {
-		return $this->active && null !== $this->price_id( $mode );
+		return $this->active && ( $this->free || null !== $this->price_id( $mode ) );
 	}
 
 	/**

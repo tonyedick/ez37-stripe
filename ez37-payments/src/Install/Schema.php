@@ -32,7 +32,7 @@ final class Schema {
 	/**
 	 * Bump when the schema changes; maybe_upgrade() then re-runs dbDelta().
 	 */
-	public const DB_VERSION = '1.0.0';
+	public const DB_VERSION = '1.1.0';
 
 	public const VERSION_OPTION = 'ez37_payments_db_version';
 
@@ -141,6 +141,11 @@ fulfilment_locked_until datetime NULL,
 review_required tinyint(1) unsigned NOT NULL DEFAULT 0,
 failure_code varchar(64) {$ascii} NULL,
 failure_message varchar(500) NULL,
+enrolment_json longtext NULL,
+agreement_key varchar(64) {$ascii} NULL,
+agreement_version varchar(32) {$ascii} NULL,
+agreement_hash char(64) {$ascii} NULL,
+agreement_accepted_at datetime NULL,
 created_at datetime NOT NULL,
 updated_at datetime NOT NULL,
 paid_at datetime NULL,

@@ -66,6 +66,11 @@ One row per checkout attempt.
 | `review_required` | tinyint, default 0 | Set when a webhook does not match the transaction (amount, currency, reference); such transactions are never fulfilled automatically |
 | `failure_code` | varchar(64) ascii, null | Machine-readable |
 | `failure_message` | varchar(500), null | Sanitised; never secrets or card data |
+| `enrolment_json` | longtext, null | Schema 1.1.0. Validated enrolment answers (only the fields the offering configures), JSON |
+| `agreement_key` | varchar(64) ascii, null | Schema 1.1.0. Agreement the customer accepted |
+| `agreement_version` | varchar(32) ascii, null | Version label shown when they accepted |
+| `agreement_hash` | char(64) ascii, null | SHA-256 of the exact agreement text (key, version, title, sections) |
+| `agreement_accepted_at` | datetime, null | UTC time of acceptance (set server-side when the order is created) |
 | `created_at`, `updated_at` | datetime | UTC |
 | `paid_at`, `fulfilled_at` | datetime, null | UTC |
 

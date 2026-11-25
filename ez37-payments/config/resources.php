@@ -20,6 +20,48 @@
 defined( 'ABSPATH' ) || exit;
 
 return array(
+	// Placeholder until the real programme welcome pack exists. Put the file in
+	// EZ37_PAYMENTS_PRIVATE_DIR/pccp/brochure-placeholder.pdf (outside the web root).
+	'pccp-programme-brochure'      => array(
+		'type'        => 'private_file',
+		'label'       => 'Professional Coach Certification Programme brochure',
+		'path'        => 'pccp/brochure-placeholder.pdf',
+		'attach'      => true,
+		'max_attach'  => 5242880,
+		'access_days' => 7,
+	),
+	'accp-programme-brochure'      => array(
+		'type'        => 'private_file',
+		'label'       => 'Advanced Coach Certification Programme brochure',
+		'path'        => 'accp/brochure-placeholder.pdf',
+		'attach'      => true,
+		'max_attach'  => 5242880,
+		'access_days' => 7,
+	),
+	'coaching-skills-brochure'     => array(
+		'type'        => 'private_file',
+		'label'       => 'Coaching Skills Training for Managers and Leaders course outline',
+		'path'        => 'coaching-skills/brochure-placeholder.pdf',
+		'attach'      => true,
+		'max_attach'  => 5242880,
+		'access_days' => 7,
+	),
+	'amcmp-brochure'            => array(
+		'type'        => 'private_file',
+		'label'       => 'Advanced Mentor Coaching Mastery Program course outline',
+		'path'        => 'amcmp/brochure-placeholder.pdf',
+		'attach'      => true,
+		'max_attach'  => 5242880,
+		'access_days' => 7,
+	),
+	'mcs-brochure'              => array(
+		'type'        => 'private_file',
+		'label'       => 'Mentor Coach Specialization (MCS) Training course outline',
+		'path'        => 'mcs/brochure-placeholder.pdf',
+		'attach'      => true,
+		'max_attach'  => 5242880,
+		'access_days' => 7,
+	),
 	'leadership-coaching-brochure' => array(
 		'type'        => 'private_file',
 		'label'       => 'Leadership Coaching programme brochure',

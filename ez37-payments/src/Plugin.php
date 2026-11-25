@@ -10,6 +10,8 @@ declare( strict_types=1 );
 namespace EZ37\Payments;
 
 use EZ37\Payments\Admin\PaymentsPage;
+use EZ37\Payments\Agreements\AgreementCatalogue;
+use EZ37\Payments\Email\InvoiceRequestMailer;
 use EZ37\Payments\Checkout\CheckoutRequestHandler;
 use EZ37\Payments\Checkout\CheckoutService;
 use EZ37\Payments\Checkout\RateLimiter;
@@ -62,12 +64,14 @@ final class Plugin {
 	 * @param Logger            $logger    Logger.
 	 * @param OfferingCatalogue $catalogue Offerings.
 	 * @param ResourceCatalogue $resources Resources.
+	 * @param AgreementCatalogue $agreements Agreements.
 	 */
 	private function __construct(
 		private readonly Config $config,
 		private readonly Logger $logger,
 		private readonly OfferingCatalogue $catalogue,
-		private readonly ResourceCatalogue $resources
+		private readonly ResourceCatalogue $resources,
+		private readonly AgreementCatalogue $agreements
 	) {}
 
 	/**
@@ -85,7 +89,8 @@ final class Plugin {
 			$config,
 			$logger,
 			OfferingCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/offerings.php' ),
-			ResourceCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/resources.php' )
+			ResourceCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/resources.php' ),
+			AgreementCatalogue::from_file( EZ37_PAYMENTS_DIR . 'config/agreements.php' )
 		);
 		self::$instance->register_hooks();
 	}
@@ -134,12 +139,14 @@ final class Plugin {
 			$this->catalogue,
 			$gateway,
 			$transactions,
-			$this->logger
+			$this->logger,
+			$this->agreements,
+			new InvoiceRequestMailer( $this->config, $this->logger )
 		);
 
 		( new Styles() )->register();
 		( new CheckoutRequestHandler( $service, new RateLimiter(), $this->logger ) )->register();
-		( new CheckoutShortcode( $this->config, $this->catalogue ) )->register();
+		( new CheckoutShortcode( $this->config, $this->catalogue, $this->agreements ) )->register();
 
 		$events    = new EventRepository();
 		$processor = new EventProcessor( $this->config, $transactions, $events, $this->logger );
@@ -179,7 +186,7 @@ final class Plugin {
 		}
 
 		$errors   = $this->config->errors();
-		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors(), $this->resources->errors() );
+		$warnings = array_merge( $this->config->warnings(), $this->catalogue->errors(), $this->resources->errors(), $this->agreements->errors() );
 
 		if ( $this->config->is_live() && ! CheckoutService::site_uses_https() ) {
 			$errors[] = __( 'Live mode requires the site address (Settings → General) to use https. Checkout is blocked.', 'ez37-payments' );

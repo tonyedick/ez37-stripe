@@ -9,7 +9,10 @@ declare( strict_types=1 );
 
 namespace EZ37\Payments\Checkout;
 
+use EZ37\Payments\Agreements\AgreementCatalogue;
 use EZ37\Payments\Config;
+use EZ37\Payments\Email\InvoiceRequestMailer;
+use EZ37\Payments\Transactions\PaymentStatus;
 use EZ37\Payments\Offerings\Offering;
 use EZ37\Payments\Offerings\OfferingCatalogue;
 use EZ37\Payments\Stripe\GatewayException;
@@ -36,7 +39,14 @@ final class CheckoutService {
 	/**
 	 * How long a successful Price check is cached.
 	 */
-	public const PRICE_CHECK_TTL = 600;
+	public const PRICE_CHECK_TTL = 3600;
+
+	/**
+	 * Enrolment field that decides how the customer pays, and the one value that goes to Stripe.
+	 * Any other answer (instalments, other) is recorded and invoiced by the EZ37 team.
+	 */
+	public const PAYMENT_OPTION_FIELD = 'payment_option';
+	public const PAY_NOW_VALUE        = 'Full payment';
 
 	/**
 	 * Constructor.
@@ -46,14 +56,127 @@ final class CheckoutService {
 	 * @param StripeGateway         $gateway      Stripe API boundary.
 	 * @param TransactionRepository $transactions Transaction storage.
 	 * @param Logger                $logger       Logger.
+	 * @param AgreementCatalogue|null $agreements Agreements (needed only by offerings that require one).
 	 */
 	public function __construct(
 		private readonly Config $config,
 		private readonly OfferingCatalogue $catalogue,
 		private readonly StripeGateway $gateway,
 		private readonly TransactionRepository $transactions,
-		private readonly Logger $logger
+		private readonly Logger $logger,
+		private readonly ?AgreementCatalogue $agreements = null,
+		private readonly ?InvoiceRequestMailer $invoice_mailer = null
 	) {}
+
+	/**
+	 * Whether this submission asks for an invoice instead of paying by card now.
+	 *
+	 * True only for offerings that have the payment-option field, when the (server-side) answer
+	 * is anything other than full payment. The value is checked against the configured options later.
+	 *
+	 * @param CheckoutInput $input Validated customer input.
+	 */
+	public function wants_invoice( CheckoutInput $input ): bool {
+		$offering = $this->catalogue->find( $input->offering_key );
+		if ( null === $offering || ! $offering->active || null === $this->invoice_mailer ) {
+			return false;
+		}
+
+		foreach ( $offering->enrolment_fields as $field ) {
+			if ( self::PAYMENT_OPTION_FIELD === $field['key'] ) {
+				$answer = $input->enrolment[ self::PAYMENT_OPTION_FIELD ] ?? '';
+				return '' !== $answer && self::PAY_NOW_VALUE !== $answer;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Whether this submission is a registration for a free offering (no payment, no Stripe).
+	 *
+	 * @param CheckoutInput $input Validated customer input.
+	 */
+	public function is_free_registration( CheckoutInput $input ): bool {
+		$offering = $this->catalogue->find( $input->offering_key );
+
+		return null !== $offering && $offering->active && $offering->free && null !== $this->invoice_mailer;
+	}
+
+	/**
+	 * Record a free registration and tell the team and the customer. Returns the page to show.
+	 *
+	 * @param CheckoutInput $input Validated customer input.
+	 *
+	 * @throws CheckoutException When the form or agreement is invalid, or the registration cannot be stored.
+	 */
+	public function register_free( CheckoutInput $input ): string {
+		$offering = $this->catalogue->find( $input->offering_key );
+		if ( null === $offering || ! $offering->active || ! $offering->free || null === $this->invoice_mailer ) {
+			throw new CheckoutException( CheckoutException::UNAVAILABLE, 'Offering unknown, inactive or not free.' );
+		}
+
+		$enrolment = EnrolmentForm::validate( $offering->enrolment_fields, $input->enrolment );
+		$agreement = $this->accepted_agreement( $offering, $input );
+
+		try {
+			$transaction = $this->transactions->create_pending( $offering, '', $this->config->mode(), $input->name, $input->email, $enrolment, $agreement, PaymentStatus::Registered );
+		} catch ( \RuntimeException $e ) {
+			$this->logger->error( 'Could not store registration.', array( 'exception' => $e ) );
+			throw new CheckoutException( CheckoutException::STRIPE_ERROR, 'Database error.', $e );
+		}
+
+		$this->logger->info(
+			'Free registration received.',
+			array(
+				'transaction' => $transaction['public_id'],
+				'offering'    => $offering->key,
+			)
+		);
+
+		// Emails never block the customer: failures are logged by the mailer.
+		$this->invoice_mailer->send_registration( $offering, $input->name, $input->email, $enrolment, $transaction['public_id'] );
+
+		return add_query_arg( 'offering', rawurlencode( $offering->key ), home_url( '/enrolment-received/' ) );
+	}
+
+	/**
+	 * Record an invoice request (no payment) and tell the team and the customer. Returns the page to show.
+	 *
+	 * @param CheckoutInput $input Validated customer input.
+	 *
+	 * @throws CheckoutException When the form or agreement is invalid, or the request cannot be stored.
+	 */
+	public function request_invoice( CheckoutInput $input ): string {
+		$offering = $this->catalogue->find( $input->offering_key );
+		if ( null === $offering || ! $offering->active || null === $this->invoice_mailer ) {
+			throw new CheckoutException( CheckoutException::UNAVAILABLE, 'Offering unknown or inactive.' );
+		}
+
+		$enrolment = EnrolmentForm::validate( $offering->enrolment_fields, $input->enrolment );
+		$agreement = $this->accepted_agreement( $offering, $input );
+
+		try {
+			$transaction = $this->transactions->create_pending( $offering, '', $this->config->mode(), $input->name, $input->email, $enrolment, $agreement, PaymentStatus::InvoiceRequested );
+		} catch ( \RuntimeException $e ) {
+			$this->logger->error( 'Could not store invoice request.', array( 'exception' => $e ) );
+			throw new CheckoutException( CheckoutException::STRIPE_ERROR, 'Database error.', $e );
+		}
+
+		$this->logger->info(
+			'Invoice requested.',
+			array(
+				'transaction' => $transaction['public_id'],
+				'offering'    => $offering->key,
+				'option'      => $enrolment[ self::PAYMENT_OPTION_FIELD ] ?? '',
+			)
+		);
+
+		// Emails never block the customer: failures are logged by the mailer.
+		$this->invoice_mailer->send( $offering, $input->name, $input->email, $enrolment, $transaction['public_id'] );
+
+		return add_query_arg( 'offering', rawurlencode( $offering->key ), home_url( '/enrolment-received/' ) );
+	}
 
 	/**
 	 * Start a checkout and return the Stripe-hosted Checkout URL.
@@ -74,15 +197,19 @@ final class CheckoutService {
 		$mode     = $this->config->mode();
 		$offering = $this->catalogue->find( $input->offering_key );
 
-		if ( null === $offering || ! $offering->is_purchasable( $mode ) ) {
+		if ( null === $offering || $offering->free || ! $offering->is_purchasable( $mode ) ) {
 			throw new CheckoutException( CheckoutException::UNAVAILABLE, 'Offering unknown, inactive or without a price in ' . $mode . ' mode.' );
 		}
+
+		// Validate the form before spending a Stripe API call on the Price check.
+		$enrolment = array() === $offering->enrolment_fields ? null : EnrolmentForm::validate( $offering->enrolment_fields, $input->enrolment );
+		$agreement = $this->accepted_agreement( $offering, $input );
 
 		$price_id = (string) $offering->price_id( $mode );
 		$this->verify_price( $offering, $price_id );
 
 		try {
-			$transaction = $this->transactions->create_pending( $offering, $price_id, $mode, $input->name, $input->email );
+			$transaction = $this->transactions->create_pending( $offering, $price_id, $mode, $input->name, $input->email, $enrolment, $agreement );
 		} catch ( \RuntimeException $e ) {
 			$this->logger->error( 'Could not create transaction.', array( 'exception' => $e ) );
 			throw new CheckoutException( CheckoutException::STRIPE_ERROR, 'Database error.', $e );
@@ -119,6 +246,42 @@ final class CheckoutService {
 		);
 
 		return $session['url'];
+	}
+
+	/**
+	 * The agreement acceptance to store with the order, or null when the
+	 * offering needs no agreement.
+	 *
+	 * The customer must have ticked the box and must have seen the current
+	 * version of the text (a stale open form is refused, so nobody accepts
+	 * wording that has since changed).
+	 *
+	 * @param Offering      $offering Offering.
+	 * @param CheckoutInput $input    Customer input.
+	 * @return array{key: string, version: string, hash: string, accepted_at: string}|null
+	 *
+	 * @throws CheckoutException AGREEMENT_REQUIRED, or UNAVAILABLE when the agreement is not configured.
+	 */
+	private function accepted_agreement( Offering $offering, CheckoutInput $input ): ?array {
+		if ( '' === $offering->agreement_key ) {
+			return null;
+		}
+
+		$agreement = null === $this->agreements ? null : $this->agreements->find( $offering->agreement_key );
+		if ( null === $agreement ) {
+			throw new CheckoutException( CheckoutException::UNAVAILABLE, 'Agreement "' . $offering->agreement_key . '" is not configured.' );
+		}
+
+		if ( ! $input->agreement_accepted || $input->agreement_version !== $agreement->version ) {
+			throw new CheckoutException( CheckoutException::AGREEMENT_REQUIRED, 'Agreement not accepted, or form shows an old version.' );
+		}
+
+		return array(
+			'key'         => $agreement->key,
+			'version'     => $agreement->version,
+			'hash'        => $agreement->text_hash(),
+			'accepted_at' => gmdate( 'Y-m-d H:i:s' ),
+		);
 	}
 
 	/**

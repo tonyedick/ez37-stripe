@@ -104,6 +104,11 @@ calls `wp cron event run --due-now` (or `wp-cron.php`) every 5–15 minutes and 
 - The private folder must be outside the web server's document root (the plugin can only detect a
   folder inside the WordPress folder).
 
+## Before enabling the PCCP offering
+
+See `docs/enrolment-and-agreement.md` ("Before go-live"): approved agreement text and version, Stripe Price
+IDs (sandbox now, live later), the private resource file, and confirmed form fields.
+
 ## Configuration on staging/production
 
 Add constants to `wp-config.php` **above** the "That's all, stop editing!" line. Example for

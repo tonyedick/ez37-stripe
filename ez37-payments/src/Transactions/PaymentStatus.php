@@ -38,6 +38,12 @@ enum PaymentStatus: string {
 	/** Checkout Session expired without payment (abandoned or cancelled). */
 	case Expired = 'expired';
 
+	/** Customer chose instalments / other terms: no card payment; the EZ37 team sends an invoice. */
+	case InvoiceRequested = 'invoice_requested';
+
+	/** A free registration (no payment involved): stored, and the EZ37 team follows up. */
+	case Registered = 'registered';
+
 	/**
 	 * States this status may move to.
 	 *
@@ -47,7 +53,7 @@ enum PaymentStatus: string {
 		return match ( $this ) {
 			self::Pending    => array( self::Processing, self::Paid, self::Failed, self::Expired ),
 			self::Processing => array( self::Paid, self::Failed ),
-			self::Paid, self::Failed, self::Expired => array(),
+			self::Paid, self::Failed, self::Expired, self::InvoiceRequested, self::Registered => array(),
 		};
 	}
 
